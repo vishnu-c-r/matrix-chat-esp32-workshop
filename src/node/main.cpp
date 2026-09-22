@@ -1,0 +1,188 @@
+// =============================================================
+//  src/node/main.cpp — Human node reference solution.
+//
+//  Students edit ONLY include/config.h (NODE_ID, NODE_NAME).
+//  SOLUTION-BEGIN/END blocks are stripped by tools/make_student.py
+//  to generate the skeleton with TODO hints.
+//
+//  Stage guide (what make_student.py leaves for students):
+//    Stage 1 — Call ledInit() so the LED shows your node color.
+//    Stage 2 — Fill in the Pkt fields and handle incoming CHAT packets.
+//    Stage 3 — Feed Smith packets into rssiTrackerUpdate() and
+//               map the resulting state to the LED and web status bar.
+// =============================================================
+#include <Arduino.h>
+#include <WiFi.h>
+#include <esp_wifi.h>
+
+#include "config.h"
+#include "common/protocol.h"
+#include "common/board_pins.h"
+#include "common/palette.h"
+#include "common/radio.h"
+#include "common/led.h"
+#include "common/rssi_tracker.h"
+#include "common/dedupe.h"
+#include "common/web.h"
+
+// Implemented here; declared in web.h — called by the web module when
+// the browser POSTs a message.
+void sendChatMessage(const char* text);
+
+// ----- Global state ----------------------------------------
+static uint16_t      g_seq     = 0;
+static RssiTracker   g_tracker = {};
+
+// ----- Packet receive callback (called from radioLoop) ------
+static void onPktRecv(const Pkt* pkt, int8_t rssi)
+{
+    // ---------- Smith beacon / Smith chat -------------------
+    if (pkt->type == (uint8_t)PktType::SMITH_BEACON ||
+        pkt->type == (uint8_t)PktType::SMITH_CHAT)
+    {
+        // SOLUTION-BEGIN stage:3 hint:"Call rssiTrackerUpdate with the raw RSSI and current time."
+        rssiTrackerUpdate(&g_tracker, rssi, millis());
+        // SOLUTION-END
+
+        if (pkt->type == (uint8_t)PktType::SMITH_CHAT && pkt->len > 0)
+        {
+            // Show corrupted Smith text with glitch styling.
+            webAddMessage(pkt->node_id, "Agent Smith",
+                          COLOR_SMITH.r, COLOR_SMITH.g, COLOR_SMITH.b,
+                          pkt->text, /*is_smith=*/true);
+        }
+        return;
+    }
+
+    // ---------- Normal chat from another node ---------------
+    if (pkt->type != (uint8_t)PktType::CHAT)
+    {
+        return;  // unknown type — discard
+    }
+
+    // SOLUTION-BEGIN stage:2 hint:"Check dedupeSeen(); if new, show the message and flash the LED."
+    if (!dedupeSeen(pkt->node_id, pkt->seq))
+    {
+        Color col = nodeColor(pkt->color_idx);
+        // Display in web UI (name comes from the packet text prefix, but we
+        // show sender's node_id as a fallback name for simplicity).
+        char sender[28];
+        snprintf(sender, sizeof(sender), "Node %u", pkt->node_id);
+        webAddMessage(pkt->node_id, sender,
+                      col.r, col.g, col.b,
+                      pkt->text, /*is_smith=*/false);
+        ledFlashMsg(col);
+        Serial.printf("[chat] Node%u: %s\n", pkt->node_id, pkt->text);
+    }
+    // SOLUTION-END
+}
+
+// ----- Called by web.cpp when the browser sends a message ---
+void sendChatMessage(const char* text)
+{
+    Pkt pkt = {};
+
+    // SOLUTION-BEGIN stage:2 hint:"Fill in every Pkt field, then call radioSend(&pkt)."
+    pkt.magic     = PKT_MAGIC;
+    pkt.ver       = PKT_VER;
+    pkt.type      = (uint8_t)PktType::CHAT;
+    pkt.node_id   = NODE_ID;
+    pkt.color_idx = (uint8_t)(NODE_ID % N_COLORS);
+    pkt.seq       = g_seq++;
+    strncpy(pkt.text, text, sizeof(pkt.text) - 1);
+    pkt.text[sizeof(pkt.text) - 1] = '\0';
+    pkt.len       = (uint8_t)strlen(pkt.text);
+    radioSend(&pkt);
+    // SOLUTION-END
+
+    // Echo to our own chat log (own messages don't come back via ESP-NOW).
+    webAddMessage(NODE_ID, NODE_NAME,
+                  nodeColor(NODE_ID % N_COLORS).r,
+                  nodeColor(NODE_ID % N_COLORS).g,
+                  nodeColor(NODE_ID % N_COLORS).b,
+                  text, /*is_smith=*/false);
+
+    Serial.printf("[me] %s: %s\n", NODE_NAME, text);
+}
+
+// ----- Serial command handler --------------------------------
+static void handleSerial()
+{
+    if (!Serial.available()) return;
+    String line = Serial.readStringUntil('\n');
+    line.trim();
+
+    if (line == "/id")
+    {
+        Serial.printf("NODE_ID=%u  NAME=%s  MAC=%s\n",
+                      NODE_ID, NODE_NAME, WiFi.macAddress().c_str());
+    }
+    else if (line == "/rssi")
+    {
+        Serial.printf("rssi_f=%.1f  state=%u\n",
+                      g_tracker.rssi_f, (uint8_t)g_tracker.state);
+    }
+    else if (line == "/state")
+    {
+        const char* names[] = {"CLEAR", "NEAR", "CLOSE"};
+        uint8_t si = (uint8_t)g_tracker.state;
+        Serial.printf("Smith: %s\n", si <= 2 ? names[si] : "?");
+    }
+    else if (line.length() > 0 && line[0] != '/')
+    {
+        // Plain text → send as chat.
+        sendChatMessage(line.c_str());
+    }
+    else
+    {
+        Serial.println("Commands: /id /rssi /state  or type a message");
+    }
+}
+
+// ----- setup() ----------------------------------------------
+void setup()
+{
+    Serial.begin(115200);
+    delay(1500);  // give USB CDC time to attach
+    Serial.printf("\n=== Matrix Chat Node %u (%s) ===\n", NODE_ID, NODE_NAME);
+
+    // SOLUTION-BEGIN stage:1 hint:"Call ledInit(NODE_ID) to set up the RGB LED for your node color."
+    ledInit(NODE_ID);
+    // SOLUTION-END
+
+    dedupeInit();
+    rssiTrackerInit(&g_tracker,
+                    RSSI_EMA_ALPHA,
+                    (float)RSSI_CLOSE_ENTER,
+                    (float)RSSI_CLOSE_EXIT,
+                    (float)RSSI_NEAR,
+                    SMITH_TIMEOUT_MS);
+
+    // radioInit sets WiFi mode AP+STA and channel before esp_now_init.
+    radioInit(CHANNEL, onPktRecv);
+
+    // SoftAP and web server start after radio so they share the channel.
+    webBegin(NODE_ID, NODE_NAME);
+
+    Serial.printf("MAC:      %s\n", WiFi.macAddress().c_str());
+    Serial.printf("AP SSID:  NEO-%u  password: matrix123\n", NODE_ID);
+    Serial.printf("Chat URL: http://%s\n", WiFi.softAPIP().toString().c_str());
+    Serial.println("Serial: type a message or /id /rssi /state");
+}
+
+// ----- loop() -----------------------------------------------
+void loop()
+{
+    radioLoop();
+    webLoop();
+
+    // SOLUTION-BEGIN stage:3 hint:"Call rssiTrackerTick() then pass the returned state to ledSetSmithState() and webSetSmithStatus()."
+    uint32_t   now = millis();
+    SmithState st  = rssiTrackerTick(&g_tracker, now);
+    ledSetSmithState((uint8_t)st, g_tracker.rssi_f);
+    webSetSmithStatus((uint8_t)st, g_tracker.rssi_f);
+    // SOLUTION-END
+
+    ledLoop(millis());
+    handleSerial();
+}
