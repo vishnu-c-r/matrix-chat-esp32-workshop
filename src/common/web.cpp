@@ -127,6 +127,8 @@ button:hover{background:#004400}
 @keyframes pls{0%,100%{opacity:1}50%{opacity:.35}}
 @keyframes glitch{0%{text-shadow:2px 0 #f00,-2px 0 #0f0}25%{text-shadow:-2px 0 #f00,2px 0 #0f0}50%{text-shadow:2px 0 #0f0,-2px 0 #f00}75%,100%{text-shadow:none}}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#003300;border-radius:2px}
+#sdown{display:none;position:absolute;bottom:60px;right:50%;transform:translateX(50%);background:rgba(0,34,0,0.9);border:1px solid #00ff41;color:#00ff41;padding:8px 16px;border-radius:20px;cursor:pointer;z-index:10;font-weight:700;box-shadow:0 0 10px #00ff41}
+#sdown:hover{background:#005500}
 </style></head><body>
 <canvas id="rain"></canvas>
 <main>
@@ -138,6 +140,7 @@ button:hover{background:#004400}
   </svg>
 </div>
 <div id="msgs"><div class="msg"><div class="body" style="color:#336633">Connecting to the Matrix...</div></div></div>
+<button id="sdown" type="button">↓ NEW MESSAGES</button>
 <form id="frm">
   <input id="txt" maxlength="95" placeholder="Enter the Matrix..." autocomplete="off">
   <button type="submit">SEND</button>
@@ -159,9 +162,16 @@ setInterval(()=>{
 })();
 
 // Chat
-const badge=document.getElementById('badge'),rssiVal=document.getElementById('rssi-val'),msgs=document.getElementById('msgs'),spl=document.getElementById('spl');
+const badge=document.getElementById('badge'),rssiVal=document.getElementById('rssi-val'),msgs=document.getElementById('msgs'),spl=document.getElementById('spl'),sdown=document.getElementById('sdown');
 const SC=['cl','nr','cs'],SL=['■ CLEAR','▲ NEAR','● CLOSE'];
-let rh=[],lastN=0,title=document.getElementById('pt');
+let rh=[],lastN=0,autoScroll=true,title=document.getElementById('pt');
+
+msgs.addEventListener('scroll',()=>{
+  autoScroll=(msgs.scrollHeight-msgs.scrollTop-msgs.clientHeight)<15;
+  if(autoScroll)sdown.style.display='none';
+});
+sdown.onclick=()=>{msgs.scrollTop=msgs.scrollHeight;};
+
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function spark(){
   if(rh.length<2)return;
@@ -197,7 +207,11 @@ async function refresh(){
         newMsgs.forEach(addMsg);
       }
       lastN=d.seq;
-      msgs.scrollTop=msgs.scrollHeight;
+      if(autoScroll){
+        msgs.scrollTop=msgs.scrollHeight;
+      }else{
+        sdown.style.display='block';
+      }
     }
   }catch(e){}
 }
