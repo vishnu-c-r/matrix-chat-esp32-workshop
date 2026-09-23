@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ESP-NOW Matrix Workshop</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    background: #000;
+    color: #00ff41;
+    font-family: 'Courier New', Courier, monospace;
+    overflow: hidden;
+}
+#rain {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: 0;
+    opacity: 0.3;
+}
+#slides {
+    position: relative;
+    z-index: 1;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.slide {
+    position: absolute;
+    width: 80%;
+    max-width: 900px;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    pointer-events: none;
+    text-align: center;
+    background: rgba(0, 20, 0, 0.85);
+    padding: 60px;
+    border: 1px solid #005500;
+    border-radius: 12px;
+    box-shadow: 0 0 30px rgba(0, 255, 65, 0.2);
+}
+.slide.active {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+h1 {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px #00ff41;
+    letter-spacing: 2px;
+}
+h2 {
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    color: #ccffcc;
+    border-bottom: 2px solid #005500;
+    padding-bottom: 10px;
+    display: inline-block;
+}
+p, ul {
+    font-size: 1.5rem;
+    line-height: 1.6;
+    text-align: left;
+    margin-bottom: 20px;
+}
+ul {
+    list-style-type: none;
+    padding-left: 20px;
+}
+li::before {
+    content: "> ";
+    color: #00ff41;
+    font-weight: bold;
+}
+li {
+    margin-bottom: 15px;
+}
+.highlight {
+    color: #fff;
+    background: rgba(0, 255, 65, 0.3);
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+.controls {
+    position: fixed;
+    bottom: 20px;
+    right: 30px;
+    z-index: 10;
+    font-size: 1.2rem;
+    opacity: 0.5;
+}
+.controls span { cursor: pointer; padding: 10px; }
+.controls span:hover { color: #fff; opacity: 1; }
+</style>
+</head>
+<body>
+
+<canvas id="rain"></canvas>
+
+<div id="slides">
+    
+    <!-- Slide 1 -->
+    <div class="slide active">
+        <h1>Welcome to the Matrix</h1>
+        <p style="text-align:center; color:#88cc88;">Decentralised Communications with ESP32</p>
+        <p style="text-align:center; font-size:1.2rem; margin-top:40px; color:#559955;">Press (Right Arrow) to begin...</p>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="slide">
+        <h2>The Red Pill</h2>
+        <p>Today, we are building a completely off-grid, decentralised chat network.</p>
+        <ul>
+            <li>No Routers.</li>
+            <li>No Internet.</li>
+            <li>No Central Server.</li>
+        </ul>
+        <p>Your ESP32-C3 board will act as both the server and the client simultaneously.</p>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="slide">
+        <h2>The Protocol: ESP-NOW</h2>
+        <p>How do we communicate without a router?</p>
+        <ul>
+            <li><span class="highlight">Connectionless</span>: Peer-to-peer Wi-Fi protocol developed by Espressif.</li>
+            <li><span class="highlight">Fast</span>: Extremely low latency compared to standard Wi-Fi.</li>
+            <li><span class="highlight">Direct</span>: Devices talk directly to each other using MAC addresses.</li>
+        </ul>
+    </div>
+
+    <!-- Slide 4 -->
+    <div class="slide">
+        <h2>The Architecture</h2>
+        <ul>
+            <li><strong>The Backend:</strong> FreeRTOS handles incoming radio packets asynchronously.</li>
+            <li><strong>The UI:</strong> A built-in WebServer hosting an embedded HTML/JS Captive Portal.</li>
+            <li><strong>The Hardware:</strong> ESP32-C3 processing everything locally in your pocket.</li>
+        </ul>
+    </div>
+
+    <!-- Slide 5 -->
+    <div class="slide">
+        <h2>Your Mission</h2>
+        <ul>
+            <li>Open the codebase and navigate to <span class="highlight">include/config.h</span></li>
+            <li>Set your unique <span class="highlight">Node ID</span> (1 to 50) and your Chat Name.</li>
+            <li>Click <strong>Upload</strong> in PlatformIO.</li>
+            <li>Connect to your board's Wi-Fi network (e.g., <strong>NEO-14</strong>) from your phone.</li>
+            <li>Infiltrate the network and start chatting!</li>
+        </ul>
+        <h2 style="margin-top:30px; font-size:2rem; border:none; text-align:center; width:100%;">LET'S HACK!</h2>
+    </div>
+
+</div>
+
+<div class="controls">
+    <span onclick="prevSlide()">[BACK]</span>
+    <span onclick="nextSlide()">[NEXT]</span>
+</div>
+
+<script>
+// Digital Rain Background
+(function(){
+    const cv=document.getElementById('rain'),cx=cv.getContext('2d');
+    const CH='アイウエオカキクケコサシスセソタチツテト0123456789ABCDEF01';
+    let dr=[];
+    function rsz(){
+        cv.width=window.innerWidth;
+        cv.height=window.innerHeight;
+        dr=Array.from({length:Math.floor(cv.width/20)},()=>Math.random()*-60);
+    }
+    rsz();
+    window.addEventListener('resize',rsz);
+    setInterval(()=>{
+        cx.fillStyle='rgba(0,0,0,0.05)';
+        cx.fillRect(0,0,cv.width,cv.height);
+        cx.fillStyle='#00ff41';
+        cx.font='20px monospace';
+        dr.forEach((y,i)=>{
+            cx.fillText(CH[Math.floor(Math.random()*CH.length)],i*20,y*20);
+            if(y*20>cv.height&&Math.random()>.975) dr[i]=0;
+            dr[i]++;
+        });
+    },50);
+})();
+
+// Slide Navigation
+const slides = document.querySelectorAll('.slide');
+let current = 0;
+
+function showSlide(index) {
+    slides.forEach((s, i) => {
+        if (i === index) {
+            s.classList.add('active');
+        } else {
+            s.classList.remove('active');
+        }
+    });
+}
+
+function nextSlide() {
+    if (current < slides.length - 1) {
+        current++;
+        showSlide(current);
+    }
+}
+
+function prevSlide() {
+    if (current > 0) {
+        current--;
+        showSlide(current);
+    }
+}
+
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+    if (e.key === 'ArrowLeft') prevSlide();
+});
+</script>
+
+</body>
+</html>
