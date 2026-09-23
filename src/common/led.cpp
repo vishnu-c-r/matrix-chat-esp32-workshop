@@ -18,7 +18,7 @@ static uint8_t gamma8(uint8_t v)
 // ---- Low-level output ---------------------------------------
 static void setRgb(uint8_t r, uint8_t g, uint8_t b)
 {
-#if defined(CONFIG_IDF_TARGET_ESP32S3) && HAS_NEOPIXEL
+#if defined(CONFIG_IDF_TARGET_ESP32S3)
     // Onboard WS2812 — gamma applied inside neopixelWrite is vendor-specific;
     // we apply our own gamma before calling so output is consistent.
     neopixelWrite(PIN_NEOPIXEL, gamma8(r), gamma8(g), gamma8(b));
@@ -43,10 +43,10 @@ static uint32_t g_blink_last   = 0;
 static bool     g_blink_on     = false;
 static uint32_t g_blink_half   = 600;  // half-period in ms
 
-// Map filtered RSSI to blink half-period: -85 dBm → 600 ms, -50 dBm → 50 ms.
-static uint32_t rssiToHalfPeriod(float rssi_f)
+// Map filtered distance to blink half-period: 300 cm → 600 ms, 100 cm → 50 ms.
+static uint32_t distToHalfPeriod(float dist_cm)
 {
-    float t = (rssi_f - (-85.0f)) / ((-50.0f) - (-85.0f));
+    float t = (300.0f - dist_cm) / (300.0f - 100.0f);
     if (t < 0.0f) t = 0.0f;
     if (t > 1.0f) t = 1.0f;
     return (uint32_t)(600.0f - t * 550.0f);  // 600 ms → 50 ms
@@ -78,7 +78,7 @@ void ledFlashMsg(Color c)
     }
 }
 
-void ledSetSmithState(uint8_t state, float rssi_f)
+void ledSetSmithState(uint8_t state, float dist_cm)
 {
     if (state == 2)
     {
@@ -92,7 +92,7 @@ void ledSetSmithState(uint8_t state, float rssi_f)
             g_blink_on   = true;
             g_state      = LedState::SMITH_NEAR;
         }
-        g_blink_half = rssiToHalfPeriod(rssi_f);
+        g_blink_half = distToHalfPeriod(dist_cm);
     }
     else
     {

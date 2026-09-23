@@ -21,7 +21,6 @@
 #include "common/palette.h"
 #include "common/radio.h"
 #include "common/led.h"
-#include "common/rssi_tracker.h"
 #include "common/dedupe.h"
 #include "common/web.h"
 
@@ -31,7 +30,15 @@ void sendChatMessage(const char* text);
 
 // ----- Global state ----------------------------------------
 static uint16_t      g_seq     = 0;
-static RssiTracker   g_tracker = {};
+static float         g_filtered_rssi = -100.0f;
+static uint32_t      g_last_smith_ms = 0;
+
+// Indoor FSPL distance estimation (Path Loss Exponent N=3.0)
+// Tuned for low TX power: -45 dBm reference at 1 meter.
+static float estimateDistanceCm(float rssi)
+{
+    return 100.0f * pow(10.0f, (-45.0f - rssi) / 30.0f);
+}
 
 // ----- Packet receive callback (called from radioLoop) ------
 static void onPktRecv(const Pkt* pkt, int8_t rssi)
@@ -40,8 +47,10 @@ static void onPktRecv(const Pkt* pkt, int8_t rssi)
     if (pkt->type == (uint8_t)PktType::SMITH_BEACON ||
         pkt->type == (uint8_t)PktType::SMITH_CHAT)
     {
-        // SOLUTION-BEGIN stage:3 hint:"Call rssiTrackerUpdate with the raw RSSI and current time."
-        rssiTrackerUpdate(&g_tracker, rssi, millis());
+        // SOLUTION-BEGIN stage:3 hint:"Update g_filtered_rssi (EMA) and g_last_smith_ms."
+        if (g_filtered_rssi == -100.0f) g_filtered_rssi = (float)rssi;
+        else g_filtered_rssi = 0.2f * (float)rssi + 0.8f * g_filtered_rssi;
+        g_last_smith_ms = millis();
         // SOLUTION-END
 
         if (pkt->type == (uint8_t)PktType::SMITH_CHAT && pkt->len > 0)
@@ -119,14 +128,13 @@ static void handleSerial()
     }
     else if (line == "/rssi")
     {
-        Serial.printf("rssi_f=%.1f  state=%u\n",
-                      g_tracker.rssi_f, (uint8_t)g_tracker.state);
+        Serial.printf("rssi_f=%.1f  dist_cm=%.1f\n",
+                      g_filtered_rssi, estimateDistanceCm(g_filtered_rssi));
     }
     else if (line == "/state")
     {
-        const char* names[] = {"CLEAR", "NEAR", "CLOSE"};
-        uint8_t si = (uint8_t)g_tracker.state;
-        Serial.printf("Smith: %s\n", si <= 2 ? names[si] : "?");
+        float dist = estimateDistanceCm(g_filtered_rssi);
+        Serial.printf("Smith dist: %.1f cm\n", dist);
     }
     else if (line.length() > 0 && line[0] != '/')
     {
@@ -151,13 +159,6 @@ void setup()
     // SOLUTION-END
 
     dedupeInit();
-    rssiTrackerInit(&g_tracker,
-                    RSSI_EMA_ALPHA,
-                    (float)RSSI_CLOSE_ENTER,
-                    (float)RSSI_CLOSE_EXIT,
-                    (float)RSSI_NEAR,
-                    SMITH_TIMEOUT_MS);
-
     // radioInit sets WiFi mode AP+STA and channel before esp_now_init.
     radioInit(CHANNEL, onPktRecv);
 
@@ -176,11 +177,19 @@ void loop()
     radioLoop();
     webLoop();
 
-    // SOLUTION-BEGIN stage:3 hint:"Call rssiTrackerTick() then pass the returned state to ledSetSmithState() and webSetSmithStatus()."
-    uint32_t   now = millis();
-    SmithState st  = rssiTrackerTick(&g_tracker, now);
-    ledSetSmithState((uint8_t)st, g_tracker.rssi_f);
-    webSetSmithStatus((uint8_t)st, g_tracker.rssi_f);
+    // SOLUTION-BEGIN stage:3 hint:"Calculate distance and call ledSetSmithState/webSetSmithStatus."
+    uint32_t now = millis();
+    uint8_t st = 0;
+    float dist = 999.0f;
+    if (now - g_last_smith_ms < SMITH_TIMEOUT_MS && g_filtered_rssi > -99.0f) {
+        dist = estimateDistanceCm(g_filtered_rssi);
+        if (dist < 100.0f) st = 2;       // CLOSE
+        else if (dist < 300.0f) st = 1;  // NEAR
+    } else {
+        g_filtered_rssi = -100.0f;
+    }
+    ledSetSmithState(st, dist);
+    webSetSmithStatus(st, dist);
     // SOLUTION-END
 
     ledLoop(millis());

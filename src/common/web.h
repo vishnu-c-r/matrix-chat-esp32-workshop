@@ -22,8 +22,8 @@ void webAddMessage(uint8_t node_id, const char* name,
 
 // Update the Smith proximity indicator shown in the status bar.
 //   state  : 0=CLEAR 1=NEAR 2=CLOSE  (SmithState cast to uint8_t)
-//   rssi_f : filtered RSSI value
-void webSetSmithStatus(uint8_t state, float rssi_f);
+//   dist_cm : estimated distance in cm
+void webSetSmithStatus(uint8_t state, float dist_cm);
 
 // Implemented in node/main.cpp — called when a browser sends a message.
 void sendChatMessage(const char* text);

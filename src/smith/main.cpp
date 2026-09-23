@@ -33,10 +33,10 @@ static constexpr uint8_t SMITH_ID = 99;
 
 // Beacon interval per stage (ms).
 static const uint32_t STAGE_INTERVAL_MS[N_STAGES] = {
-    100,   // 0: beacon only
-    500,   // 1: impersonation chat
-    300,   // 2: corrupted chat
-    200,   // 3: flood
+    500,   // 0: beacon only
+    2000,  // 1: impersonation chat
+    1500,  // 2: corrupted chat
+    1000,  // 3: flood (slowed down)
 };
 
 // Messages Smith sends in stage 1 (impersonation).

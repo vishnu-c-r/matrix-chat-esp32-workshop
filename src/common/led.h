@@ -26,5 +26,5 @@ void ledFlashMsg(Color c);
 
 // Update Smith proximity state; also recalculates blink period.
 //   state : 0=CLEAR, 1=NEAR, 2=CLOSE  (SmithState cast to uint8_t)
-//   rssi_f: EMA-filtered RSSI for blink period mapping
-void ledSetSmithState(uint8_t state, float rssi_f);
+//   dist_cm: Estimated distance in cm for blink period mapping
+void ledSetSmithState(uint8_t state, float dist_cm);

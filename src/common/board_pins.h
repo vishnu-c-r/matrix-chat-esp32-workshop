@@ -4,6 +4,7 @@
 // =============================================================
 #pragma once
 #include <stdint.h>
+#include <Arduino.h>
 
 #if defined(CONFIG_IDF_TARGET_ESP32S3)
 // ---- ESP32-S3-DevKitC-1 -------------------------------------

@@ -15,70 +15,84 @@
 #include "palette.h"
 
 #include <Arduino.h>
-#include <WebServer.h>
 #include <DNSServer.h>
+#include <WebServer.h>
 #include <WiFi.h>
 
 // ----- Module state ----------------------------------------
-static WebServer  g_server(80);
-static DNSServer  g_dns;
+static WebServer g_server(80);
+static DNSServer g_dns;
 
-static uint8_t  g_node_id   = 1;
-static char     g_node_name[24] = "Neo";
+static uint8_t g_node_id = 1;
+static char g_node_name[24] = "Neo";
 
-static uint8_t  g_smith_state = 0;    // 0=CLEAR 1=NEAR 2=CLOSE
-static float    g_smith_rssi  = -100.0f;
+static uint8_t g_smith_state = 0; // 0=CLEAR 1=NEAR 2=CLOSE
+static float g_smith_rssi = -100.0f;
 
 // ----- Message history (ring buffer) -----------------------
 static constexpr uint8_t HIST_SIZE = 16;
 struct WebMsg {
-    uint8_t node_id;
-    char    name[24];
-    uint8_t r, g, b;
-    char    text[181];
-    bool    is_smith;
+  uint8_t node_id;
+  char name[24];
+  uint8_t r, g, b;
+  char text[181];
+  bool is_smith;
 };
-static WebMsg  g_hist[HIST_SIZE] = {};
-static uint8_t g_hist_head  = 0;
+static WebMsg g_hist[HIST_SIZE] = {};
+static uint8_t g_hist_head = 0;
 static uint8_t g_hist_count = 0;
+static uint32_t g_total_msg = 0;
 
 // ----- Rate limiting ---------------------------------------
-static uint32_t g_last_send_ms  = 0;
+static uint32_t g_last_send_ms = 0;
 static constexpr uint32_t RATE_LIMIT_MS = 1000;
 
 // ----- Helpers ---------------------------------------------
-static String htmlEscape(const char* s)
-{
-    String out;
-    for (; *s; ++s) {
-        switch (*s) {
-            case '&':  out += "&amp;";  break;
-            case '<':  out += "&lt;";   break;
-            case '>':  out += "&gt;";   break;
-            case '"':  out += "&quot;"; break;
-            default:   out += *s;
-        }
+static String htmlEscape(const char *s) {
+  String out;
+  for (; *s; ++s) {
+    switch (*s) {
+    case '&':
+      out += "&amp;";
+      break;
+    case '<':
+      out += "&lt;";
+      break;
+    case '>':
+      out += "&gt;";
+      break;
+    case '"':
+      out += "&quot;";
+      break;
+    default:
+      out += *s;
     }
-    return out;
+  }
+  return out;
 }
 
-static String jsonEscape(const char* s)
-{
-    String out;
-    for (; *s; ++s) {
-        if (*s == '"' || *s == '\\') out += '\\';
-        if (*s == '\n') { out += "\\n"; continue; }
-        if (*s == '\r') continue;
-        out += *s;
+static String jsonEscape(const char *s) {
+  String out;
+  for (; *s; ++s) {
+    if (*s == '"' || *s == '\\')
+      out += '\\';
+    if (*s == '\n') {
+      out += "\\n";
+      continue;
     }
-    return out;
+    if (*s == '\r')
+      continue;
+    if (*s >= 0 && *s < 0x20) // JSON strictly forbids unescaped control characters
+      continue;
+    out += *s;
+  }
+  return out;
 }
 
-static String colorHex(uint8_t r, uint8_t g, uint8_t b)
-{
-    char buf[8];
-    snprintf(buf, sizeof(buf), "#%02x%02x%02x", r, g, b);
-    return String(buf);
+static String colorHex(uint8_t r, uint8_t g, uint8_t b) {
+  char buf[8];
+  snprintf(buf, sizeof(buf), "#%02x%02x%02x", r, g, b);
+  return String(buf);
 }
 
 // ----- Embedded HTML page ----------------------------------
@@ -166,14 +180,23 @@ async function refresh(){
     badge.className='badge '+SC[si];badge.textContent=SL[si]||'CLEAR';
     rssiVal.textContent=si>0?' ('+d.rssi.toFixed(0)+'dBm)':'';
     rh.push(d.rssi);if(rh.length>20)rh.shift();spark();
-    if(d.messages.length!==lastN){
-      lastN=d.messages.length;msgs.innerHTML='';
-      d.messages.forEach(m=>{
+    if(d.seq!==lastN){
+      const addMsg = (m) => {
         const div=document.createElement('div');
         div.className='msg'+(m.smith?' sm':'');
         div.innerHTML='<div class="who" style="color:'+m.col+'">'+esc(m.name)+'</div><div class="body">'+esc(m.text)+'</div>';
         msgs.appendChild(div);
-      });
+      };
+      
+      if(lastN===0 || (d.seq-lastN) >= d.messages.length) {
+        msgs.innerHTML='';
+        d.messages.forEach(addMsg);
+      } else {
+        const newCount = d.seq - lastN;
+        const newMsgs = d.messages.slice(d.messages.length - newCount);
+        newMsgs.forEach(addMsg);
+      }
+      lastN=d.seq;
       msgs.scrollTop=msgs.scrollHeight;
     }
   }catch(e){}
@@ -191,134 +214,129 @@ refresh();setInterval(refresh,1000);
 )END_PAGE";
 
 // ----- HTTP handlers ---------------------------------------
-static void handleRoot()
-{
-    g_server.send_P(200, "text/html", PAGE);
-}
+static void handleRoot() { g_server.send_P(200, "text/html", PAGE); }
 
-static void handleApi()
-{
-    // Build JSON snapshot
-    String json = "{\"name\":\"";
-    json += jsonEscape(g_node_name);
+static void handleApi() {
+  // Build JSON snapshot
+  String json;
+  json.reserve(3000); // Prevent heap fragmentation truncation
+  json = "{\"name\":\"";
+  json += jsonEscape(g_node_name);
+  json += "\",\"smith\":";
+  json += String(g_smith_state);
+  json += ",\"rssi\":";
+  // Avoid sprintf/float formatting issues — use integer + decimal
+  int r_int = (int)g_smith_rssi;
+  json += String(r_int);
+  json += ".0,\"seq\":";
+  json += String(g_total_msg);
+  json += ",\"messages\":[";
+
+  for (uint8_t i = 0; i < g_hist_count; ++i) {
+    const uint8_t idx =
+        (g_hist_head + HIST_SIZE - g_hist_count + i) % HIST_SIZE;
+    const WebMsg &m = g_hist[idx];
+    if (i > 0)
+      json += ',';
+    json += "{\"id\":";
+    json += String(m.node_id);
+    json += ",\"name\":\"";
+    json += jsonEscape(m.name);
+    json += "\",\"col\":\"";
+    json += colorHex(m.r, m.g, m.b);
+    json += "\",\"text\":\"";
+    json += jsonEscape(m.text);
     json += "\",\"smith\":";
-    json += String(g_smith_state);
-    json += ",\"rssi\":";
-    // Avoid sprintf/float formatting issues — use integer + decimal
-    int r_int = (int)g_smith_rssi;
-    json += String(r_int);
-    json += ".0,\"messages\":[";
+    json += m.is_smith ? "true" : "false";
+    json += "}";
+  }
+  json += "]}";
 
-    for (uint8_t i = 0; i < g_hist_count; ++i)
-    {
-        const uint8_t idx = (g_hist_head + HIST_SIZE - g_hist_count + i) % HIST_SIZE;
-        const WebMsg& m   = g_hist[idx];
-        if (i > 0) json += ',';
-        json += "{\"id\":";
-        json += String(m.node_id);
-        json += ",\"name\":\"";
-        json += jsonEscape(m.name);
-        json += "\",\"col\":\"";
-        json += colorHex(m.r, m.g, m.b);
-        json += "\",\"text\":\"";
-        json += jsonEscape(m.text);
-        json += "\",\"smith\":";
-        json += m.is_smith ? "true" : "false";
-        json += "}";
-    }
-    json += "]}";
-
-    g_server.send(200, "application/json", json);
+  g_server.send(200, "application/json", json);
 }
 
-static void handleSend()
-{
-    if (!g_server.hasArg("message"))
-    {
-        g_server.send(400, "text/plain", "missing message");
-        return;
-    }
+static void handleSend() {
+  if (!g_server.hasArg("message")) {
+    g_server.send(400, "text/plain", "missing message");
+    return;
+  }
 
-    // Rate limit: 1 message per second per node (single-client workshop).
-    uint32_t now = millis();
-    if ((now - g_last_send_ms) < RATE_LIMIT_MS)
-    {
-        g_server.send(429, "text/plain", "slow down");
-        return;
-    }
+  // Rate limit: 1 message per second per node (single-client workshop).
+  uint32_t now = millis();
+  if ((now - g_last_send_ms) < RATE_LIMIT_MS) {
+    g_server.send(429, "text/plain", "slow down");
+    return;
+  }
 
-    String msg = g_server.arg("message");
-    msg.trim();
-    if (msg.length() == 0 || msg.length() > 180)
-    {
-        g_server.send(400, "text/plain", "message 1-180 chars");
-        return;
-    }
+  String msg = g_server.arg("message");
+  msg.trim();
+  if (msg.length() == 0 || msg.length() > 180) {
+    g_server.send(400, "text/plain", "message 1-180 chars");
+    return;
+  }
 
-    g_last_send_ms = now;
-    sendChatMessage(msg.c_str());
-    g_server.send(200, "text/plain", "ok");
+  g_last_send_ms = now;
+  sendChatMessage(msg.c_str());
+  g_server.send(200, "text/plain", "ok");
 }
 
 // Redirect captive-portal OS probes back to the chat page.
-static void handleCaptive()
-{
-    g_server.sendHeader("Location", "http://192.168.4.1/", true);
-    g_server.send(302, "text/plain", "");
+static void handleCaptive() {
+  g_server.sendHeader("Location", "http://192.168.4.1/", true);
+  g_server.send(302, "text/plain", "");
 }
 
 // ----- Public API ------------------------------------------
-void webBegin(uint8_t node_id, const char* node_name)
-{
-    g_node_id = node_id;
-    strncpy(g_node_name, node_name, sizeof(g_node_name) - 1);
-    g_node_name[sizeof(g_node_name) - 1] = '\0';
+void webBegin(uint8_t node_id, const char *node_name) {
+  g_node_id = node_id;
+  strncpy(g_node_name, node_name, sizeof(g_node_name) - 1);
+  g_node_name[sizeof(g_node_name) - 1] = '\0';
 
-    // SoftAP: "NEO-<id>" — unique per node, easy to identify.
-    char ap_name[32];
-    snprintf(ap_name, sizeof(ap_name), "NEO-%u", node_id);
-    WiFi.softAP(ap_name, "matrix123");  // channel inherited from radioInit()
+  // SoftAP: "NEO-<id>" — unique per node, easy to identify.
+  char ap_name[32];
+  snprintf(ap_name, sizeof(ap_name), "NEO-%u", node_id);
+  WiFi.softAP(ap_name, "matrix123"); // channel inherited from radioInit()
 
-    // DNSServer: redirect all DNS queries to the AP IP.
-    g_dns.start(53, "*", WiFi.softAPIP());
+  // DNSServer: redirect all DNS queries to the AP IP.
+  g_dns.start(53, "*", WiFi.softAPIP());
 
-    g_server.on("/",                    HTTP_GET,  handleRoot);
-    g_server.on("/api",                 HTTP_GET,  handleApi);
-    g_server.on("/send",                HTTP_POST, handleSend);
-    // OS captive-portal probe URLs (Android, iOS, Windows):
-    g_server.on("/generate_204",        HTTP_GET,  handleCaptive);
-    g_server.on("/hotspot-detect.html", HTTP_GET,  handleCaptive);
-    g_server.on("/ncsi.txt",            HTTP_GET,  handleCaptive);
-    g_server.onNotFound(handleCaptive);
+  g_server.on("/", HTTP_GET, handleRoot);
+  g_server.on("/api", HTTP_GET, handleApi);
+  g_server.on("/send", HTTP_POST, handleSend);
+  // OS captive-portal probe URLs (Android, iOS, Windows):
+  g_server.on("/generate_204", HTTP_GET, handleCaptive);
+  g_server.on("/hotspot-detect.html", HTTP_GET, handleCaptive);
+  g_server.on("/ncsi.txt", HTTP_GET, handleCaptive);
+  g_server.onNotFound(handleCaptive);
 
-    g_server.begin();
+  g_server.begin();
 }
 
-void webLoop()
-{
-    g_dns.processNextRequest();
-    g_server.handleClient();
+void webLoop() {
+  g_dns.processNextRequest();
+  g_server.handleClient();
 }
 
-void webAddMessage(uint8_t node_id, const char* name,
-                   uint8_t r, uint8_t g, uint8_t b,
-                   const char* text, bool is_smith)
-{
-    WebMsg& m   = g_hist[g_hist_head];
-    m.node_id   = node_id;
-    strncpy(m.name, name, sizeof(m.name) - 1);
-    m.name[sizeof(m.name) - 1] = '\0';
-    m.r = r; m.g = g; m.b = b;
-    strncpy(m.text, text, sizeof(m.text) - 1);
-    m.text[sizeof(m.text) - 1] = '\0';
-    m.is_smith  = is_smith;
+void webAddMessage(uint8_t node_id, const char *name, uint8_t r, uint8_t g,
+                   uint8_t b, const char *text, bool is_smith) {
+  WebMsg &m = g_hist[g_hist_head];
+  m.node_id = node_id;
+  strncpy(m.name, name, sizeof(m.name) - 1);
+  m.name[sizeof(m.name) - 1] = '\0';
+  m.r = r;
+  m.g = g;
+  m.b = b;
+  strncpy(m.text, text, sizeof(m.text) - 1);
+  m.text[sizeof(m.text) - 1] = '\0';
+  m.is_smith = is_smith;
 
-    g_hist_head = (g_hist_head + 1) % HIST_SIZE;
-    if (g_hist_count < HIST_SIZE) ++g_hist_count;
+  g_hist_head = (g_hist_head + 1) % HIST_SIZE;
+  if (g_hist_count < HIST_SIZE)
+    ++g_hist_count;
+  ++g_total_msg;
 }
 
-void webSetSmithStatus(uint8_t state, float rssi_f)
-{
-    g_smith_state = state;
-    g_smith_rssi  = rssi_f;
+void webSetSmithStatus(uint8_t state, float rssi_f) {
+  g_smith_state = state;
+  g_smith_rssi = rssi_f;
 }
