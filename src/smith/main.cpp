@@ -24,6 +24,7 @@
 #include "common/smith/corrupt.h"
 #include "common/radio.h"
 #include "common/led.h"
+#include "smith_web.h"
 
 // ----- Stage configuration ----------------------------------
 static constexpr uint8_t N_STAGES = 4;
@@ -90,6 +91,49 @@ static void checkButton()
         Serial.printf("[smith] stage -> %u\n", g_stage);
     }
     g_btn_prev = pressed;
+}
+
+// ----- Web Server API ---------------------------------------
+uint8_t smithGetStage()
+{
+    return g_stage;
+}
+
+void smithSetStage(uint8_t stage)
+{
+    if (stage < N_STAGES)
+    {
+        g_stage = stage;
+        g_stage_start_ms = millis();
+        Serial.printf("[smith] Web changed stage -> %u\n", g_stage);
+        
+        const Color& c = STAGE_COLORS[g_stage];
+#if defined(CONFIG_IDF_TARGET_ESP32S3) || defined(CONFIG_IDF_TARGET_ESP32C3)
+        neopixelWrite(PIN_NEOPIXEL, c.r / 3, c.g / 3, c.b / 3);
+#else
+        ledcWrite(PIN_LED_R, c.r / 4);
+        ledcWrite(PIN_LED_G, c.g / 4);
+        ledcWrite(PIN_LED_B, c.b / 4);
+#endif
+    }
+}
+
+void smithSendCustom(uint8_t node_id, const char* msg)
+{
+    Pkt pkt = {};
+    pkt.magic     = PKT_MAGIC;
+    pkt.ver       = PKT_VER;
+    pkt.type      = (uint8_t)PktType::SMITH_CHAT;
+    pkt.node_id   = node_id;
+    pkt.color_idx = (node_id == SMITH_ID) ? 0 : (uint8_t)(node_id % N_COLORS);
+    pkt.seq       = g_seq++;
+    strncpy(pkt.text, msg, sizeof(pkt.text) - 1);
+    pkt.text[sizeof(pkt.text) - 1] = '\0';
+    pkt.len       = (uint8_t)strlen(pkt.text);
+
+    static uint8_t bcast[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+    esp_now_send(bcast, reinterpret_cast<uint8_t*>(&pkt), sizeof(Pkt));
+    Serial.printf("[smith] Injected custom message as %u: %s\n", node_id, msg);
 }
 
 // ----- Build and send a beacon / chat packet ----------------
@@ -197,6 +241,8 @@ void setup()
     radioInit(CHANNEL, smithRecvCb);
     esp_wifi_set_max_tx_power(8);  // 2 dBm — hardware validation needed
 
+    smithWebBegin();
+
     Serial.printf("MAC: %s  channel: %u\n", WiFi.macAddress().c_str(), CHANNEL);
     g_stage_start_ms = millis();
 }
@@ -221,4 +267,5 @@ void loop()
 
     // radioLoop drains the (ignored) receive queue.
     radioLoop();
+    smithWebLoop();
 }
