@@ -19,12 +19,10 @@ static constexpr bool    HAS_NEOPIXEL = true;
 static constexpr uint8_t PIN_BOOT     = 0;
 
 #elif defined(CONFIG_IDF_TARGET_ESP32C3)
-// ---- ESP32-C3-DevKitM-1 -------------------------------------
-// External common-cathode RGB:
-static constexpr uint8_t PIN_LED_R    = 3;
-static constexpr uint8_t PIN_LED_G    = 4;
-static constexpr uint8_t PIN_LED_B    = 5;
-static constexpr bool    HAS_NEOPIXEL = false;
+// ---- ESP32-C3 SuperMini -------------------------------------
+// External NeoPixel data pin (Connect your NeoPixel Data-IN here):
+static constexpr uint8_t PIN_NEOPIXEL = 2;
+static constexpr bool    HAS_NEOPIXEL = true;
 // C3 BOOT button is GPIO9 (GPIO0 is a strapping pin on C3):
 static constexpr uint8_t PIN_BOOT     = 9;
 

@@ -18,7 +18,7 @@ static uint8_t gamma8(uint8_t v)
 // ---- Low-level output ---------------------------------------
 static void setRgb(uint8_t r, uint8_t g, uint8_t b)
 {
-#if defined(CONFIG_IDF_TARGET_ESP32S3)
+#if defined(CONFIG_IDF_TARGET_ESP32S3) || defined(CONFIG_IDF_TARGET_ESP32C3)
     // Onboard WS2812 — gamma applied inside neopixelWrite is vendor-specific;
     // we apply our own gamma before calling so output is consistent.
     neopixelWrite(PIN_NEOPIXEL, gamma8(r), gamma8(g), gamma8(b));
@@ -57,7 +57,7 @@ void ledInit(uint8_t node_id)
 {
     g_node_color = nodeColor(node_id % N_COLORS);
 
-#if !defined(CONFIG_IDF_TARGET_ESP32S3)
+#if !defined(CONFIG_IDF_TARGET_ESP32S3) && !defined(CONFIG_IDF_TARGET_ESP32C3)
     // Arduino-ESP32 3.x LEDC API: attach pin, then write duty by pin.
     ledcAttach(PIN_LED_R, 5000, 8);
     ledcAttach(PIN_LED_G, 5000, 8);

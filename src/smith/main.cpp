@@ -102,13 +102,9 @@ static void sendBeacon()
 
     switch (g_stage)
     {
-        // ---- Stage 0: silent proximity beacon ---------------
+        // ---- Stage 0: completely silent (undetectable) ------
         case 0:
-            pkt.type      = (uint8_t)PktType::SMITH_BEACON;
-            pkt.node_id   = SMITH_ID;
-            pkt.color_idx = 0;
-            pkt.len       = 0;
-            break;
+            return; // Don't send any packets at all!
 
         // ---- Stage 1: impersonate a random node -------------
         case 1:
@@ -166,7 +162,7 @@ static void updateStageLed()
 {
     const Color& c = STAGE_COLORS[g_stage];
     // Smith has no node LED state machine — just show stage color directly.
-#if defined(CONFIG_IDF_TARGET_ESP32S3) && HAS_NEOPIXEL
+#if defined(CONFIG_IDF_TARGET_ESP32S3) || defined(CONFIG_IDF_TARGET_ESP32C3)
     neopixelWrite(PIN_NEOPIXEL, c.r / 3, c.g / 3, c.b / 3);  // dim
 #else
     // LEDC direct write for WROOM/C3 stage indicator.
