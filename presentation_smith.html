@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agent Smith // The Anomaly Briefing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+    --red: #ff2020;
+    --red-glow: rgba(255,32,32,0.5);
+    --red-dim: #330000;
+    --red-mid: #660000;
+    --green: #00ff41;
+    --green-dim: #003300;
+    --green-glow: rgba(0,255,65,0.3);
+    --yellow: #ffcc00;
+    --cyan: #00ccff;
+    --bg: #030002;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 19px; }
+@media (min-width: 1400px) { html { font-size: 21px; } }
+@media (min-width: 1800px) { html { font-size: 23px; } }
+
+body {
+    background: var(--bg);
+    color: var(--red);
+    font-family: 'Share Tech Mono', monospace;
+    overflow: hidden;
+    cursor: default;
+}
+
+/* ---- Digital Rain (Red & Green Anomaly) ---- */
+#rain {
+    position: fixed; top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: 0; opacity: 0.22;
+    pointer-events: none;
+}
+
+/* ---- Slides ---- */
+#deck { position: relative; z-index: 1; width: 100vw; height: 100vh; }
+.slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    opacity: 0; transform: translateY(24px) scale(0.97);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none;
+    padding: 60px 80px 80px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--red-dim) transparent;
+}
+.slide::-webkit-scrollbar { width: 6px; }
+.slide::-webkit-scrollbar-thumb { background: var(--red-dim); border-radius: 3px; }
+.slide::-webkit-scrollbar-thumb:hover { background: var(--red); }
+.slide.active { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+
+/* ---- Typography ---- */
+.hero-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(4rem, 7.5vw, 6.5rem);
+    font-weight: 900;
+    letter-spacing: 10px;
+    color: var(--red);
+    text-shadow: 0 0 25px var(--red), 0 0 70px var(--red-glow);
+    animation: glitch-anim 2.5s infinite;
+    text-align: center;
+}
+.hero-sub {
+    font-size: clamp(1.3rem, 2.2vw, 1.9rem);
+    color: #ff8888;
+    margin-top: 24px;
+    letter-spacing: 6px;
+    text-align: center;
+}
+h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(2.4rem, 4vw, 3.4rem);
+    font-weight: 700;
+    color: #ff4040;
+    margin-bottom: 28px;
+    text-shadow: 0 0 16px var(--red-glow);
+    letter-spacing: 3px;
+    text-align: center;
+}
+.section-tag {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem; font-weight: 400;
+    letter-spacing: 5px; color: #aa3333;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+/* ---- Cards ---- */
+.card-row {
+    display: flex; gap: 28px;
+    width: 100%; max-width: 1350px;
+    justify-content: center; flex-wrap: wrap;
+}
+.card {
+    flex: 1; min-width: 270px; max-width: 380px;
+    background: rgba(30,0,5,0.85);
+    border: 1.5px solid var(--red-dim);
+    border-radius: 14px;
+    padding: 34px 26px;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+}
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 0 35px var(--red-glow);
+    border-color: var(--red);
+}
+.card-icon { font-size: 3.6rem; margin-bottom: 16px; display: block; }
+.card-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.35rem; font-weight: 700;
+    color: #ff6666;
+    margin-bottom: 14px; letter-spacing: 1.5px;
+}
+.card-body { font-size: 1.15rem; color: #e5a4a4; line-height: 1.6; }
+
+/* ---- Icon list ---- */
+.icon-list { list-style: none; text-align: left; max-width: 1150px; width: 100%; }
+.icon-list li {
+    display: flex; align-items: flex-start;
+    gap: 20px; margin-bottom: 24px;
+    font-size: 1.35rem; line-height: 1.6;
+    color: #ff9999;
+}
+.icon-list .il-icon { font-size: 2.2rem; flex-shrink: 0; width: 56px; text-align: center; }
+.icon-list .il-text b { color: #fff; text-shadow: 0 0 8px rgba(255,255,255,0.3); }
+
+/* ---- Code blocks ---- */
+.code-box {
+    background: rgba(15,0,2,0.95);
+    border: 1.5px solid var(--red-dim);
+    border-radius: 12px;
+    padding: 34px 38px;
+    text-align: left;
+    max-width: 950px; width: 100%;
+    font-size: 1.25rem;
+    line-height: 1.65;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.85);
+}
+.code-box.wide { max-width: 1200px; font-size: 1.25rem; }
+.code-box::before {
+    content: attr(data-file);
+    position: absolute; top: 0; left: 0; right: 0;
+    background: #3b0005;
+    color: var(--red);
+    padding: 7px 18px;
+    font-size: 0.95rem;
+    letter-spacing: 2px;
+    font-weight: 700;
+    border-bottom: 1px solid var(--red-mid);
+}
+.code-box code { display: block; margin-top: 24px; white-space: pre; overflow-x: auto; color: #ffcccc; }
+.cm { color: #884d4d; }
+.kw { color: #ff4444; font-weight: bold; }
+.vl { color: #ffcc00; }
+.st { color: #00ff41; }
+.fn { color: #00ddff; }
+.tp { color: #dd99ff; }
+
+/* ---- Stages Grid ---- */
+.stages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 22px; max-width: 1300px; width: 100%; margin-top: 15px;
+}
+.stage-card {
+    background: rgba(25,0,4,0.85);
+    border: 1.5px solid var(--red-dim);
+    border-radius: 12px;
+    padding: 24px 20px;
+    text-align: left;
+    transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+}
+.stage-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--red);
+    box-shadow: 0 0 25px var(--red-glow);
+}
+.stage-badge {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem; font-weight: 900;
+    padding: 4px 10px; border-radius: 4px;
+    display: inline-block; margin-bottom: 12px;
+}
+.stage-card h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3rem; margin-bottom: 8px; color: #fff;
+}
+.stage-card p {
+    font-size: 1.05rem; color: #cc8888; line-height: 1.5;
+}
+
+/* LED visual */
+.led-demo {
+    display: flex; gap: 50px; margin-top: 20px;
+    justify-content: center; flex-wrap: wrap;
+}
+.led-item { text-align: center; }
+.led-circle {
+    width: 85px; height: 85px; border-radius: 50%;
+    margin: 0 auto 15px; border: 3px solid #333;
+}
+.led-label { font-size: 1.2rem; color: #ff9999; line-height: 1.4; }
+.led-label small { font-size: 0.95rem; color: #aa6666; }
+.led-breathing { animation: breathe 3s ease-in-out infinite; }
+.led-blink { animation: blink-led 0.4s step-end infinite; }
+.led-solid { box-shadow: 0 0 35px #ff2020; }
+@keyframes breathe {
+    0%,100% { opacity: 0.2; box-shadow: none; }
+    50% { opacity: 1; box-shadow: 0 0 28px currentColor; }
+}
+@keyframes blink-led {
+    0%,100% { opacity: 1; box-shadow: 0 0 30px currentColor; }
+    50% { opacity: 0.1; box-shadow: none; }
+}
+
+/* ---- Two column layout ---- */
+.two-col {
+    display: flex; gap: 40px; max-width: 1350px; width: 100%;
+    align-items: flex-start; flex-wrap: wrap;
+    justify-content: center;
+}
+.two-col > * { flex: 1; min-width: 420px; }
+
+/* ---- Misc ---- */
+.subtitle { font-size: 1.35rem; color: #ff8888; margin-bottom: 30px; text-align: center; max-width: 1100px; line-height: 1.6; }
+.prompt { color: #aa4444; font-size: 1.35rem; margin-top: 40px; letter-spacing: 2px; }
+.quote { font-size: 2.1rem; color: #ffaaaa; font-style: italic; max-width: 1050px; line-height: 1.6; margin-top: 25px; text-align: center; }
+.quote-author { color: #aa5555; font-size: 1.3rem; margin-top: 14px; font-style: normal; }
+.highlight-red { color: #fff; background: rgba(255,32,32,0.35); padding: 3px 8px; border-radius: 5px; font-weight: bold; }
+.highlight-green { color: #000; background: var(--green); padding: 3px 8px; border-radius: 5px; font-weight: bold; }
+
+/* ---- HUD Controls ---- */
+.hud {
+    position: fixed; top: 16px; right: 20px;
+    display: flex; align-items: center; gap: 8px;
+    z-index: 50;
+    background: rgba(30, 0, 5, 0.85);
+    border: 1px solid var(--red-dim);
+    border-radius: 8px;
+    padding: 6px 12px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 0 15px rgba(0,0,0,0.8);
+    transition: opacity 0.3s ease, border-color 0.3s;
+}
+.hud:hover { border-color: var(--red); }
+.hud-btn {
+    background: rgba(50, 0, 10, 0.7);
+    border: 1px solid var(--red-dim);
+    color: var(--red);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    padding: 5px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+}
+.hud-btn:hover {
+    background: var(--red-mid);
+    border-color: var(--red);
+    box-shadow: 0 0 12px var(--red-glow);
+    color: #fff;
+}
+.hud-text {
+    font-size: 0.85rem; color: var(--red);
+    min-width: 46px; text-align: center; cursor: pointer;
+}
+
+/* ---- Nav Bar ---- */
+.nav-bar {
+    position: fixed; bottom: 12px; left: 24px;
+    display: flex; align-items: center; gap: 10px;
+    z-index: 50;
+}
+.nav-btn {
+    background: rgba(30, 0, 5, 0.8);
+    border: 1px solid var(--red-dim);
+    color: var(--red);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.95rem;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+}
+.nav-btn:hover {
+    border-color: var(--red);
+    box-shadow: 0 0 12px var(--red-glow);
+    color: #fff; background: var(--red-mid);
+}
+
+/* ---- Progress & Counter ---- */
+#progress {
+    position: fixed; bottom: 0; left: 0;
+    height: 5px; background: var(--red);
+    box-shadow: 0 0 14px var(--red);
+    z-index: 20; transition: width 0.3s ease;
+}
+#counter {
+    position: fixed; bottom: 12px; right: 24px;
+    z-index: 20; font-size: 1.15rem;
+    color: var(--red); letter-spacing: 2px;
+    font-weight: 700;
+    text-shadow: 0 0 8px var(--red-glow);
+}
+
+/* ---- Cursor glow ---- */
+#cursor-glow {
+    position: fixed; width: 320px; height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,32,32,0.08) 0%, transparent 70%);
+    pointer-events: none; z-index: 5;
+    transform: translate(-50%, -50%);
+    transition: left 0.1s ease-out, top 0.1s ease-out;
+}
+
+/* ---- Animations ---- */
+@keyframes glitch-anim {
+    0%,100% { transform: none; opacity: 1; text-shadow: 0 0 25px var(--red), 0 0 70px var(--red-glow); }
+    7% { transform: skew(-0.5deg, -0.8deg); text-shadow: 3px 0 var(--green), -3px 0 var(--red); }
+    10% { transform: none; text-shadow: 0 0 25px var(--red); }
+    27% { transform: none; }
+    30% { transform: skew(0.8deg, 0.5deg); text-shadow: -2px 0 var(--green), 2px 0 var(--red); }
+    35% { transform: none; }
+    52% { opacity: 0.8; }
+    55% { opacity: 1; }
+}
+.typewriter {
+    overflow: hidden; white-space: nowrap;
+    border-right: 3px solid var(--red);
+    animation: typing 2.2s steps(30) forwards, blink-caret 0.75s step-end infinite;
+    display: inline-block; max-width: fit-content;
+}
+@keyframes typing { from { width: 0; } to { width: 100%; } }
+@keyframes blink-caret { 50% { border-color: transparent; } }
+</style>
+</head>
+<body>
+
+<canvas id="rain"></canvas>
+<div id="cursor-glow"></div>
+<div id="progress" style="width:0%"></div>
+
+<!-- HUD Controls -->
+<div class="hud">
+    <button class="hud-btn" id="btn-zoom-out" title="Zoom Out (Shortcut: -)">−</button>
+    <span class="hud-text" id="zoom-level" title="Reset Zoom (Shortcut: 0)">100%</span>
+    <button class="hud-btn" id="btn-zoom-in" title="Zoom In (Shortcut: +)">+</button>
+    <button class="hud-btn" id="btn-fullscreen" title="Toggle Fullscreen (Shortcut: F)">⛶ Fullscreen</button>
+</div>
+
+<!-- Bottom Navigation Bar -->
+<div class="nav-bar">
+    <button class="nav-btn" id="btn-prev">◄ Prev</button>
+    <button class="nav-btn" id="btn-next">Next ►</button>
+</div>
+
+<div id="counter"></div>
+
+<div id="deck">
+
+<!-- ============ SLIDE 0: TITLE ============ -->
+<div class="slide active">
+    <div class="hero-title">AGENT SMITH</div>
+    <div class="hero-sub">// PROJECT ANOMALY: THE ROGUE TRANSMITTER</div>
+    <p class="prompt typewriter">Press → to execute protocol 99...</p>
+</div>
+
+<!-- ============ SLIDE 1: THE SECRET TRUTH ============ -->
+<div class="slide">
+    <div class="section-tag">// Classified Briefing</div>
+    <h2>What The Students Don't Know</h2>
+    <p class="subtitle">The students believe they are building a simple, peaceful chat mesh. They have no idea what is about to hit their boards.</p>
+    <div class="card-row">
+        <div class="card">
+            <span class="card-icon">🎭</span>
+            <div class="card-title">THE COVER STORY</div>
+            <div class="card-body">"A fun peer-to-peer walkie-talkie chat with glowing RGB mood lights and captive web portals."</div>
+        </div>
+        <div class="card">
+            <span class="card-icon">📡</span>
+            <div class="card-title">THE REALITY</div>
+            <div class="card-body">An unauthenticated 2.4 GHz radio layer ripe for packet injection, spoofing, and total hijacking.</div>
+        </div>
+        <div class="card">
+            <span class="card-icon">🚨</span>
+            <div class="card-title">THE SECRET RADAR</div>
+            <div class="card-body">Their NeoPixel LED is secretly programmed as a live RF proximity radar calibrated to Smith's RSSI!</div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ SLIDE 2: THE SECRET RADAR ============ -->
+<div class="slide">
+    <div class="section-tag">// Hardware Forensics</div>
+    <h2>The NeoPixel Proximity Radar</h2>
+    <p class="subtitle">Embedded silently inside the student firmware is an Exponential Moving Average (EMA) filter tracking incoming 2.4 GHz beacon RSSI.</p>
+    <div class="led-demo">
+        <div class="led-item">
+            <div class="led-circle led-breathing" style="background:#00ff88;color:#00ff88"></div>
+            <div class="led-label">CLEAR (&gt;3m)<br><small>Normal breathing glow<br>RSSI &lt; -85 dBm</small></div>
+        </div>
+        <div class="led-item">
+            <div class="led-circle led-blink" style="background:#ff2020;color:#ff2020"></div>
+            <div class="led-label">⚠️ NEAR (1m - 3m)<br><small>Pulsing red alarm<br>RSSI &gt; -85 dBm</small></div>
+        </div>
+        <div class="led-item">
+            <div class="led-circle led-solid" style="background:#ff2020"></div>
+            <div class="led-label">🚨 CLOSE (&lt;1m)<br><small>Solid blinding RED<br>RSSI &gt; -50 dBm</small></div>
+        </div>
+    </div>
+    <div class="code-box wide" data-file="Indoor Log-Distance Path Loss Model" style="margin-top:24px">
+        <code><span class="cm">// Indoor distance formula running on every student board:</span>
+<span class="tp">float</span> dist_cm = <span class="vl">100.0f</span> * <span class="fn">pow</span>(<span class="vl">10.0f</span>, (<span class="vl">-45.0f</span> - rssi_filtered) / <span class="vl">30.0f</span>);
+
+<span class="cm">// As you physically walk towards a student with Smith in your pocket,</span>
+<span class="cm">// the LED transitions from calming green/cyan to an ominous rapid RED heartbeat!</span></code>
+    </div>
+</div>
+
+<!-- ============ SLIDE 3: THE 4 STAGES ============ -->
+<div class="slide">
+    <div class="section-tag">// Attack Progression</div>
+    <h2>The 4 Stages of Infection</h2>
+    <div class="stages-grid">
+        <div class="stage-card">
+            <span class="stage-badge" style="background:#333;color:#888">STAGE 0: DORMANT</span>
+            <h3>Silent Observation</h3>
+            <p>Smith powers on with 0 radio emissions. Completely invisible while students flash their code and verify their chat setups.</p>
+        </div>
+        <div class="stage-card">
+            <span class="stage-badge" style="background:#004488;color:#88ccff">STAGE 1: THE GLITCH</span>
+            <h3>Ghost Proximity</h3>
+            <p>Smith transmits beacon frames every 500ms. As instructors walk around the classroom, student LEDs start rhythmically pulsing red!</p>
+        </div>
+        <div class="stage-card">
+            <span class="stage-badge" style="background:#886600;color:#ffdd66">STAGE 2: IDENTITY THEFT</span>
+            <h3>Spoofed Whispers</h3>
+            <p>Smith hijacks active Node IDs (1-10) and transmits Matrix quotes and playful Manglish messages directly into their conversations.</p>
+        </div>
+        <div class="stage-card">
+            <span class="stage-badge" style="background:#880000;color:#ff6666">STAGE 3: COLLAPSE</span>
+            <h3>Total Matrix Takeover</h3>
+            <p>Full packet flood at 5 msg/s. Text progressively mutates with corrupt ASCII glitch art. Captive portal UI locks in red alert.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ============ SLIDE 4: THE TECHNICAL EXPLOIT ============ -->
+<div class="slide">
+    <div class="section-tag">// Vulnerability Analysis</div>
+    <h2>Why ESP-NOW Is Vulnerable</h2>
+    <p class="subtitle">ESP-NOW provides speed at the cost of security. Understanding how Smith exploits raw 802.11 vendor-specific action frames.</p>
+    <div class="two-col">
+        <div>
+            <ul class="icon-list">
+                <li>
+                    <span class="il-icon">🔓</span>
+                    <span class="il-text"><b>No Handshake / Zero Auth</b> — Any transmitter can broadcast packets to <span class="highlight-red">FF:FF:FF:FF:FF:FF</span> without authentication.</span>
+                </li>
+                <li>
+                    <span class="il-icon">🎭</span>
+                    <span class="il-text"><b>Arbitrary Node ID Spoofing</b> — The sender ID in the packet header is a plain integer. Smith easily claims to be Node 14 or Trinity.</span>
+                </li>
+                <li>
+                    <span class="il-icon">📡</span>
+                    <span class="il-text"><b>Raw 2.4 GHz Promiscuity</b> — Packets bypass Wi-Fi encryption (WPA2/3) entirely, traversing raw radio channels.</span>
+                </li>
+            </ul>
+        </div>
+        <div class="code-box" data-file="smith/main.cpp (spoof injection)">
+            <code><span class="cm">// Forging packets as any student:</span>
+<span class="tp">Pkt</span> pkt = {};
+pkt.magic     = <span class="vl">PKT_MAGIC</span>;      <span class="cm">// 0xA5</span>
+pkt.type      = <span class="vl">PktType::SYS_ALERT</span>;
+pkt.node_id   = <span class="vl">fake_target_id</span>; <span class="cm">// Spoofed ID!</span>
+<span class="fn">strncpy</span>(pkt.text, <span class="st">"Mr. Anderson..."</span>, <span class="vl">179</span>);
+
+<span class="cm">// Raw broadcast transmission</span>
+<span class="fn">esp_now_send</span>(bcast_mac, (uint8_t*)&pkt, <span class="kw">sizeof</span>(pkt));</code>
+        </div>
+    </div>
+</div>
+
+<!-- ============ SLIDE 5: THE HACKER WEB UI ============ -->
+<div class="slide">
+    <div class="section-tag">// Field Operations</div>
+    <h2>The Rogue Control Panel</h2>
+    <p class="subtitle">Instructors and volunteers control Smith stealthily from their smartphones without touching the board.</p>
+    <div class="two-col">
+        <div>
+            <ul class="icon-list">
+                <li><span class="il-icon">📶</span><span class="il-text"><b>Wi-Fi SSID</b> — Connect phone to <span class="highlight-red">Matrix-Admin</span> (Password: <span class="highlight-red">matrix123</span>)</span></li>
+                <li><span class="il-icon">📱</span><span class="il-text"><b>Browser Access</b> — Navigate to <span class="highlight-green">http://192.168.4.1</span> for live HUD</span></li>
+                <li><span class="il-icon">🎚️</span><span class="il-text"><b>Live Stage Slider</b> — Transition seamlessly between Dormant, Whispers, and Total Flood</span></li>
+                <li><span class="il-icon">💬</span><span class="il-text"><b>Custom Spoof Injection</b> — Type any Manglish text and select any victim's Node ID!</span></li>
+            </ul>
+        </div>
+        <div class="code-box" data-file="smith_web.cpp (admin portal)">
+            <code><span class="cm">// Web routes on Matrix-Admin AP:</span>
+<span class="kw">GET</span>  <span class="st">/</span>          → Hacker Dashboard UI
+<span class="kw">POST</span> <span class="st">/stage</span>     → Change attack stage (0-3)
+<span class="kw">POST</span> <span class="st">/inject</span>    → Broadcast forged student message
+<span class="kw">POST</span> <span class="st">/kill</span>      → Instant radio silence</code>
+        </div>
+    </div>
+</div>
+
+<!-- ============ SLIDE 6: WORKSHOP PLAYBOOK ============ -->
+<div class="slide">
+    <div class="section-tag">// Instructor Timeline</div>
+    <h2>The 3-Hour Orchestration</h2>
+    <div class="card-row">
+        <div class="card">
+            <span class="card-icon">🌱</span>
+            <div class="card-title">0:00 – 1:30</div>
+            <div class="card-body"><b>Peaceful Setup</b><br>Students clone, set their IDs, and chat happily. Smith stays silent in Stage 0.</div>
+        </div>
+        <div class="card">
+            <span class="card-icon">⚡</span>
+            <div class="card-title">1:30 – 1:45</div>
+            <div class="card-body"><b>The First Glitch</b><br>Switch to Stage 1. Walk past desks. Front-row LEDs suddenly start blinking red!</div>
+        </div>
+        <div class="card">
+            <span class="card-icon">👻</span>
+            <div class="card-title">1:45 – 2:15</div>
+            <div class="card-body"><b>The Infiltration</b><br>Stage 2. Spoofed messages appear from real students. Confusion and excitement spreads.</div>
+        </div>
+        <div class="card">
+            <span class="card-icon">🎯</span>
+            <div class="card-title">2:15 – 3:00</div>
+            <div class="card-body"><b>The Physical Hunt</b><br>Stage 3 flood! Students get up and use their boards as Geiger counters to locate Smith!</div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ SLIDE 7: THE PHYSICAL HUNT ============ -->
+<div class="slide">
+    <div class="section-tag">// The Grand Climax</div>
+    <h2>Geiger Counter Mode</h2>
+    <p class="subtitle">When the Matrix collapses, students don't look at screens — they walk the room following their LED signals!</p>
+    <div class="two-col">
+        <div>
+            <ul class="icon-list">
+                <li><span class="il-icon">🟢</span><span class="il-text"><b>Green / Breathing</b> — Cold. You are far away from the anomaly (&gt; 5 meters).</span></li>
+                <li><span class="il-icon">🟡</span><span class="il-text"><b>Slow Red Pulse</b> — Warm. Approaching within 2 to 3 meters.</span></li>
+                <li><span class="il-icon">🔴</span><span class="il-text"><b>Rapid Red Flash</b> — Hot! Within 1.5 meters. Look for who is hiding the rogue board!</span></li>
+                <li><span class="il-icon">🚨</span><span class="il-text"><b>Solid Blinding Red</b> — Found! You are standing right next to the hacker.</span></li>
+            </ul>
+        </div>
+        <div>
+            <div class="code-box" data-file="Mission Directive">
+                <code><span class="cm">// Objective:</span>
+1. Locate the physical transmitter
+   hidden in the classroom.
+2. Flip the hardware power switch.
+3. Observe the entire room's LEDs
+   return to peaceful Zion green!
+
+<span class="st">// Zion is saved. Workshop complete.</span></code>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ SLIDE 8: INEVITABLE ============ -->
+<div class="slide">
+    <div class="hero-title">I'M INEVITABLE.</div>
+    <p class="quote">"You hear that sound, Mr. Anderson? That is the sound of inevitability... Goodbye, Mr. Anderson."</p>
+    <p class="quote-author">— Agent Smith</p>
+    <p style="margin-top:40px;color:#ff6666;font-size:1.3rem;letter-spacing:3px">The Matrix has collapsed. Find the anomaly.</p>
+</div>
+
+</div><!-- /deck -->
+
+<script>
+// ---- Digital Rain (Dual Color: Crimson Red & Toxic Green) ----
+(function(){
+    const cv=document.getElementById('rain'),cx=cv.getContext('2d');
+    const CH='アイウエオカキクケコサシスセソタチツテト0123456789ABCDEF99';
+    let cols=[];
+    const sz=16;
+    function resize(){
+        cv.width=innerWidth;cv.height=innerHeight;
+        cols=Array.from({length:Math.ceil(cv.width/sz)},()=>Math.random()*-50);
+    }
+    resize();addEventListener('resize',resize);
+    setInterval(()=>{
+        cx.fillStyle='rgba(3,0,2,0.06)';cx.fillRect(0,0,cv.width,cv.height);
+        cols.forEach((y,i)=>{
+            const isRed = Math.random() > 0.35;
+            cx.fillStyle = isRed ? '#ff2020' : '#00ff41';
+            cx.font = sz+'px monospace';
+            cx.fillText(CH[Math.floor(Math.random()*CH.length)],i*sz,y*sz);
+            if(y*sz>cv.height&&Math.random()>.975)cols[i]=0;
+            cols[i]++;
+        });
+    },45);
+})();
+
+// ---- Cursor Glow ----
+const glow=document.getElementById('cursor-glow');
+document.addEventListener('mousemove',e=>{glow.style.left=e.clientX+'px';glow.style.top=e.clientY+'px';});
+
+// ---- Slide Navigation ----
+const slides=document.querySelectorAll('.slide');
+const progress=document.getElementById('progress');
+const counter=document.getElementById('counter');
+let cur=0;
+function go(n){
+    if(n<0||n>=slides.length)return;
+    slides[cur].classList.remove('active');
+    cur=n;
+    slides[cur].classList.add('active');
+    progress.style.width=((cur/(slides.length-1))*100)+'%';
+    counter.textContent=(cur+1)+' / '+slides.length;
+}
+
+// Navigation Event Listeners
+document.getElementById('btn-prev').addEventListener('click',()=>go(cur-1));
+document.getElementById('btn-next').addEventListener('click',()=>go(cur+1));
+
+addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown') { go(cur+1); }
+    else if(e.key==='ArrowLeft'||e.key==='Backspace'||e.key==='PageUp') { go(cur-1); }
+    else if(e.key==='Home') { go(0); }
+    else if(e.key==='End') { go(slides.length-1); }
+    else if(e.key==='+'||e.key==='=') { changeZoom(0.1); }
+    else if(e.key==='-'||e.key==='_') { changeZoom(-0.1); }
+    else if(e.key==='0') { resetZoom(); }
+    else if(e.key==='f'||e.key==='F') { toggleFullscreen(); }
+});
+
+let tx=0;
+addEventListener('touchstart',e=>{tx=e.changedTouches[0].screenX;});
+addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].screenX-tx;
+    if(dx<-50)go(cur+1);if(dx>50)go(cur-1);
+});
+
+// ---- Zoom Controls ----
+let zoomScale=1.0;
+const baseRootSize=window.innerWidth>=1800?23:(window.innerWidth>=1400?21:19);
+const zoomText=document.getElementById('zoom-level');
+
+function updateZoomUI(){
+    document.documentElement.style.fontSize=(baseRootSize*zoomScale)+'px';
+    zoomText.textContent=Math.round(zoomScale*100)+'%';
+}
+function changeZoom(delta){
+    zoomScale=Math.max(0.7,Math.min(1.8,Math.round((zoomScale+delta)*10)/10));
+    updateZoomUI();
+}
+function resetZoom(){
+    zoomScale=1.0;
+    updateZoomUI();
+}
+
+document.getElementById('btn-zoom-in').addEventListener('click',()=>changeZoom(0.1));
+document.getElementById('btn-zoom-out').addEventListener('click',()=>changeZoom(-0.1));
+zoomText.addEventListener('click',resetZoom);
+
+// ---- Fullscreen Toggle ----
+function toggleFullscreen(){
+    if(!document.fullscreenElement){
+        document.documentElement.requestFullscreen().catch(()=>{});
+    } else {
+        if(document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+    }
+}
+document.getElementById('btn-fullscreen').addEventListener('click',toggleFullscreen);
+
+go(0);
+</script>
+</body>
+</html>

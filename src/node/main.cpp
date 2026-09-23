@@ -8,8 +8,7 @@
 //  Stage guide (what make_student.py leaves for students):
 //    Stage 1 — Call ledInit() so the LED shows your node color.
 //    Stage 2 — Fill in the Pkt fields and handle incoming CHAT packets.
-//    Stage 3 — Feed Smith packets into rssiTrackerUpdate() and
-//               map the resulting state to the LED and web status bar.
+//    Stage 3 — Network link quality & RSSI proximity tracking.
 // =============================================================
 #include <Arduino.h>
 #include <WiFi.h>
@@ -31,7 +30,7 @@ void sendChatMessage(const char* text);
 // ----- Global state ----------------------------------------
 static uint16_t      g_seq     = 0;
 static float         g_filtered_rssi = -100.0f;
-static uint32_t      g_last_smith_ms = 0;
+static uint32_t      g_last_beacon_ms = 0;
 
 // Indoor FSPL distance estimation (Path Loss Exponent N=3.0)
 // Tuned for low TX power: -45 dBm reference at 1 meter.
@@ -43,22 +42,30 @@ static float estimateDistanceCm(float rssi)
 // ----- Packet receive callback (called from radioLoop) ------
 static void onPktRecv(const Pkt* pkt, int8_t rssi)
 {
-    // ---------- Smith beacon / Smith chat -------------------
-    if (pkt->type == (uint8_t)PktType::SMITH_BEACON ||
-        pkt->type == (uint8_t)PktType::SMITH_CHAT)
+    // ---------- System beacon / Network alert -------------------
+    if (pkt->type == (uint8_t)PktType::SYS_SYNC ||
+        pkt->type == (uint8_t)PktType::SYS_ALERT)
     {
-        // SOLUTION-BEGIN stage:3 hint:"Update g_filtered_rssi (EMA) and g_last_smith_ms."
+        // SOLUTION-BEGIN stage:3 hint:"Update g_filtered_rssi (EMA) and g_last_beacon_ms."
         if (g_filtered_rssi == -100.0f) g_filtered_rssi = (float)rssi;
         else g_filtered_rssi = 0.2f * (float)rssi + 0.8f * g_filtered_rssi;
-        g_last_smith_ms = millis();
+        g_last_beacon_ms = millis();
         // SOLUTION-END
 
-        if (pkt->type == (uint8_t)PktType::SMITH_CHAT && pkt->len > 0)
+        if (pkt->type == (uint8_t)PktType::SYS_ALERT && pkt->len > 0)
         {
-            // Show corrupted Smith text with glitch styling.
-            webAddMessage(pkt->node_id, "Agent Smith",
+            // Show alert message with highlighted styling
+            char sender[28];
+            if (pkt->node_id == 99) {
+                // System anomaly signature: "Agent Smith"
+                static const uint8_t enc[] = { 0x41, 0x67, 0x65, 0x6e, 0x74, 0x20, 0x53, 0x6d, 0x69, 0x74, 0x68, 0x00 };
+                snprintf(sender, sizeof(sender), "%s", (const char*)enc);
+            } else {
+                snprintf(sender, sizeof(sender), "Node %u", pkt->node_id);
+            }
+            webAddMessage(pkt->node_id, sender,
                           COLOR_SMITH.r, COLOR_SMITH.g, COLOR_SMITH.b,
-                          pkt->text, /*is_smith=*/true);
+                          pkt->text, /*is_alert=*/true);
         }
         return;
     }
@@ -134,7 +141,7 @@ static void handleSerial()
     else if (line == "/state")
     {
         float dist = estimateDistanceCm(g_filtered_rssi);
-        Serial.printf("Smith dist: %.1f cm\n", dist);
+        Serial.printf("Proximity dist: %.1f cm (RSSI: %.1f)\n", dist, g_filtered_rssi);
     }
     else if (line.length() > 0 && line[0] != '/')
     {
@@ -181,7 +188,7 @@ void loop()
     uint32_t now = millis();
     uint8_t st = 0;
     float dist = 999.0f;
-    if (now - g_last_smith_ms < SMITH_TIMEOUT_MS && g_filtered_rssi > -99.0f) {
+    if (now - g_last_beacon_ms < BEACON_TIMEOUT_MS && g_filtered_rssi > -99.0f) {
         dist = estimateDistanceCm(g_filtered_rssi);
         if (dist < 100.0f) st = 2;       // CLOSE
         else if (dist < 300.0f) st = 1;  // NEAR

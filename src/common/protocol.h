@@ -17,9 +17,13 @@ static constexpr uint8_t PKT_MAGIC = 0xA5;
 static constexpr uint8_t PKT_VER   = 1;
 
 enum class PktType : uint8_t {
-    CHAT         = 0,  // Normal chat message
-    SMITH_BEACON = 1,  // Smith proximity beacon (no text needed)
-    SMITH_CHAT   = 2,  // Smith impersonation / corruption
+    CHAT         = 0,  // Normal peer-to-peer chat message
+    SYS_SYNC     = 1,  // Network sync / diagnostic beacon (no text needed)
+    SYS_ALERT    = 2,  // System broadcast / network alert
+
+    // Compatibility aliases for rogue beacon
+    SMITH_BEACON = 1,
+    SMITH_CHAT   = 2,
 };
 
 // Packed to guarantee identical layout on every ESP32 variant.

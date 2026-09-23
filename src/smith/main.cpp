@@ -229,7 +229,7 @@ void setup()
 
     pinMode(PIN_BOOT, INPUT_PULLUP);
 
-#if !defined(CONFIG_IDF_TARGET_ESP32S3)
+#if !defined(CONFIG_IDF_TARGET_ESP32S3) && !defined(CONFIG_IDF_TARGET_ESP32C3)
     ledcAttach(PIN_LED_R, 5000, 8);
     ledcAttach(PIN_LED_G, 5000, 8);
     ledcAttach(PIN_LED_B, 5000, 8);

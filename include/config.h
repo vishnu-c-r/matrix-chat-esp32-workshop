@@ -16,15 +16,15 @@
 
 // ---- RSSI proximity thresholds (dBm) -----------------------
 // More negative = weaker signal = further away.
-// Smith is CLOSE when filtered RSSI rises above RSSI_CLOSE_ENTER.
-// It leaves CLOSE only when RSSI drops below RSSI_CLOSE_EXIT (hysteresis).
+// Link proximity thresholds for diagnostic feedback.
 #define RSSI_CLOSE_ENTER  (-50)
 #define RSSI_CLOSE_EXIT   (-55)
-// Smith is NEAR when filtered RSSI is above RSSI_NEAR.
 #define RSSI_NEAR         (-85)
 
-// Declare Smith gone after this many ms without a beacon.
-#define SMITH_TIMEOUT_MS  1500U
+// Reset link status after this many ms without beacon.
+#define BEACON_TIMEOUT_MS 1500U
+#define SMITH_TIMEOUT_MS  BEACON_TIMEOUT_MS  // Compatibility alias
 
 // EMA smoothing factor for RSSI.  0 = frozen, 1 = raw, 0.2 = recommended.
 #define RSSI_EMA_ALPHA    0.2f
+

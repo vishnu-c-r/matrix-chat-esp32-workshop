@@ -1,262 +1,134 @@
-# Matrix Chat + Agent Smith Detector
+# The Matrix: Decentralised ESP-NOW Mesh Chat
 
-> **3-hour engineering workshop** — 30-50 students in groups of 4.
-> Each group builds a group chat over ESP-NOW while a rogue "Agent Smith"
-> board infiltrates the network. Proximity is detected via RSSI.
-
----
-
-## Quick start
-
-```
-# 1. Edit your identity (ONE file only!)
-include/config.h   ←  change NODE_ID and NODE_NAME
-
-# 2. Flash your board
-pio run -e esp32s3_node  -t upload --upload-port COMx    # S3
-pio run -e esp32dev_node -t upload --upload-port COMx    # WROOM
-
-# 3. Connect phone/laptop to Wi-Fi "NEO-<your id>", password matrix123
-# 4. Open http://192.168.4.1
-```
+> **3-Hour Engineering Workshop**
+> Build an autonomous, serverless peer-to-peer chat network using ESP32 microcontrollers and the ESP-NOW 2.4 GHz protocol. Each participant's board hosts its own captive-portal web interface and uses addressable RGB hardware indicators to signal network activity.
 
 ---
 
-## Repository layout
+## ⚡ Quick Start
+
+```powershell
+# 1. Edit your node identity (The ONLY file you need to modify!)
+# Open include/config.h and set your unique NODE_ID (1-50) and NODE_NAME
+include/config.h
+
+# 2. Flash your board via PlatformIO (replace COMx with your port)
+pio run -e esp32c3_node  -t upload --upload-port COMx    # ESP32-C3 SuperMini (Recommended)
+pio run -e esp32s3_node  -t upload --upload-port COMx    # ESP32-S3 DevKitC-1
+pio run -e esp32dev_node -t upload --upload-port COMx    # ESP32-WROOM-32
+
+# 3. Connect your phone or laptop to your board's Wi-Fi network:
+# SSID:     NEO-<your_node_id>   (e.g., NEO-14)
+# Password: matrix123
+
+# 4. Open your browser and navigate to:
+http://192.168.4.1
+```
+
+---
+
+## 📁 Repository Layout
 
 ```
-platformio.ini          Build configuration (all envs)
+platformio.ini          PlatformIO build configurations for all targets
 include/
-  config.h              THE ONLY FILE STUDENTS EDIT
+  config.h              THE ONLY FILE YOU NEED TO EDIT (ID & Handle)
 src/
-  common/               Shared modules (node + smith)
-    protocol.h          Wire packet (Pkt struct, magic 0xA5)
-    board_pins.h        GPIO assignments per board variant
-    palette.h           12-color palette; red reserved for Smith
-    radio.h / .cpp      ESP-NOW broadcast, FreeRTOS queue, retransmit
-    led.h   / .cpp      LEDC/NeoPixel state machine (gamma-corrected)
-    rssi_tracker.h/.cpp EMA filter + CLEAR/NEAR/CLOSE state machine
-    dedupe.h  / .cpp    64-entry ring buffer (node_id, seq) filter
-    web.h     / .cpp    WebServer + DNSServer captive portal
-    smith/              Smith-exclusive modules
-      corrupt.h / .cpp  Deterministic text corruptor (5 levels)
+  common/               Shared network & hardware drivers
+    protocol.h          Wire packet definition (Pkt struct, magic 0xA5)
+    board_pins.h        Pinouts for ESP32-C3, S3, and WROOM
+    palette.h           12-color unique node identity palette
+    radio.h / .cpp      ESP-NOW broadcast engine & queue manager
+    led.h   / .cpp      NeoPixel / RGB LED state animation controller
+    dedupe.h  / .cpp    64-entry ring buffer packet deduplicator
+    web.h     / .cpp    Lightweight WebServer + DNSServer captive portal
   node/
-    main.cpp            Human node firmware (reference solution)
-  smith/
-    main.cpp            Agent Smith firmware (4 escalation stages)
-test/
-  test_packet.cpp       Protocol pack/unpack
-  test_dedupe.cpp       Ring buffer edge cases
-  test_rssi.cpp         EMA + hysteresis + timeout
-  test_corrupt.cpp      Deterministic corruption
-tools/
-  make_student.py       Generates student skeleton from reference
+    main.cpp            Node chat firmware
+presentation.html       Interactive workshop slide deck
 ```
 
 ---
 
-## Wiring
+## 🔌 Hardware & Wiring
 
-### RGB LED (common-cathode, 3 × 330 Ω resistors to GND)
+### 1. ESP32-C3 SuperMini / DevKitM-1 (Primary Workshop Board)
+The ESP32-C3 uses an external WS2812 addressable NeoPixel LED connected to **GPIO 2**:
 
-| Board | R pin | G pin | B pin | Notes |
-|-------|-------|-------|-------|-------|
-| ESP32-WROOM-32 | GPIO 25 | GPIO 26 | GPIO 27 | Safe; avoids flash (6-11) and strapping pins |
-| ESP32-C3 DevKitM-1 | GPIO 3 | GPIO 4 | GPIO 5 | C3 BOOT is GPIO9, not GPIO0 |
-| ESP32-S3 DevKitC-1 | GPIO 4 | GPIO 5 | GPIO 6 | Or use onboard NeoPixel (pin 48) |
+| NeoPixel Pin | ESP32-C3 Pin | Notes |
+|:-------------|:-------------|:------|
+| **VCC / 5V** | 5V / VBUS | Power line |
+| **GND**      | GND | Ground line |
+| **DIN (Data)**| **GPIO 2** | High-speed single-wire data |
 
-```
-ESP32 pin ──[ 330 Ω ]──┬── R leg (LED)
-                        ├── G leg (LED)   } common cathode → GND
-                        └── B leg (LED)
-```
+> **Note on C3 Uploads**: If the C3 board does not enter bootloader mode automatically, hold down the **BOOT** button (GPIO 9), tap the **RST** button, and then release BOOT.
 
-### NeoPixel (ESP32-S3 DevKitC-1 only)
-No external wiring — the onboard RGB LED on pin 48 is used automatically.
-`#define HAS_NEOPIXEL true` is set automatically for S3 targets.
+### 2. ESP32-S3 DevKitC-1
+No external wiring required. The onboard addressable RGB LED on **GPIO 48** is used automatically (`HAS_NEOPIXEL = true`).
 
----
-
-## Build environments
-
-| Env | Board | Role |
-|-----|-------|------|
-| `esp32s3_node` | S3 DevKitC-1 | Chat participant |
-| `esp32dev_node` | WROOM-32 | Chat participant |
-| `esp32c3_node` | C3 DevKitM-1 | Chat participant |
-| `esp32s3_smith` | S3 | Agent Smith |
-| `esp32dev_smith` | WROOM-32 | Agent Smith |
-| `esp32c3_smith` | C3 DevKitM-1 | Agent Smith |
-| `esp32dev_student` | WROOM-32 | Skeleton (same as node + `STUDENT_BUILD=1`) |
-| `native` | Desktop | Unity unit tests |
+### 3. ESP32-WROOM-32 (esp32dev)
+Uses an external common-cathode RGB LED with 3 × 330 Ω resistors:
+- **Red**: GPIO 25
+- **Green**: GPIO 26
+- **Blue**: GPIO 27
+- **Cathode**: GND
 
 ---
 
-## Flash steps
+## 📡 How the Chat System Works
 
-```powershell
-# List connected boards
-pio device list
+1. **Peer-to-Peer Radio Layer**:
+   - Messages bypass Wi-Fi routers, the internet, and servers entirely.
+   - Nodes transmit 2.4 GHz raw vendor-specific action frames directly over **ESP-NOW** in under 1 millisecond.
+   - All boards in the room listen on the same radio channel (`CHANNEL 1`).
 
-# Flash node firmware (S3)
-pio run -e esp32s3_node -t upload --upload-port COM6
+2. **The Wire Packet (`Pkt`)**:
+   - Every transmission is packed into a compact binary `Pkt` struct (188 bytes):
+     - `magic` (0xA5): Network signature byte.
+     - `ver`: Protocol version.
+     - `node_id`: Sender's unique ID number.
+     - `color_idx`: Determines avatar and LED color.
+     - `seq`: Monotonically incrementing sequence ID for deduplication.
+     - `text`: Null-terminated chat string (up to 180 characters).
 
-# Flash node firmware (WROOM)
-pio run -e esp32dev_node -t upload --upload-port COM7
+3. **Captive Portal Web Interface**:
+   - Each ESP32 acts as a SoftAP (`NEO-<id>`).
+   - A built-in DNS server captures all requests and routes them to `192.168.4.1`.
+   - The web UI polls `/api` once per second to pull recent messages from the ring buffer.
 
-# Flash Smith firmware (WROOM)
-pio run -e esp32dev_smith -t upload --upload-port COM8
-
-# Monitor serial (115200 baud)
-pio device monitor --port COM6 --baud 115200
-```
-
-> Ports change when boards are unplugged. Re-run `pio device list` if upload fails.
-
-### C3 note
-The C3 with USB CDC sometimes needs the BOOT button held during reset to
-enter download mode. Hold BOOT, press RST, release RST, release BOOT.
-
----
-
-## RSSI calibration procedure (`/cal` mode)
-
-1. Flash the node. Open a serial monitor at 115200.
-2. Flash Smith onto a second board.
-3. Place Smith at a fixed distance (e.g. 1 m) from the node.
-4. Type `/rssi` in the serial monitor every few seconds.
-5. Note `rssi_f` at 1 m, 2 m, and 5 m in the room.
-6. Adjust `RSSI_CLOSE_ENTER` / `RSSI_NEAR` in `include/config.h` so:
-   - 1 m ≈ CLOSE  (`rssi_f > RSSI_CLOSE_ENTER`)
-   - 2-3 m ≈ NEAR
-   - >5 m ≈ CLEAR
-
-Example values from a typical workshop room:
-
-| Distance | Raw RSSI range |
-|----------|---------------|
-| 0.5 m | -40 to -50 dBm |
-| 1–2 m | -55 to -65 dBm |
-| 3–5 m | -70 to -80 dBm |
-| >5 m   | -80 to -95 dBm |
+4. **NeoPixel Hardware Status**:
+   - **IDLE**: Smooth breathing pulse in your node's assigned color.
+   - **TRANSMIT (TX)**: Quick blue pulse when you send a message.
+   - **RECEIVE (RX)**: Immediate bright flash in the sender's color whenever a packet arrives.
+   - **ACTIVE**: Radio link synchronization indicator.
 
 ---
 
-## Venue channel-selection checklist
+## 🛠️ Build Environments
 
-Before the workshop:
-
-- [ ] Scan the 2.4 GHz spectrum with a Wi-Fi analyser app.
-- [ ] Identify channels with the least other AP traffic.
-- [ ] Pick a channel **not** used by venue infrastructure (usually 1, 6, 11).
-- [ ] Channels 1-13 are valid for ESP-NOW. Channel 1 is the default.
-- [ ] Update `#define CHANNEL` in `include/config.h` and flash all boards.
-- [ ] Verify all groups can exchange chat messages before handing out Smith.
+| Environment | Board Target | Description |
+|:------------|:-------------|:------------|
+| `esp32c3_node` | ESP32-C3 | Final workshop student chat firmware |
+| `esp32s3_node` | ESP32-S3 | S3 DevKitC-1 student chat firmware |
+| `esp32dev_node` | ESP32-WROOM | Classic ESP32 DevKit chat firmware |
 
 ---
 
-## Airtime budget estimate (10 nodes, 1 Smith)
+## 💻 Serial Monitor Commands
 
-Each normal node sends at most 1 chat packet × 3 retransmits.
-Smith broadcasts a beacon every 100 ms + optional chat at up to 5 msg/s.
+Open a serial monitor at **115200 baud** to interact directly with your board:
 
-| Source | Rate | Pkt size | Approx duty |
-|--------|------|----------|-------------|
-| 1 node chat (3× retransmit) | ~0.1 msg/s avg | 196 B | < 0.1% |
-| 10 nodes combined | 1 msg/s total | 196 B | < 1% |
-| Smith beacon (stage 0) | 10/s | 196 B | ~3% |
-| Smith flood (stage 3) | 5/s chat + beacon | 196 B | ~4% |
-| **Total worst-case** | | | **< 6%** |
-
-ESP-NOW on a 20 MHz channel at 1 Mbit/s can sustain ~50% useful load,
-so 10 nodes + Smith is well within budget with minimal collision risk.
+| Command | Action |
+|:--------|:-------|
+| `/id` | Prints your `NODE_ID`, handle, and hardware MAC address |
+| `/rssi` | Displays filtered RSSI signal strength from incoming transmissions |
+| `/state` | Displays current network link status & proximity distance |
+| *(any text)* | Transmits the entered text as a chat message over ESP-NOW |
 
 ---
 
-## Smith escalation stages
+## 🖥️ Workshop Presentation
 
-Press the **BOOT button** on the Smith board to advance:
-
-| Stage | LED | Behaviour |
-|-------|-----|-----------|
-| 0 | Off | Silent beacons only (100 ms interval, 2 dBm TX) |
-| 1 | Blue | Impersonates a random node (1 of 10 canned lines) |
-| 2 | Yellow | Progressive text corruption, level 1→5 over time |
-| 3 | Red | Flood 5 msg/s, max corruption |
-
----
-
-## Student skeleton generation
-
-```powershell
-python tools/make_student.py          # outputs to student/
-python tools/make_student.py --out dist/student   # custom path
-```
-
-The script strips all `// SOLUTION-BEGIN … // SOLUTION-END` blocks and
-replaces them with `// TODO(stageN): <hint>` comments.
-
-### Stage guide for students
-
-| Stage | Time | What to do | Visible result |
-|-------|------|------------|----------------|
-| 1 | 15 min | Call `ledInit(NODE_ID)` in `setup()` | LED glows in your node colour |
-| 2 | 40 min | Build `Pkt` fields in `sendChatMessage()`; handle CHAT in `onPktRecv()` | Messages appear in browser |
-| 3 | 40 min | Call `rssiTrackerUpdate()` + `rssiTrackerTick()` → `ledSetSmithState()` | LED blinks when Smith approaches |
-
----
-
-## Unit tests (native)
-
-```powershell
-pio test -e native
-```
-
-Tests: `test_packet`, `test_dedupe`, `test_rssi`, `test_corrupt`.
-No hardware needed — runs on the host machine.
-
----
-
-## Assumptions recorded
-
-The following were assumed in this implementation and should be
-confirmed before the workshop:
-
-1. **Broadcast peer interface**: `WIFI_IF_AP` is used. If TX returns
-   `ESP_ERR_ESPNOW_IF`, the code falls back to `WIFI_IF_STA` and prints
-   a warning. Which interface works with a SoftAP active on the same
-   channel needs hardware validation.
-
-2. **Smith TX power**: `esp_wifi_set_max_tx_power(8)` (2 dBm) is called
-   after `esp_now_init()`. Whether this is honoured without a full radio
-   calibration cycle on every board variant needs hardware validation.
-
-3. **RSSI API**: `esp_now_recv_info_t->rx_ctrl->rssi` is used (IDF 5.x /
-   Arduino-ESP32 core 3.x). Verified available by `static_assert` on
-   `ESP_IDF_VERSION_MAJOR >= 5`. Absolute accuracy (±3-5 dBm typical)
-   varies by board, antenna orientation, and environment.
-
-4. **Captive portal**: The DNS redirect + OS probe URLs work on most
-   Android (Chrome) and iOS (Safari) clients in our testing. Some OS
-   versions cache captive-portal decisions. Users may need to forget the
-   network and reconnect. Windows NCSI behaviour varies.
-
-5. **ledcAttach / ledcWrite**: The new Arduino-ESP32 3.x LEDC API is
-   used. The deprecated `ledcSetup` + `ledcAttachPin` calls are not used.
-   If the platform version reverts to an older API, `led.cpp` will need
-   updating.
-
-6. **NeoPixel (S3)**: `neopixelWrite()` is available in Arduino-ESP32 3.x
-   without any extra library. Behaviour with 3rd-party NeoPixel strips
-   on pins other than 48 has not been validated.
-
----
-
-## Serial commands (node firmware)
-
-| Command | Output |
-|---------|--------|
-| `/id` | Node ID, name, and MAC address |
-| `/rssi` | Current filtered RSSI and raw last value |
-| `/state` | Smith state: CLEAR / NEAR / CLOSE |
-| *(plain text)* | Sends as a chat message |
+Open `presentation.html` in Google Chrome or any modern browser for the interactive slide deck.
+- Use **Left / Right arrow keys** or the on-screen **◄ Prev / Next ►** buttons to navigate.
+- Use **`+`** / **`-`** to scale presentation contents to match your screen or projector.
+- Press **`F`** to toggle fullscreen mode.

@@ -28,8 +28,7 @@ Stage guide
 -----------
   Stage 1 (~15 min) — Call ledInit() to light up your node colour.
   Stage 2 (~40 min) — Build the Pkt fields and handle incoming chat.
-  Stage 3 (~40 min) — Feed Smith RSSI into rssiTrackerUpdate() and
-                      map the state to LED + web status bar.
+  Stage 3 (~40 min) — Link RSSI filter + Proximity indicator.
 """
 
 import re
@@ -121,7 +120,7 @@ Stage guide
 -----------
   Stage 1 (~15 min) LED colour cycle — wire check
   Stage 2 (~40 min) Send & receive chat messages
-  Stage 3 (~40 min) Smith RSSI filter + LED blink
+  Stage 3 (~40 min) Link RSSI filter + Proximity indicator
 
 Flash commands (replace COMx with your port):
   Node  (S3):   pio run -e esp32s3_node -t upload --upload-port COMx
