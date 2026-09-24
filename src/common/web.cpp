@@ -103,6 +103,8 @@ button:hover{background:#004400}
 @keyframes pls{0%,100%{opacity:1}50%{opacity:.35}}
 @keyframes glitch{0%{text-shadow:2px 0 #f00,-2px 0 #0f0}25%{text-shadow:-2px 0 #f00,2px 0 #0f0}50%{text-shadow:2px 0 #0f0,-2px 0 #f00}75%,100%{text-shadow:none}}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#003300;border-radius:2px}
+#clr{background:rgba(30,0,0,.7);border:1px solid #660000;color:#ff6666;padding:4px 9px;font-size:.74rem;border-radius:4px;cursor:pointer;font-weight:700;letter-spacing:.05em}
+#clr:hover{background:rgba(60,0,0,.9);border-color:#ff2020;color:#ff9999}
 #sdown{display:none;position:absolute;bottom:60px;right:50%;transform:translateX(50%);background:rgba(0,34,0,0.9);border:1px solid #00ff41;color:#00ff41;padding:8px 16px;border-radius:20px;cursor:pointer;z-index:10;font-weight:700;box-shadow:0 0 10px #00ff41}
 #sdown:hover{background:#005500}
 </style></head><body>
@@ -110,10 +112,13 @@ button:hover{background:#004400}
 <main>
 <h1 id="pt">Matrix Chat</h1>
 <div id="bar">
-  <div><span id="badge" class="cl">■ CLEAR</span><span id="rssi-val"></span></div>
-  <svg id="spark" viewBox="0 0 80 28" preserveAspectRatio="none">
-    <polyline id="spl" fill="none" stroke="#00ff41" stroke-width="1.5" points=""/>
-  </svg>
+  <div><span id="badge" class="cl">RADAR: CLEAR</span><span id="rssi-val"></span></div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button id="clr" type="button" title="Clear chat messages">CLEAR</button>
+    <svg id="spark" viewBox="0 0 80 28" preserveAspectRatio="none">
+      <polyline id="spl" fill="none" stroke="#00ff41" stroke-width="1.5" points=""/>
+    </svg>
+  </div>
 </div>
 <div id="msgs"><div class="msg"><div class="body" style="color:#336633">Connecting to the Matrix...</div></div></div>
 <button id="sdown" type="button">↓ NEW MESSAGES</button>
@@ -139,7 +144,7 @@ setInterval(()=>{
 
 // Chat
 const badge=document.getElementById('badge'),rssiVal=document.getElementById('rssi-val'),msgs=document.getElementById('msgs'),spl=document.getElementById('spl'),sdown=document.getElementById('sdown');
-const SC=['cl','nr','cs'],SL=['■ CLEAR','▲ NEAR','● CLOSE'];
+const SC=['cl','nr','cs'],SL=['RADAR: CLEAR','▲ RADAR: NEAR','● RADAR: CLOSE'];
 let rh=[],lastN=0,autoScroll=true,title=document.getElementById('pt');
 
 msgs.addEventListener('scroll',()=>{
@@ -147,6 +152,13 @@ msgs.addEventListener('scroll',()=>{
   if(autoScroll)sdown.style.display='none';
 });
 sdown.onclick=()=>{msgs.scrollTop=msgs.scrollHeight;};
+
+document.getElementById('clr').onclick=async()=>{
+  if(!confirm('Clear chat messages?'))return;
+  msgs.innerHTML='<div class="msg"><div class="body" style="color:#336633">Chat log cleared.</div></div>';
+  lastN=0;
+  await fetch('/clear',{method:'POST'});
+};
 
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function spark(){
@@ -163,7 +175,7 @@ async function refresh(){
     const d=await(await fetch('/api')).json();
     title.textContent=d.name+' | Matrix Chat';
     const si=d.smith;
-    badge.className='badge '+SC[si];badge.textContent=SL[si]||'CLEAR';
+    badge.className='badge '+SC[si];badge.textContent=SL[si]||'RADAR: CLEAR';
     rssiVal.textContent=si>0?' ('+d.rssi.toFixed(0)+'dBm)':'';
     rh.push(d.rssi);if(rh.length>20)rh.shift();spark();
     if(d.seq!==lastN){
@@ -270,6 +282,13 @@ static void handleSend() {
   g_server.send(200, "text/plain", "ok");
 }
 
+static void handleClear() {
+  g_hist_count = 0;
+  g_hist_head = 0;
+  g_total_msg = 0;
+  g_server.send(200, "text/plain", "ok");
+}
+
 // Redirect captive-portal OS probes back to the chat page.
 static void handleCaptive() {
   g_server.sendHeader("Location", "http://192.168.4.1/", true);
@@ -293,6 +312,7 @@ void webBegin(uint8_t node_id, const char *node_name) {
   g_server.on("/", HTTP_GET, handleRoot);
   g_server.on("/api", HTTP_GET, handleApi);
   g_server.on("/send", HTTP_POST, handleSend);
+  g_server.on("/clear", HTTP_POST, handleClear);
   // OS captive-portal probe URLs (Android, iOS, Windows):
   g_server.on("/generate_204", HTTP_GET, handleCaptive);
   g_server.on("/hotspot-detect.html", HTTP_GET, handleCaptive);
