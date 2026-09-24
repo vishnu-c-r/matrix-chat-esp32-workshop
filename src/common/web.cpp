@@ -47,30 +47,6 @@ static uint32_t g_total_msg = 0;
 static uint32_t g_last_send_ms = 0;
 static constexpr uint32_t RATE_LIMIT_MS = 1000;
 
-// ----- Helpers ---------------------------------------------
-static String htmlEscape(const char *s) {
-  String out;
-  for (; *s; ++s) {
-    switch (*s) {
-    case '&':
-      out += "&amp;";
-      break;
-    case '<':
-      out += "&lt;";
-      break;
-    case '>':
-      out += "&gt;";
-      break;
-    case '"':
-      out += "&quot;";
-      break;
-    default:
-      out += *s;
-    }
-  }
-  return out;
-}
-
 static String jsonEscape(const char *s) {
   String out;
   for (; *s; ++s) {
@@ -82,7 +58,7 @@ static String jsonEscape(const char *s) {
     }
     if (*s == '\r')
       continue;
-    if (*s >= 0 && *s < 0x20) // JSON strictly forbids unescaped control characters
+    if ((uint8_t)*s < 0x20) // JSON strictly forbids unescaped control characters
       continue;
     out += *s;
   }

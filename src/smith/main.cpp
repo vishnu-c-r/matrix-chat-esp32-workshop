@@ -84,9 +84,11 @@ static void checkButton()
         g_btn_ms         = now;
 
         // Show stage color briefly at full brightness.
-        const Color& c = STAGE_COLORS[g_stage];
-#if defined(CONFIG_IDF_TARGET_ESP32S3) && HAS_NEOPIXEL
-        neopixelWrite(PIN_NEOPIXEL, c.r, c.g, c.b);
+#if defined(CONFIG_IDF_TARGET_ESP32S3) || defined(CONFIG_IDF_TARGET_ESP32C3)
+        if (HAS_NEOPIXEL) {
+            const Color& c = STAGE_COLORS[g_stage];
+            rgbLedWrite(PIN_NEOPIXEL, c.r, c.g, c.b);
+        }
 #endif
         Serial.printf("[smith] stage -> %u\n", g_stage);
     }
@@ -109,7 +111,7 @@ void smithSetStage(uint8_t stage)
         
         const Color& c = STAGE_COLORS[g_stage];
 #if defined(CONFIG_IDF_TARGET_ESP32S3) || defined(CONFIG_IDF_TARGET_ESP32C3)
-        neopixelWrite(PIN_NEOPIXEL, c.r / 3, c.g / 3, c.b / 3);
+        rgbLedWrite(PIN_NEOPIXEL, c.r / 3, c.g / 3, c.b / 3);
 #else
         ledcWrite(PIN_LED_R, c.r / 4);
         ledcWrite(PIN_LED_G, c.g / 4);
@@ -207,7 +209,7 @@ static void updateStageLed()
     const Color& c = STAGE_COLORS[g_stage];
     // Smith has no node LED state machine — just show stage color directly.
 #if defined(CONFIG_IDF_TARGET_ESP32S3) || defined(CONFIG_IDF_TARGET_ESP32C3)
-    neopixelWrite(PIN_NEOPIXEL, c.r / 3, c.g / 3, c.b / 3);  // dim
+    rgbLedWrite(PIN_NEOPIXEL, c.r / 3, c.g / 3, c.b / 3);  // dim
 #else
     // LEDC direct write for WROOM/C3 stage indicator.
     ledcWrite(PIN_LED_R, c.r / 4);

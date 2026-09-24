@@ -19,9 +19,9 @@ static uint8_t gamma8(uint8_t v)
 static void setRgb(uint8_t r, uint8_t g, uint8_t b)
 {
 #if defined(CONFIG_IDF_TARGET_ESP32S3) || defined(CONFIG_IDF_TARGET_ESP32C3)
-    // Onboard WS2812 — gamma applied inside neopixelWrite is vendor-specific;
+    // Onboard WS2812 — gamma applied inside rgbLedWrite is vendor-specific;
     // we apply our own gamma before calling so output is consistent.
-    neopixelWrite(PIN_NEOPIXEL, gamma8(r), gamma8(g), gamma8(b));
+    rgbLedWrite(PIN_NEOPIXEL, gamma8(r), gamma8(g), gamma8(b));
 #else
     // External common-cathode RGB via LEDC (Arduino-ESP32 3.x API).
     ledcWrite(PIN_LED_R, gamma8(r));
