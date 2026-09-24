@@ -77,7 +77,7 @@ static const char PAGE[] PROGMEM = R"END_PAGE(
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#000000">
-<title id="pt">Matrix Chat</title>
+<title id="page-title">Matrix Chat</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#000;color:#00ff41;font-family:'Courier New',monospace;overflow-x:hidden}
@@ -110,7 +110,7 @@ button:hover{background:#004400}
 </style></head><body>
 <canvas id="rain"></canvas>
 <main>
-<h1 id="pt">Matrix Chat</h1>
+<h1 id="pt"><span id="tname">Matrix</span> <span style="font-size:0.75rem;color:#00aa28;letter-spacing:0.1em;opacity:0.85">| CHAT</span></h1>
 <div id="bar">
   <div><span id="badge" class="cl">RADAR: CLEAR</span><span id="rssi-val"></span></div>
   <div style="display:flex;align-items:center;gap:8px">
@@ -123,7 +123,7 @@ button:hover{background:#004400}
 <div id="msgs"><div class="msg"><div class="body" style="color:#336633">Connecting to the Matrix...</div></div></div>
 <button id="sdown" type="button">↓ NEW MESSAGES</button>
 <form id="frm">
-  <input id="txt" maxlength="95" placeholder="Enter the Matrix..." autocomplete="off">
+  <input id="txt" maxlength="150" placeholder="Enter message..." autocomplete="off">
   <button type="submit">SEND</button>
 </form>
 </main>
@@ -173,7 +173,13 @@ function spark(){
 async function refresh(){
   try{
     const d=await(await fetch('/api')).json();
-    title.textContent=d.name+' | Matrix Chat';
+    document.title=d.name+' | Matrix Chat';
+    title.innerHTML='<span style="color:#ffffff;text-shadow:0 0 10px #00ff41">'+esc(d.name)+'</span> <span style="font-size:0.75rem;color:#00aa28;letter-spacing:0.1em;opacity:0.85">| MATRIX CHAT</span>';
+    const inp=document.getElementById('txt');
+    if(!inp.getAttribute('data-init')){
+      inp.placeholder='Message as '+d.name+'...';
+      inp.setAttribute('data-init','1');
+    }
     const si=d.smith;
     badge.className='badge '+SC[si];badge.textContent=SL[si]||'RADAR: CLEAR';
     rssiVal.textContent=si>0?' ('+d.rssi.toFixed(0)+'dBm)':'';
@@ -272,8 +278,8 @@ static void handleSend() {
 
   String msg = g_server.arg("message");
   msg.trim();
-  if (msg.length() == 0 || msg.length() > 180) {
-    g_server.send(400, "text/plain", "message 1-180 chars");
+  if (msg.length() == 0 || msg.length() > 150) {
+    g_server.send(400, "text/plain", "message 1-150 chars");
     return;
   }
 
@@ -301,9 +307,14 @@ void webBegin(uint8_t node_id, const char *node_name) {
   strncpy(g_node_name, node_name, sizeof(g_node_name) - 1);
   g_node_name[sizeof(g_node_name) - 1] = '\0';
 
-  // SoftAP: "NEO-<id>" — unique per node, easy to identify.
+  // SoftAP: custom team name (from NODE_NAME in config.h), fallback to "Team-<id>".
   char ap_name[32];
-  snprintf(ap_name, sizeof(ap_name), "NEO-%u", node_id);
+  if (node_name && strlen(node_name) > 0) {
+    strncpy(ap_name, node_name, sizeof(ap_name) - 1);
+    ap_name[sizeof(ap_name) - 1] = '\0';
+  } else {
+    snprintf(ap_name, sizeof(ap_name), "Team-%u", node_id);
+  }
   WiFi.softAP(ap_name, "matrix123"); // channel inherited from radioInit()
 
   // DNSServer: redirect all DNS queries to the AP IP.

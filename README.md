@@ -18,7 +18,7 @@ pio run -e esp32s3_node  -t upload --upload-port COMx    # ESP32-S3 DevKitC-1
 pio run -e esp32dev_node -t upload --upload-port COMx    # ESP32-WROOM-32
 
 # 3. Connect your phone or laptop to your board's Wi-Fi network:
-# SSID:     NEO-<your_node_id>   (e.g., NEO-14)
+# SSID:     <NODE_NAME>          (your team's chosen name from config.h)
 # Password: matrix123
 
 # 4. Open your browser and navigate to:
@@ -88,10 +88,11 @@ Uses an external common-cathode RGB LED with 3 × 330 Ω resistors:
      - `node_id`: Sender's unique ID number.
      - `color_idx`: Determines avatar and LED color.
      - `seq`: Monotonically incrementing sequence ID for deduplication.
-     - `text`: Null-terminated chat string (up to 180 characters).
+     - `name`: Sender team handle / handle name (up to 20 chars).
+     - `text`: Null-terminated chat string (up to 160 characters).
 
 3. **Captive Portal Web Interface**:
-   - Each ESP32 acts as a SoftAP (`NEO-<id>`).
+   - Each ESP32 acts as a SoftAP broadcasting its configured team name (`<NODE_NAME>`).
    - A built-in DNS server captures all requests and routes them to `192.168.4.1`.
    - The web UI polls `/api` once per second to pull recent messages from the ring buffer.
 

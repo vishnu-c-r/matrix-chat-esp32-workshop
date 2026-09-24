@@ -36,7 +36,8 @@ struct Pkt {
     uint8_t  color_idx;   // Index into palette (node_id % N_COLORS)
     uint16_t seq;         // Per-sender sequence counter (wraps at 65535)
     uint8_t  len;         // Actual text length (0 for beacons)
-    char     text[180];   // Message text, null-terminated
+    char     name[20];    // Sender team handle / AP name, null-terminated
+    char     text[160];   // Message text, null-terminated
 };
 #pragma pack(pop)
 

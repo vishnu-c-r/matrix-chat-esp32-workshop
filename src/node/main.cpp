@@ -78,14 +78,17 @@ static void onPktRecv(const Pkt *pkt, int8_t rssi) {
   // and flash the LED."
   if (!dedupeSeen(pkt->node_id, pkt->seq)) {
     Color col = nodeColor(pkt->color_idx);
-    // Display in web UI (name comes from the packet text prefix, but we
-    // show sender's node_id as a fallback name for simplicity).
+    // Display in web UI: use sender's team name if provided, fallback to Node ID.
     char sender[28];
-    snprintf(sender, sizeof(sender), "Node %u", pkt->node_id);
+    if (pkt->name[0] != '\0') {
+      snprintf(sender, sizeof(sender), "%s", pkt->name);
+    } else {
+      snprintf(sender, sizeof(sender), "Node %u", pkt->node_id);
+    }
     webAddMessage(pkt->node_id, sender, col.r, col.g, col.b, pkt->text,
                   /*is_smith=*/false);
     ledFlashMsg(col);
-    Serial.printf("[chat] Node%u: %s\n", pkt->node_id, pkt->text);
+    Serial.printf("[chat] %s: %s\n", sender, pkt->text);
   }
   // SOLUTION-END
 }
@@ -102,6 +105,8 @@ void sendChatMessage(const char *text) {
   pkt.node_id = NODE_ID;
   pkt.color_idx = (uint8_t)(NODE_ID % N_COLORS);
   pkt.seq = g_seq++;
+  strncpy(pkt.name, NODE_NAME, sizeof(pkt.name) - 1);
+  pkt.name[sizeof(pkt.name) - 1] = '\0';
   strncpy(pkt.text, text, sizeof(pkt.text) - 1);
   pkt.text[sizeof(pkt.text) - 1] = '\0';
   pkt.len = (uint8_t)strlen(pkt.text);
@@ -160,7 +165,7 @@ void setup() {
   webBegin(NODE_ID, NODE_NAME);
 
   Serial.printf("MAC:      %s\n", WiFi.macAddress().c_str());
-  Serial.printf("AP SSID:  NEO-%u  password: matrix123\n", NODE_ID);
+  Serial.printf("AP SSID:  %s  password: matrix123\n", NODE_NAME);
   Serial.printf("Chat URL: http://%s\n", WiFi.softAPIP().toString().c_str());
   Serial.println("Serial: type a message or /id /rssi /state");
 }

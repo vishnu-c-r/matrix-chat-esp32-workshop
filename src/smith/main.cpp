@@ -129,6 +129,8 @@ void smithSendCustom(uint8_t node_id, const char* msg)
     pkt.node_id   = node_id;
     pkt.color_idx = (node_id == SMITH_ID) ? 0 : (uint8_t)(node_id % N_COLORS);
     pkt.seq       = g_seq++;
+    strncpy(pkt.name, (node_id == SMITH_ID) ? "Agent Smith" : "Node", sizeof(pkt.name) - 1);
+    pkt.name[sizeof(pkt.name) - 1] = '\0';
     strncpy(pkt.text, msg, sizeof(pkt.text) - 1);
     pkt.text[sizeof(pkt.text) - 1] = '\0';
     pkt.len       = (uint8_t)strlen(pkt.text);
@@ -159,6 +161,7 @@ static void sendBeacon()
             pkt.type         = (uint8_t)PktType::SMITH_CHAT;
             pkt.node_id      = fake_id;
             pkt.color_idx    = (uint8_t)(fake_id % N_COLORS);
+            snprintf(pkt.name, sizeof(pkt.name), "Node %u", fake_id);
             const char* line = CANNED_LINES[g_seq % N_CANNED];
             strncpy(pkt.text, line, sizeof(pkt.text) - 1);
             pkt.text[sizeof(pkt.text) - 1] = '\0';
@@ -172,6 +175,8 @@ static void sendBeacon()
             pkt.type      = (uint8_t)PktType::SMITH_CHAT;
             pkt.node_id   = SMITH_ID;
             pkt.color_idx = 0;
+            strncpy(pkt.name, "Agent Smith", sizeof(pkt.name) - 1);
+            pkt.name[sizeof(pkt.name) - 1] = '\0';
             // Corruption level rises from 1 to 5 over the first 50 packets.
             int level = 1 + (int)((millis() - g_stage_start_ms) / 8000);
             if (level > 5) level = 5;
@@ -188,6 +193,8 @@ static void sendBeacon()
             pkt.type      = (uint8_t)PktType::SMITH_CHAT;
             pkt.node_id   = SMITH_ID;
             pkt.color_idx = 0;
+            strncpy(pkt.name, "Agent Smith", sizeof(pkt.name) - 1);
+            pkt.name[sizeof(pkt.name) - 1] = '\0';
             {
                 const char* base = CANNED_LINES[g_seq % N_CANNED];
                 strncpy(pkt.text, base, sizeof(pkt.text) - 1);

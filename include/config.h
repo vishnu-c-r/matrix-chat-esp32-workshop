@@ -7,7 +7,8 @@
 // Your team number (1-50).  Must be unique in the room.
 #define NODE_ID 1
 
-// Your handle in the chat (max 20 chars).
+// Your team handle and Wi-Fi network name (SSID, max 20 chars).
+// This is your board's Wi-Fi network name and your handle in chat!
 #define NODE_NAME "Neo"
 
 // Wi-Fi channel — set by the workshop instructor for the venue.
