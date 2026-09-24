@@ -65,6 +65,7 @@ static void onPktRecv(const Pkt *pkt, int8_t rssi) {
       }
       webAddMessage(pkt->node_id, sender, COLOR_SMITH.r, COLOR_SMITH.g,
                     COLOR_SMITH.b, pkt->text, /*is_alert=*/true);
+      Serial.printf("[ALERT] %s: %s (RSSI: %d dBm)\n", sender, pkt->text, rssi);
     }
     return;
   }

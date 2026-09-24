@@ -259,7 +259,15 @@ void setup()
 // ----- loop() -----------------------------------------------
 void loop()
 {
-    checkButton();
+    // Allow stage control via Serial (0, 1, 2, 3 or space/enter to cycle)
+    if (Serial.available()) {
+        char ch = Serial.read();
+        if (ch >= '0' && ch <= '3') {
+            smithSetStage(ch - '0');
+        } else if (ch == '\n' || ch == ' ') {
+            smithSetStage((g_stage + 1) % N_STAGES);
+        }
+    }
 
     uint32_t now = millis();
     if ((now - g_last_ms) >= STAGE_INTERVAL_MS[g_stage])
