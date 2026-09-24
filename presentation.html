@@ -1955,7 +1955,8 @@
     pkt.node_id   = <span class="vl">NODE_ID</span>;             <span class="cm">// Your assigned ID (from config.h)</span>
     pkt.color_idx = <span class="vl">NODE_ID</span> % <span class="vl">N_COLORS</span>;    <span class="cm">// Your unique colour</span>
     pkt.seq       = g_seq++;            <span class="cm">// Incremented sequence ID</span>
-    <span class="fn">strncpy</span>(pkt.text, text, <span class="vl">179</span>);     <span class="cm">// Safe bounded string copy</span>
+    <span class="fn">strncpy</span>(pkt.name, <span class="vl">NODE_NAME</span>, <span class="vl">19</span>);   <span class="cm">// Your team handle</span>
+    <span class="fn">strncpy</span>(pkt.text, text, <span class="vl">159</span>);        <span class="cm">// Safe bounded string copy</span>
     pkt.len       = <span class="fn">strlen</span>(pkt.text);
 
     <span class="fn">radioSend</span>(&amp;pkt);                  <span class="cm">// Transmit over 2.4 GHz broadcast!</span>
@@ -1979,7 +1980,7 @@
 
     <span class="cm">// Step 3: New valid message! Push to phone Web UI</span>
     <span class="tp">char</span> sender[<span class="vl">28</span>];
-    <span class="fn">snprintf</span>(sender, <span class="kw">sizeof</span>(sender), <span class="st">"Node %u"</span>, pkt-&gt;node_id);
+    <span class="fn">snprintf</span>(sender, <span class="kw">sizeof</span>(sender), <span class="st">"%s"</span>, pkt-&gt;name[0] ? pkt-&gt;name : <span class="st">"Node"</span>);
     <span class="tp">Color</span> col = <span class="fn">nodeColor</span>(pkt-&gt;color_idx);
     <span class="fn">webAddMessage</span>(pkt-&gt;node_id, sender, col.r, col.g, col.b, pkt-&gt;text, <span class="vl">false</span>);
 
@@ -1999,7 +2000,7 @@
                 <div>
                     <ul class="icon-list">
                         <li><span class="il-icon">📶</span><span class="il-text"><b>SoftAP Mode</b> — Your ESP32
-                                broadcasts its own Wi-Fi SSID (e.g. <span class="hl-yellow">NEO-14</span>).</span></li>
+                                broadcasts its own Wi-Fi SSID using your team's chosen name (e.g. <span class="hl-yellow">Trinity</span>).</span></li>
                         <li><span class="il-icon">🔗</span><span class="il-text"><b>DNS Hijacking</b> — When your phone
                                 pings Apple/Google probe servers, ESP32 answers: <i>"I am that server! Go to
                                     192.168.4.1"</i></span></li>
@@ -2126,7 +2127,7 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
                 <div class="step">
                     <div class="step-num">04</div>
                     <div class="step-title">CONNECT</div>
-                    <div class="step-desc">Connect phone to<br>NEO-&lt;id&gt; Wi-Fi!</div>
+                    <div class="step-desc">Connect phone to<br>your team's Wi-Fi!</div>
                 </div>
             </div>
             <div class="code-box" data-file="include/config.h" style="margin-top:20px;max-width:720px">
@@ -2147,7 +2148,7 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
                         choose ID 7, their messages will overwrite and deduplicate each other. Coordinate with
                         neighbours!</span></li>
                 <li><span class="il-icon">📶</span><span class="il-text"><b>Connect from your phone</b> — Connect to
-                        <span class="hl-yellow">NEO-&lt;your_id&gt;</span> with password <span
+                        <span class="hl-yellow">&lt;your_team_name&gt;</span> with password <span
                             class="hl-yellow">matrix123</span>. The captive screen will open automatically.</span></li>
                 <li><span class="il-icon">💡</span><span class="il-text"><b>Watch the NeoPixel</b> — Breathes your
                         colour when idle, and flashes in your friend's unique color the millisecond their message
