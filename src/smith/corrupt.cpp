@@ -1,6 +1,9 @@
 // =============================================================
 //  corrupt.cpp — Deterministic text corruption for Smith.
 //  Pure C++, no Arduino deps — unit-testable on native.
+//
+//  Design goal: Glitched cyberpunk anomaly aesthetic while
+//  keeping the iconic quotes readable (subtle leet/symbol mods).
 // =============================================================
 #include "corrupt.h"
 #include <string.h>
@@ -14,8 +17,49 @@ static uint32_t xorshift(uint32_t& state)
     return state;
 }
 
-static const char SYMBOLS[] = "01#@!%^&*[]{}|\\?/~`<>_";
-static constexpr int N_SYMBOLS = (int)(sizeof(SYMBOLS) - 1);
+static char glitchChar(char c, uint32_t r)
+{
+    switch (c)
+    {
+        case 'a': case 'A': return (r % 2 == 0) ? '@' : '4';
+        case 'b': case 'B': return '8';
+        case 'c': case 'C': return '<';
+        case 'e': case 'E': return '3';
+        case 'g': case 'G': return '9';
+        case 'i': case 'I': return '1';
+        case 'l': case 'L': return '1';
+        case 'o': case 'O': return '0';
+        case 's': case 'S': return (r % 2 == 0) ? '5' : '$';
+        case 't': case 'T': return '7';
+        case 'z': case 'Z': return '2';
+        default:
+        {
+            static const char SUB_SYMBOLS[] = "~_";
+            return SUB_SYMBOLS[r % (sizeof(SUB_SYMBOLS) - 1)];
+        }
+    }
+}
+
+static bool isLeetTarget(char c)
+{
+    switch (c)
+    {
+        case 'a': case 'A':
+        case 'b': case 'B':
+        case 'c': case 'C':
+        case 'e': case 'E':
+        case 'g': case 'G':
+        case 'i': case 'I':
+        case 'l': case 'L':
+        case 'o': case 'O':
+        case 's': case 'S':
+        case 't': case 'T':
+        case 'z': case 'Z':
+            return true;
+        default:
+            return false;
+    }
+}
 
 void corrupt(char* text, int level, uint32_t seed)
 {
@@ -29,57 +73,76 @@ void corrupt(char* text, int level, uint32_t seed)
 
     const size_t len = strlen(text);
 
-    // ---- Level 1: a few symbol substitutions --------------------
-    int n_subs = level * 3;
-    for (int i = 0; i < n_subs; ++i)
+    // Number of characters to subtly glitch based on level:
+    // Keeps 85%+ of text completely intact so words remain readable.
+    size_t target = (size_t)level;
+    if (target > len / 4 && len >= 4)
     {
-        size_t pos = xorshift(rng) % len;
-        text[pos]  = SYMBOLS[xorshift(rng) % (uint32_t)N_SYMBOLS];
+        target = len / 4;
+    }
+    if (level >= 5 && len >= 12 && target < 4)
+    {
+        target = 4;
+    }
+    if (level == 1)
+    {
+        target = 1;
     }
 
-    // ---- Level 2+: replace a short span with "01" runs ----------
-    if (level >= 2)
+    // Identify candidate indices: prioritize letters with natural leet replacements
+    size_t leet_idx[128];
+    size_t other_idx[128];
+    size_t n_leet = 0;
+    size_t n_other = 0;
+
+    for (size_t i = 0; i < len && i < 128; ++i)
     {
-        size_t start = xorshift(rng) % len;
-        size_t run   = 2 + (xorshift(rng) % (uint32_t)(level * 2));
-        for (size_t j = 0; j < run && (start + j) < len; ++j)
+        char c = text[i];
+        if (isLeetTarget(c))
         {
-            text[start + j] = (char)('0' + (j % 2));
+            leet_idx[n_leet++] = i;
+        }
+        else if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+        {
+            other_idx[n_other++] = i;
         }
     }
 
-    // ---- Level 3+: duplicate a short fragment in-place ----------
-    if (level >= 3 && len > 4)
+    bool used[128] = {false};
+    size_t n_glitched = 0;
+    int attempts = 0;
+
+    while (n_glitched < target && attempts < 100 && (n_leet + n_other) > n_glitched)
     {
-        size_t src  = xorshift(rng) % (len / 2);
-        size_t dst  = len / 2 + xorshift(rng) % (len / 2);
-        size_t flen = 1 + xorshift(rng) % 4;
-        for (size_t j = 0; j < flen && (dst + j) < len; ++j)
+        ++attempts;
+        uint32_t r = xorshift(rng);
+        size_t idx;
+        if (n_leet > 0 && ((r % 10 < 8) || n_other == 0))
         {
-            text[dst + j] = text[src + j % flen];
+            idx = leet_idx[r % n_leet];
+        }
+        else if (n_other > 0)
+        {
+            idx = other_idx[r % n_other];
+        }
+        else
+        {
+            break;
+        }
+
+        if (!used[idx])
+        {
+            char orig = text[idx];
+            char replacement = glitchChar(orig, xorshift(rng));
+            if (replacement != orig)
+            {
+                text[idx] = replacement;
+                used[idx] = true;
+                ++n_glitched;
+            }
         }
     }
 
-    // ---- Level 4+: heavier symbol sweep -------------------------
-    if (level >= 4)
-    {
-        for (size_t j = 0; j < len; j += 3 + (xorshift(rng) % 3))
-        {
-            text[j] = SYMBOLS[xorshift(rng) % (uint32_t)N_SYMBOLS];
-        }
-    }
-
-    // ---- Level 5: final scramble — swap pairs -------------------
-    if (level >= 5)
-    {
-        for (size_t j = 0; j + 1 < len; j += 2)
-        {
-            char tmp    = text[j];
-            text[j]     = text[j + 1];
-            text[j + 1] = tmp;
-        }
-    }
-
-    // Guarantee null-termination was not overwritten.
+    // Guarantee null-termination
     text[len] = '\0';
 }

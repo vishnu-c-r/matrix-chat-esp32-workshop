@@ -42,7 +42,7 @@ label{display:block;margin-bottom:5px;font-size:0.9rem}
 <h2>Manual Injection</h2>
 <label>Spoof Node ID (1-50, or 99 for Smith)</label>
 <input type="number" id="node" value="99" min="1" max="99">
-<label>Message (Manglish / Emojis)</label>
+<label>Message</label>
 <input type="text" id="msg" maxlength="180" placeholder="Type here..." autocomplete="off">
 <button onclick="sendM()">INJECT PAYLOAD</button>
 </div>

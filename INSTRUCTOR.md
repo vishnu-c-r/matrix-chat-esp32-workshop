@@ -42,7 +42,7 @@ From your phone's browser, you can control the attack live without touching the 
 - **Stage 3: Total Takeover** — High-frequency packet flood with level 5 ASCII text corruption and red chat bubbles.
 
 ### 2. Live Custom Message Injection
-- Type custom text (e.g. Manglish jokes, local venue references).
+- Type custom text.
 - Select any student's `NODE_ID` (1–50) to spoof them, or leave as `99` for Agent Smith.
 - Hit **Send** to broadcast instantly into the student mesh.
 
@@ -54,7 +54,7 @@ From your phone's browser, you can control the attack live without touching the 
 |:-----|:------|:------------------|
 | **0:00 – 1:30** | **Peaceful Building** | Guide students through `presentation.html`. Have them set their `NODE_ID` in `config.h`, flash their C3 boards, and chat. Smith stays in **Stage 0**. |
 | **1:30 – 1:45** | **The First Glitch** | Switch Smith to **Stage 1**. Put the board in your pocket and walk down the classroom aisles. Student NeoPixels will begin blinking red! |
-| **1:45 – 2:15** | **The Infiltration** | Switch to **Stage 2** or inject custom Manglish messages. Students will start asking each other why they are sending strange texts! |
+| **1:45 – 2:15** | **The Infiltration** | Switch to **Stage 2** or inject custom messages. Students will start asking each other why they are sending strange texts! |
 | **2:15 – 2:30** | **The Takeover** | Switch to **Stage 3** (Total Takeover). The captive chat locks into glitched red text. Open `presentation_smith.html` on the projector! |
 | **2:30 – 3:00** | **The Physical Hunt** | Challenge students to stand up and follow their NeoPixel blink frequency (Geiger counter mode) to hunt down the rogue device in the room. |
 
