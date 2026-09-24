@@ -4,7 +4,7 @@
 #include <unity.h>
 #include <string.h>
 
-#include "../../src/common/smith/corrupt.cpp"
+#include "../../src/smith/corrupt.cpp"
 
 void setUp()    {}
 void tearDown() {}

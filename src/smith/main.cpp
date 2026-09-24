@@ -21,7 +21,7 @@
 #include "common/protocol.h"
 #include "common/board_pins.h"
 #include "common/palette.h"
-#include "common/smith/corrupt.h"
+#include "corrupt.h"
 #include "common/radio.h"
 #include "common/led.h"
 #include "smith_web.h"
