@@ -81,6 +81,10 @@ void radioInit(uint8_t channel, PktRecvCb cb)
     // Channel MUST be set before esp_now_init().
     esp_wifi_set_channel(channel, WIFI_SECOND_CHAN_NONE);
 
+    // Workshop calibrated TX power (~2 dBm): prevents ESP32-C3 power droop
+    // and makes RSSI distance-sensitive across the room.
+    esp_wifi_set_max_tx_power(8);
+
     if (esp_now_init() != ESP_OK)
     {
         Serial.println("[radio] esp_now_init failed — halting");

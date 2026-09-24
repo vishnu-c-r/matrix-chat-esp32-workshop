@@ -43,14 +43,8 @@ static void onPktRecv(const Pkt *pkt, int8_t rssi) {
   // ---------- System beacon / Network alert -------------------
   if (pkt->type == (uint8_t)PktType::SYS_SYNC ||
       pkt->type == (uint8_t)PktType::SYS_ALERT) {
-    // SOLUTION-BEGIN stage:3 hint:"Update g_filtered_rssi (EMA) and
-    // g_last_beacon_ms."
-    if (g_filtered_rssi == -100.0f)
-      g_filtered_rssi = (float)rssi;
-    else
-      g_filtered_rssi = 0.2f * (float)rssi + 0.8f * g_filtered_rssi;
-    g_last_beacon_ms = millis();
-    // SOLUTION-END
+    // TODO(stage3): Update g_filtered_rssi (EMA) and
+    // g_last_beacon_ms.
 
     if (pkt->type == (uint8_t)PktType::SYS_ALERT && pkt->len > 0) {
       // Show alert message with highlighted styling
@@ -75,44 +69,16 @@ static void onPktRecv(const Pkt *pkt, int8_t rssi) {
     return; // unknown type — discard
   }
 
-  // SOLUTION-BEGIN stage:2 hint:"Check dedupeSeen(); if new, show the message
-  // and flash the LED."
-  if (!dedupeSeen(pkt->node_id, pkt->seq)) {
-    Color col = nodeColor(pkt->color_idx);
-    // Display in web UI: use sender's team name if provided, fallback to Node ID.
-    char sender[28];
-    if (pkt->name[0] != '\0') {
-      snprintf(sender, sizeof(sender), "%s", pkt->name);
-    } else {
-      snprintf(sender, sizeof(sender), "Node %u", pkt->node_id);
-    }
-    webAddMessage(pkt->node_id, sender, col.r, col.g, col.b, pkt->text,
-                  /*is_smith=*/false);
-    ledFlashMsg(col);
-    Serial.printf("[chat] %s: %s\n", sender, pkt->text);
-  }
-  // SOLUTION-END
+  // TODO(stage2): Check dedupeSeen(); if new, show the message
+  // and flash the LED.
 }
 
 // ----- Called by web.cpp when the browser sends a message ---
 void sendChatMessage(const char *text) {
   Pkt pkt = {};
 
-  // SOLUTION-BEGIN stage:2 hint:"Fill in every Pkt field, then call
-  // radioSend(&pkt)."
-  pkt.magic = PKT_MAGIC;
-  pkt.ver = PKT_VER;
-  pkt.type = (uint8_t)PktType::CHAT;
-  pkt.node_id = NODE_ID;
-  pkt.color_idx = (uint8_t)(NODE_ID % N_COLORS);
-  pkt.seq = g_seq++;
-  strncpy(pkt.name, NODE_NAME, sizeof(pkt.name) - 1);
-  pkt.name[sizeof(pkt.name) - 1] = '\0';
-  strncpy(pkt.text, text, sizeof(pkt.text) - 1);
-  pkt.text[sizeof(pkt.text) - 1] = '\0';
-  pkt.len = (uint8_t)strlen(pkt.text);
-  radioSend(&pkt);
-  // SOLUTION-END
+  // TODO(stage2): Fill in every Pkt field, then call
+  // radioSend(&pkt).
 
   // Echo to our own chat log (own messages don't come back via ESP-NOW).
   webAddMessage(NODE_ID, NODE_NAME, nodeColor(NODE_ID % N_COLORS).r,
@@ -139,11 +105,22 @@ static void handleSerial() {
     float dist = estimateDistanceCm(g_filtered_rssi);
     Serial.printf("Proximity dist: %.1f cm (RSSI: %.1f)\n", dist,
                   g_filtered_rssi);
+  } else if (line == "/wifi") {
+    wifi_config_t conf = {};
+    esp_wifi_get_config(WIFI_IF_AP, &conf);
+    int8_t pwr = 0;
+    esp_wifi_get_max_tx_power(&pwr);
+    uint8_t proto = 0;
+    esp_wifi_get_protocol(WIFI_IF_AP, &proto);
+    Serial.printf("AP SSID: '%s', hidden: %d, ch: %d, auth: %d\n",
+                  (char*)conf.ap.ssid, conf.ap.ssid_hidden, conf.ap.channel, conf.ap.authmode);
+    Serial.printf("IP: %s, TX power: %d, proto: 0x%02X, stations: %d\n",
+                  WiFi.softAPIP().toString().c_str(), pwr, proto, WiFi.softAPgetStationNum());
   } else if (line.length() > 0 && line[0] != '/') {
     // Plain text → send as chat.
     sendChatMessage(line.c_str());
   } else {
-    Serial.println("Commands: /id /rssi /state  or type a message");
+    Serial.println("Commands: /id /rssi /state /wifi  or type a message");
   }
 }
 
@@ -153,14 +130,13 @@ void setup() {
   delay(1500); // give USB CDC time to attach
   Serial.printf("\n=== Matrix Chat Node %u (%s) ===\n", NODE_ID, NODE_NAME);
 
-  // SOLUTION-BEGIN stage:1 hint:"Call ledInit(NODE_ID) to set up the RGB LED
-  // for your node color."
-  ledInit(NODE_ID);
-  // SOLUTION-END
+  // TODO(stage1): Call ledInit(NODE_ID) to set up the RGB LED
+  // for your node color.
 
   dedupeInit();
   // radioInit sets WiFi mode AP+STA and channel before esp_now_init.
   radioInit(CHANNEL, onPktRecv);
+  esp_wifi_set_max_tx_power(8); // Match Smith low TX power (2 dBm)
 
   // SoftAP and web server start after radio so they share the channel.
   webBegin(NODE_ID, NODE_NAME);
@@ -176,23 +152,8 @@ void loop() {
   radioLoop();
   webLoop();
 
-  // SOLUTION-BEGIN stage:3 hint:"Calculate distance and call
-  // ledSetSmithState/webSetSmithStatus."
-  uint32_t now = millis();
-  uint8_t st = 0;
-  float dist = 999.0f;
-  if (now - g_last_beacon_ms < BEACON_TIMEOUT_MS && g_filtered_rssi > -99.0f) {
-    dist = estimateDistanceCm(g_filtered_rssi);
-    if (dist < 100.0f)
-      st = 2; // CLOSE
-    else if (dist < 300.0f)
-      st = 1; // NEAR
-  } else {
-    g_filtered_rssi = -100.0f;
-  }
-  ledSetSmithState(st, dist);
-  webSetSmithStatus(st, dist);
-  // SOLUTION-END
+  // TODO(stage3): Calculate distance and call
+  // ledSetSmithState/webSetSmithStatus.
 
   ledLoop(millis());
   handleSerial();
