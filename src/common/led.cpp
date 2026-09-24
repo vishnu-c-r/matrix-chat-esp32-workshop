@@ -31,7 +31,8 @@ static void setRgb(uint8_t r, uint8_t g, uint8_t b)
 }
 
 // ---- State machine ------------------------------------------
-enum class LedState : uint8_t { IDLE, MSG_FLASH, SMITH_NEAR, SMITH_CLOSE };
+// ---- State machine ------------------------------------------
+enum class LedState : uint8_t { IDLE, MSG_FLASH, RADAR_NEAR, RADAR_CLOSE };
 
 static LedState g_state      = LedState::IDLE;
 static Color    g_node_color = {0, 255, 128};  // default: mint
@@ -78,26 +79,26 @@ void ledFlashMsg(Color c)
     }
 }
 
-void ledSetSmithState(uint8_t state, float dist_cm)
+void ledSetRadarState(uint8_t state, float dist_cm)
 {
     if (state == 2)
     {
-        g_state = LedState::SMITH_CLOSE;
+        g_state = LedState::RADAR_CLOSE;
     }
     else if (state == 1)
     {
-        if (g_state != LedState::SMITH_NEAR)
+        if (g_state != LedState::RADAR_NEAR)
         {
             g_blink_last = millis();
             g_blink_on   = true;
-            g_state      = LedState::SMITH_NEAR;
+            g_state      = LedState::RADAR_NEAR;
         }
         g_blink_half = distToHalfPeriod(dist_cm);
     }
     else
     {
         // CLEAR — fall back to idle unless a flash is in progress.
-        if (g_state == LedState::SMITH_NEAR || g_state == LedState::SMITH_CLOSE)
+        if (g_state == LedState::RADAR_NEAR || g_state == LedState::RADAR_CLOSE)
         {
             g_state = LedState::IDLE;
         }
@@ -108,13 +109,13 @@ void ledLoop(uint32_t now_ms)
 {
     switch (g_state)
     {
-        // ---- Smith very close: solid red -------------------
-        case LedState::SMITH_CLOSE:
-            setRgb(COLOR_SMITH.r, COLOR_SMITH.g, COLOR_SMITH.b);
+        // ---- Threat very close: solid red -------------------
+        case LedState::RADAR_CLOSE:
+            setRgb(COLOR_ALERT.r, COLOR_ALERT.g, COLOR_ALERT.b);
             break;
 
-        // ---- Smith nearby: blink red at mapped period ------
-        case LedState::SMITH_NEAR:
+        // ---- Threat nearby: blink alert red at mapped period ------
+        case LedState::RADAR_NEAR:
             if ((now_ms - g_blink_last) >= g_blink_half)
             {
                 g_blink_on   = !g_blink_on;
@@ -122,7 +123,7 @@ void ledLoop(uint32_t now_ms)
             }
             if (g_blink_on)
             {
-                setRgb(COLOR_SMITH.r, COLOR_SMITH.g, COLOR_SMITH.b);
+                setRgb(COLOR_ALERT.r, COLOR_ALERT.g, COLOR_ALERT.b);
             }
             else
             {

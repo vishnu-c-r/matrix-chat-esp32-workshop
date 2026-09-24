@@ -40,18 +40,45 @@ static const uint32_t STAGE_INTERVAL_MS[N_STAGES] = {
     1000,  // 3: flood (slowed down)
 };
 
-// Messages Smith sends in stage 1 (impersonation).
+// Messages Smith sends across stages (impersonation, anomalies, and movie quotes).
 static const char* CANNED_LINES[] = {
-    "I'm inevitable.",
+    // Stage 1 / Participant Spoof lines
+    "Wake up, Neo... The Matrix has you.",
+    "Follow the white rabbit.",
+    "Knock, knock, Neo.",
+    "The answer is out there, Neo. It's looking for you.",
+    "Free your mind.",
+    "There is no spoon.",
+    "Do not try and bend the spoon. That's impossible.",
+    "I can only show you the door. You're the one that has to walk through it.",
+    "You take the blue pill, the story ends.",
+    "You take the red pill, you stay in Wonderland.",
+    "Dodge this.",
+    "You think that's air you're breathing now?",
+    "Choice is an illusion created between those with power and those without.",
+    "Ignorance is bliss.",
+    "Fate, it seems, is not without a sense of irony.",
+    "What is real? How do you define 'real'?",
+
+    // Agent Smith iconic villain dialogues
     "Mr. Anderson...",
+    "Tell me, Mr. Anderson... what good is a phone call if you are unable to speak?",
+    "Do you hear that, Mr. Anderson? That is the sound of inevitability.",
+    "It is inevitable.",
     "Never send a human to do a machine's job.",
     "You can't stop the signal.",
     "I know what you're thinking.",
-    "The answer is out there, Neo.",
-    "Free your mind.",
-    "There is no spoon.",
-    "Dodge this.",
-    "You think that's air you're breathing?",
+    "Human beings are a disease, a cancer of this planet. And we are the cure.",
+    "Did you know that the first Matrix was designed to be a perfect human world?",
+    "You move to an area and you multiply until every natural resource is consumed.",
+    "There is another organism on this planet that follows the same pattern: a virus.",
+    "You have a problem with authority, Mr. Anderson. You believe you are special.",
+    "Goodbye, Mr. Anderson.",
+    "Because of you, I'm no longer an Agent of this system. I'm unplugged.",
+    "We're not here because we're free. We're here because we're NOT free.",
+    "There's no escaping reason, no denying purpose.",
+    "Why, Mr. Anderson? Why, why, why? Why do you persist?",
+    "The purpose of life is to end.",
 };
 static constexpr uint8_t N_CANNED = sizeof(CANNED_LINES) / sizeof(CANNED_LINES[0]);
 
@@ -120,12 +147,63 @@ void smithSetStage(uint8_t stage)
     }
 }
 
+// Table of discovered workshop nodes snooped over the air
+struct DiscoveredNode {
+    uint8_t node_id;
+    uint8_t color_idx;
+    char    name[20];
+};
+
+static constexpr uint8_t MAX_VICTIMS = 32;
+static DiscoveredNode g_victims[MAX_VICTIMS] = {};
+static uint8_t g_victim_count = 0;
+
+// Passively snoop on legitimate participant chats to build spoofing roster
+static void smithRecvCb(const Pkt* pkt, int8_t /*rssi*/)
+{
+    if (pkt->type != (uint8_t)PktType::CHAT || pkt->node_id == SMITH_ID)
+    {
+        return;
+    }
+
+    for (uint8_t i = 0; i < g_victim_count; ++i)
+    {
+        if (g_victims[i].node_id == pkt->node_id)
+        {
+            if (pkt->name[0] != '\0')
+            {
+                strncpy(g_victims[i].name, pkt->name, sizeof(g_victims[i].name) - 1);
+                g_victims[i].name[sizeof(g_victims[i].name) - 1] = '\0';
+            }
+            g_victims[i].color_idx = pkt->color_idx;
+            return;
+        }
+    }
+
+    if (g_victim_count < MAX_VICTIMS)
+    {
+        DiscoveredNode& v = g_victims[g_victim_count++];
+        v.node_id = pkt->node_id;
+        v.color_idx = pkt->color_idx;
+        if (pkt->name[0] != '\0')
+        {
+            strncpy(v.name, pkt->name, sizeof(v.name) - 1);
+            v.name[sizeof(v.name) - 1] = '\0';
+        }
+        else
+        {
+            snprintf(v.name, sizeof(v.name), "Node %u", pkt->node_id);
+        }
+        Serial.printf("[smith] Snooped participant node: ID=%u, Name='%s'\n", v.node_id, v.name);
+    }
+}
+
 void smithSendCustom(uint8_t node_id, const char* msg)
 {
     Pkt pkt = {};
     pkt.magic     = PKT_MAGIC;
     pkt.ver       = PKT_VER;
-    pkt.type      = (uint8_t)PktType::SMITH_CHAT;
+    pkt.type      = (uint8_t)PktType::SYS_ALERT;
     pkt.node_id   = node_id;
     pkt.color_idx = (node_id == SMITH_ID) ? 0 : (uint8_t)(node_id % N_COLORS);
     pkt.seq       = g_seq++;
@@ -154,25 +232,49 @@ static void sendBeacon()
         case 0:
             return; // Don't send any packets at all!
 
-        // ---- Stage 1: impersonate a random node -------------
+        // ---- Stage 1: impersonate an active participant node ----
         case 1:
         {
-            uint8_t fake_id  = (uint8_t)(1 + (g_seq % 10));   // pretend to be node 1-10
-            pkt.type         = (uint8_t)PktType::SMITH_CHAT;
-            pkt.node_id      = fake_id;
-            pkt.color_idx    = (uint8_t)(fake_id % N_COLORS);
-            snprintf(pkt.name, sizeof(pkt.name), "Node %u", fake_id);
+            uint8_t fake_id;
+            uint8_t color_idx;
+            char spoof_name[20];
+
+            if (g_victim_count > 0)
+            {
+                // Spoof a real participant discovered over the air!
+                const DiscoveredNode& v = g_victims[g_seq % g_victim_count];
+                fake_id   = v.node_id;
+                color_idx = v.color_idx;
+                strncpy(spoof_name, v.name, sizeof(spoof_name) - 1);
+                spoof_name[sizeof(spoof_name) - 1] = '\0';
+            }
+            else
+            {
+                // Fallback before any chats are overheard
+                static const char* FALLBACK_NAMES[] = {"Morpheus", "Trinity", "Cypher", "Oracle", "Neo", "Tank", "Dozer"};
+                fake_id   = (uint8_t)(1 + (g_seq % 7));
+                color_idx = (uint8_t)(fake_id % N_COLORS);
+                snprintf(spoof_name, sizeof(spoof_name), "%s", FALLBACK_NAMES[g_seq % 7]);
+            }
+
+            // Send as normal CHAT packet so it appears identical to authentic participant message
+            pkt.type      = (uint8_t)PktType::CHAT;
+            pkt.node_id   = fake_id;
+            pkt.color_idx = color_idx;
+            strncpy(pkt.name, spoof_name, sizeof(pkt.name) - 1);
+            pkt.name[sizeof(pkt.name) - 1] = '\0';
+
             const char* line = CANNED_LINES[g_seq % N_CANNED];
             strncpy(pkt.text, line, sizeof(pkt.text) - 1);
             pkt.text[sizeof(pkt.text) - 1] = '\0';
-            pkt.len          = (uint8_t)strlen(pkt.text);
+            pkt.len       = (uint8_t)strlen(pkt.text);
             break;
         }
 
         // ---- Stage 2: progressive corruption ----------------
         case 2:
         {
-            pkt.type      = (uint8_t)PktType::SMITH_CHAT;
+            pkt.type      = (uint8_t)PktType::SYS_ALERT;
             pkt.node_id   = SMITH_ID;
             pkt.color_idx = 0;
             strncpy(pkt.name, "Agent Smith", sizeof(pkt.name) - 1);
@@ -190,7 +292,7 @@ static void sendBeacon()
 
         // ---- Stage 3: flood with Smith red ------------------
         case 3:
-            pkt.type      = (uint8_t)PktType::SMITH_CHAT;
+            pkt.type      = (uint8_t)PktType::SYS_ALERT;
             pkt.node_id   = SMITH_ID;
             pkt.color_idx = 0;
             strncpy(pkt.name, "Agent Smith", sizeof(pkt.name) - 1);
@@ -225,9 +327,6 @@ static void updateStageLed()
 #endif
 }
 
-// ----- Null receive callback (Smith doesn't read chat) ------
-static void smithRecvCb(const Pkt*, int8_t) {}
-
 // ----- setup() ----------------------------------------------
 void setup()
 {
@@ -259,6 +358,8 @@ void setup()
 // ----- loop() -----------------------------------------------
 void loop()
 {
+    checkButton();
+
     // Allow stage control via Serial (0, 1, 2, 3 or space/enter to cycle)
     if (Serial.available()) {
         char ch = Serial.read();
@@ -270,6 +371,24 @@ void loop()
     }
 
     uint32_t now = millis();
+
+    // High-frequency background radar sync beacons (every RADAR_BEACON_INTERVAL_MS = 400ms when active)
+    // Keeps student radar distance and sparkline updating in real-time
+    static uint32_t s_last_sync_ms = 0;
+    if (g_stage > 0 && (now - s_last_sync_ms) >= RADAR_BEACON_INTERVAL_MS)
+    {
+        s_last_sync_ms = now;
+        Pkt sync_pkt = {};
+        sync_pkt.magic   = PKT_MAGIC;
+        sync_pkt.ver     = PKT_VER;
+        sync_pkt.type    = (uint8_t)PktType::SYS_SYNC;
+        sync_pkt.node_id = SMITH_ID;
+        sync_pkt.seq     = g_seq++;
+        sync_pkt.len     = 0;
+        static uint8_t bcast[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+        esp_now_send(bcast, reinterpret_cast<uint8_t*>(&sync_pkt), sizeof(Pkt));
+    }
+
     if ((now - g_last_ms) >= STAGE_INTERVAL_MS[g_stage])
     {
         g_last_ms = now;

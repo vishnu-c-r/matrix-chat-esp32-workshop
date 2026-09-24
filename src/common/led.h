@@ -2,8 +2,8 @@
 //  led.h — Non-blocking LED state machine.
 //
 //  Priority (highest first):
-//    1. SMITH_CLOSE  — solid red
-//    2. SMITH_NEAR   — blink red, rate from RSSI
+//    1. RADAR_CLOSE  — solid alert red
+//    2. RADAR_NEAR   — blink alert red, rate from RSSI
 //    3. MSG_FLASH    — 300 ms flash in sender color
 //    4. IDLE         — breathing in own color (dim)
 //
@@ -21,10 +21,11 @@ void ledInit(uint8_t node_id);
 // Call every loop iteration — updates LED output non-blocking.
 void ledLoop(uint32_t now_ms);
 
-// Trigger a 300 ms flash in the given color (lower priority than Smith).
+// Trigger a 300 ms flash in the given color (lower priority than radar alert).
 void ledFlashMsg(Color c);
 
-// Update Smith proximity state; also recalculates blink period.
-//   state : 0=CLEAR, 1=NEAR, 2=CLOSE  (SmithState cast to uint8_t)
+// Update radar proximity alert state; also recalculates blink period.
+//   state : 0=CLEAR, 1=NEAR, 2=CLOSE
 //   dist_cm: Estimated distance in cm for blink period mapping
-void ledSetSmithState(uint8_t state, float dist_cm);
+void ledSetRadarState(uint8_t state, float dist_cm);
+

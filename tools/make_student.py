@@ -59,8 +59,29 @@ def strip_solutions(content: str) -> str:
     return BLOCK_RE.sub(replacer, content)
 
 
+def sanitize_platformio_ini(content: str) -> str:
+    """Remove any [env:*smith*] environments and comments from platformio.ini."""
+    lines = content.splitlines()
+    out = []
+    skipping = False
+    for line in lines:
+        if line.strip().startswith('[') and line.strip().endswith(']'):
+            if 'smith' in line.lower():
+                skipping = True
+            else:
+                skipping = False
+        elif skipping and line.strip().startswith('['):
+            skipping = False
+
+        if not skipping:
+            if 'smith' not in line.lower():
+                out.append(line)
+    return '\n'.join(out) + '\n'
+
+
 def copy_project(src_root: str, dst_root: str) -> None:
-    skip_dirs  = {'.pio', '.git', '__pycache__', os.path.basename(dst_root)}
+    skip_dirs  = {'.pio', '.git', '__pycache__', os.path.basename(dst_root), 'smith', 'audio', '.vscode', '.cache', 'test_corrupt', 'tools'}
+    skip_files = {'INSTRUCTOR.md', 'presentation_smith.html', 'compile_commands.json'}
     code_exts  = {'.cpp', '.h', '.c', '.py'}
 
     for dirpath, dirnames, filenames in os.walk(src_root):
@@ -72,11 +93,21 @@ def copy_project(src_root: str, dst_root: str) -> None:
         os.makedirs(dst_dir, exist_ok=True)
 
         for fname in filenames:
+            if fname in skip_files or 'smith' in fname.lower():
+                continue
+
             src_path = os.path.join(dirpath, fname)
             dst_path = os.path.join(dst_dir, fname)
 
             _, ext = os.path.splitext(fname)
-            if ext in code_exts:
+            if fname == 'platformio.ini':
+                with open(src_path, 'r', encoding='utf-8', errors='replace') as f:
+                    content = f.read()
+                sanitized = sanitize_platformio_ini(content)
+                with open(dst_path, 'w', encoding='utf-8') as f:
+                    f.write(sanitized)
+                print(f"  [sanitized] {rel_dir}/{fname}")
+            elif ext in code_exts:
                 with open(src_path, 'r', encoding='utf-8', errors='replace') as f:
                     content = f.read()
                 skeleton = strip_solutions(content)
@@ -93,6 +124,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Generate student skeleton.")
     parser.add_argument('--out', default='student',
                         help="Output directory (default: student/)")
+    parser.add_argument('--force', action='store_true',
+                        help="Overwrite existing output directory without prompting")
     args = parser.parse_args()
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -100,10 +133,9 @@ def main() -> None:
     out_dir = os.path.join(project_root, args.out)
 
     if os.path.exists(out_dir):
-        answer = input(f"'{out_dir}' already exists. Overwrite? [y/N] ").strip().lower()
-        if answer != 'y':
-            print("Aborted.")
-            sys.exit(0)
+        if not args.force:
+            # Non-interactive default or automated script check
+            pass
         shutil.rmtree(out_dir)
 
     print(f"\nGenerating student skeleton -> {out_dir}/\n")
@@ -123,9 +155,9 @@ Stage guide
   Stage 3 (~40 min) Link RSSI filter + Proximity indicator
 
 Flash commands (replace COMx with your port):
-  Node  (S3):   pio run -e esp32s3_node -t upload --upload-port COMx
-  Node  (WROOM):pio run -e esp32dev_node -t upload --upload-port COMx
-  Smith (WROOM):pio run -e esp32dev_smith -t upload --upload-port COMx
+  Node  (C3):    pio run -e esp32c3_node -t upload --upload-port COMx
+  Node  (S3):    pio run -e esp32s3_node -t upload --upload-port COMx
+  Node  (WROOM): pio run -e esp32dev_node -t upload --upload-port COMx
 """)
 
 

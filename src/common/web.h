@@ -15,15 +15,16 @@ void webLoop();
 
 // Add an incoming (or outgoing) chat message to the display buffer.
 //   r,g,b    : sender colour (from palette)
-//   is_smith : true = show with Smith glitch styling
+//   is_alert : true = show with anomaly alert styling
 void webAddMessage(uint8_t node_id, const char* name,
                    uint8_t r, uint8_t g, uint8_t b,
-                   const char* text, bool is_smith);
+                   const char* text, bool is_alert);
 
-// Update the Smith proximity indicator shown in the status bar.
-//   state  : 0=CLEAR 1=NEAR 2=CLOSE  (SmithState cast to uint8_t)
+// Update the radar proximity indicator shown in the status bar.
+//   state   : 0=CLEAR 1=NEAR 2=CLOSE
 //   dist_cm : estimated distance in cm
-void webSetSmithStatus(uint8_t state, float dist_cm);
+void webSetRadarStatus(uint8_t state, float dist_cm);
+
 
 // Implemented in node/main.cpp — called when a browser sends a message.
 void sendChatMessage(const char* text);
