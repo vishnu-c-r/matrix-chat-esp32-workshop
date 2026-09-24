@@ -2872,7 +2872,7 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
                         <li><span class="il-icon">🚨</span><span class="il-text"><b>Solid Blinding Red</b> — Found! You are standing right next to the transmitter.</span></li>
                     </ul>
                     <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:14px">
-                        <button id="btn-demo-geiger" class="nav-btn" style="border-color:var(--red);color:#ffcccc;padding:7px 16px;font-size:0.92rem;background:rgba(40,0,8,0.7);cursor:pointer">🔊 Test Geiger Audio (3m → 1m)</button>
+                        <button id="btn-demo-geiger" class="nav-btn" style="border-color:var(--red);color:#ffcccc;padding:7px 16px;font-size:0.92rem;background:rgba(40,0,8,0.7);cursor:pointer" title="Acoustic Proximity Simulation (Note: ESP32 boards use NeoPixel LED signals only)">🔊 Demo Geiger Audio (Acoustic Sim)</button>
                         <button class="quote-voice-btn" id="btn-quote-36" style="margin-top:0" onclick="playQuoteSlide(36)">🔊 Agent Smith: "You cannot hide"</button>
                     </div>
                 </div>
@@ -3440,6 +3440,22 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
             }
         };
 
+        const AUDIO_FILE_MAP = {
+            0: 'audio/morpheus_pill.mp3',
+            1: 'audio/morpheus_lie.mp3',
+            8: 'audio/morpheus_truth.mp3',
+            25: 'audio/morpheus_door.mp3',
+            27: 'audio/morpheus_free_mind.mp3',
+            28: 'audio/trinity_tapped.mp3',
+            29: 'audio/smith_escape.mp3',
+            30: 'audio/smith_cure.mp3',
+            33: 'audio/smith_machine.mp3',
+            36: 'audio/smith_hide.mp3',
+            37: 'audio/smith_inevitability.mp3'
+        };
+
+        let currentPlayingAudio = null;
+
         function speakMatrixQuote(quoteObj) {
             if (!soundEnabled || !quotesEnabled) return;
             if (!window.speechSynthesis) return;
@@ -3451,30 +3467,34 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
             playRadioSquelch(() => {
                 const u = new SpeechSynthesisUtterance(quoteObj.text);
                 const voices = window.speechSynthesis.getVoices();
+                const enVoices = voices.filter(v => v.lang && v.lang.startsWith('en'));
 
                 if (quoteObj.speaker === 'smith') {
-                    // Agent Smith: Cold, sinister, calculated, low pitch
-                    u.pitch = 0.58;
-                    u.rate = 0.80;
-                    const voice = voices.find(v => v.lang.startsWith('en') && (
-                        v.name.includes('David') || v.name.includes('Mark') || v.name.includes('George') || v.name.includes('Male')
-                    ));
+                    // Agent Smith: deliberate, chillingly calm, measured pacing (natural formant pitch)
+                    u.pitch = 0.92;
+                    u.rate = 0.88;
+                    const voice = enVoices.find(v => (v.name.includes('Natural') || v.name.includes('Neural') || v.name.includes('Online')) && (v.name.includes('Ryan') || v.name.includes('Christopher') || v.name.includes('Guy') || v.name.includes('George') || v.name.includes('Oliver')))
+                        || enVoices.find(v => v.name.includes('Google UK English Male') || v.name.includes('Daniel') || v.name.includes('George'))
+                        || enVoices.find(v => (v.name.includes('Natural') || v.name.includes('Neural')) && !v.name.includes('Female'))
+                        || enVoices.find(v => v.name.includes('David') || v.name.includes('Mark'))
+                        || enVoices[0];
                     if (voice) u.voice = voice;
                 } else if (quoteObj.speaker === 'morpheus') {
-                    // Morpheus: Deep, measured, prophetic
-                    u.pitch = 0.70;
-                    u.rate = 0.86;
-                    const voice = voices.find(v => v.lang.startsWith('en') && (
-                        v.name.includes('George') || v.name.includes('David') || v.name.includes('Natural') || v.name.includes('Male')
-                    ));
+                    // Morpheus: deep, resonant, authoritative baritone
+                    u.pitch = 0.90;
+                    u.rate = 0.88;
+                    const voice = enVoices.find(v => (v.name.includes('Natural') || v.name.includes('Neural') || v.name.includes('Online')) && (v.name.includes('Guy') || v.name.includes('Ryan') || v.name.includes('Davis') || v.name.includes('George')))
+                        || enVoices.find(v => v.name.includes('Google US English') || v.name.includes('David'))
+                        || enVoices.find(v => !v.name.includes('Female') && !v.name.includes('Zira'))
+                        || enVoices[0];
                     if (voice) u.voice = voice;
                 } else if (quoteObj.speaker === 'trinity') {
-                    // Trinity / Operator: Urgent, crisp
-                    u.pitch = 1.05;
-                    u.rate = 0.95;
-                    const voice = voices.find(v => v.lang.startsWith('en') && (
-                        v.name.includes('Zira') || v.name.includes('Susan') || v.name.includes('Female')
-                    ));
+                    // Trinity / Operator: urgent, crisp, tactical
+                    u.pitch = 1.0;
+                    u.rate = 0.96;
+                    const voice = enVoices.find(v => (v.name.includes('Natural') || v.name.includes('Neural') || v.name.includes('Online')) && (v.name.includes('Jenny') || v.name.includes('Sonia') || v.name.includes('Aria') || v.name.includes('Female')))
+                        || enVoices.find(v => v.name.includes('Zira') || v.name.includes('Google US English') || v.name.includes('Susan'))
+                        || enVoices[0];
                     if (voice) u.voice = voice;
                 }
 
@@ -3495,7 +3515,41 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
         function playQuoteSlide(slideIdx) {
             getAudioContext();
             const q = MOVIE_QUOTES[slideIdx];
-            if (q) {
+            if (!q) return;
+
+            // Stop any currently playing audio clip or speech
+            if (currentPlayingAudio) {
+                currentPlayingAudio.pause();
+                currentPlayingAudio = null;
+            }
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
+            document.querySelectorAll('.quote-voice-btn').forEach(b => b.classList.remove('speaking'));
+
+            const btn = q.btnId ? document.getElementById(q.btnId) : null;
+            const audioSrc = AUDIO_FILE_MAP[slideIdx];
+
+            // If an authentic movie MP3 file is present in /audio/, play it directly!
+            if (audioSrc) {
+                const audio = new Audio(audioSrc);
+                currentPlayingAudio = audio;
+                if (btn) btn.classList.add('speaking');
+
+                audio.onended = () => {
+                    if (btn) btn.classList.remove('speaking');
+                    currentPlayingAudio = null;
+                };
+
+                audio.play().then(() => {
+                    // Successfully playing real movie clip!
+                }).catch(() => {
+                    // MP3 file not found in /audio/ folder -> gracefully fall back to neural speech synthesis
+                    currentPlayingAudio = null;
+                    const prev = quotesEnabled;
+                    quotesEnabled = true;
+                    speakMatrixQuote(q);
+                    quotesEnabled = prev;
+                });
+            } else {
                 const prev = quotesEnabled;
                 quotesEnabled = true;
                 speakMatrixQuote(q);
