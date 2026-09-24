@@ -315,7 +315,7 @@ void webBegin(uint8_t node_id, const char *node_name) {
   } else {
     snprintf(ap_name, sizeof(ap_name), "Team-%u", node_id);
   }
-  WiFi.softAP(ap_name, "matrix123"); // channel inherited from radioInit()
+  WiFi.softAP(ap_name, "matrix123");
 
   // DNSServer: redirect all DNS queries to the AP IP.
   g_dns.start(53, "*", WiFi.softAPIP());

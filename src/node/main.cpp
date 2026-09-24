@@ -139,11 +139,22 @@ static void handleSerial() {
     float dist = estimateDistanceCm(g_filtered_rssi);
     Serial.printf("Proximity dist: %.1f cm (RSSI: %.1f)\n", dist,
                   g_filtered_rssi);
+  } else if (line == "/wifi") {
+    wifi_config_t conf = {};
+    esp_wifi_get_config(WIFI_IF_AP, &conf);
+    int8_t pwr = 0;
+    esp_wifi_get_max_tx_power(&pwr);
+    uint8_t proto = 0;
+    esp_wifi_get_protocol(WIFI_IF_AP, &proto);
+    Serial.printf("AP SSID: '%s', hidden: %d, ch: %d, auth: %d\n",
+                  (char*)conf.ap.ssid, conf.ap.ssid_hidden, conf.ap.channel, conf.ap.authmode);
+    Serial.printf("IP: %s, TX power: %d, proto: 0x%02X, stations: %d\n",
+                  WiFi.softAPIP().toString().c_str(), pwr, proto, WiFi.softAPgetStationNum());
   } else if (line.length() > 0 && line[0] != '/') {
     // Plain text → send as chat.
     sendChatMessage(line.c_str());
   } else {
-    Serial.println("Commands: /id /rssi /state  or type a message");
+    Serial.println("Commands: /id /rssi /state /wifi  or type a message");
   }
 }
 
@@ -161,6 +172,7 @@ void setup() {
   dedupeInit();
   // radioInit sets WiFi mode AP+STA and channel before esp_now_init.
   radioInit(CHANNEL, onPktRecv);
+  esp_wifi_set_max_tx_power(8); // Match Smith low TX power (2 dBm)
 
   // SoftAP and web server start after radio so they share the channel.
   webBegin(NODE_ID, NODE_NAME);
