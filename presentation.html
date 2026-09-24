@@ -1509,6 +1509,100 @@
             color: #aa5555;
             font-size: 1.3rem; margin-top: 14px; font-style: normal;
         }
+
+        /* Matrix Movie Quote Voice Buttons */
+        .quote-voice-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 18px;
+            background: rgba(0, 30, 10, 0.75);
+            border: 1px solid var(--green);
+            color: #afffa4;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.92rem;
+            letter-spacing: 1px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 0 12px rgba(0, 255, 65, 0.25);
+            margin-top: 14px;
+        }
+        .quote-voice-btn:hover {
+            background: rgba(0, 255, 65, 0.25);
+            box-shadow: 0 0 25px rgba(0, 255, 65, 0.7);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+        .quote-voice-btn:active {
+            transform: translateY(0);
+        }
+        .quote-voice-btn.speaking {
+            animation: pulse-speaking 0.9s infinite alternate;
+            border-color: #ffffff !important;
+            color: #ffffff !important;
+        }
+        @keyframes pulse-speaking {
+            0% { box-shadow: 0 0 10px var(--green); }
+            100% { box-shadow: 0 0 35px var(--green), 0 0 60px #00ff41; }
+        }
+
+        body.smith-mode .quote-voice-btn {
+            background: rgba(40, 0, 8, 0.75);
+            border-color: var(--red);
+            color: #ffcccc;
+            box-shadow: 0 0 12px rgba(255, 32, 32, 0.25);
+        }
+        body.smith-mode .quote-voice-btn:hover {
+            background: rgba(255, 32, 32, 0.3);
+            box-shadow: 0 0 25px rgba(255, 32, 32, 0.7);
+            color: #fff;
+        }
+        body.smith-mode .quote-voice-btn.speaking {
+            animation: pulse-speaking-smith 0.9s infinite alternate;
+            border-color: #ffffff !important;
+        }
+        @keyframes pulse-speaking-smith {
+            0% { box-shadow: 0 0 10px var(--red); }
+            100% { box-shadow: 0 0 35px var(--red), 0 0 60px #ff2020; }
+        }
+
+        /* Ambient Phone Ringing Indicator (Slide 28) */
+        .ambient-phone-indicator {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(0, 20, 5, 0.88);
+            border: 1px solid var(--green);
+            padding: 10px 24px;
+            border-radius: 30px;
+            box-shadow: 0 0 25px rgba(0, 255, 65, 0.3);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.05rem;
+            color: var(--green);
+            letter-spacing: 2px;
+            animation: phone-indicator-pulse 2s infinite ease-in-out;
+            pointer-events: none;
+        }
+        .phone-pulse-icon {
+            font-size: 1.4rem;
+            animation: phone-shake 0.8s infinite ease-in-out;
+        }
+        @keyframes phone-shake {
+            0%, 100% { transform: rotate(0deg); }
+            20% { transform: rotate(-15deg); }
+            40% { transform: rotate(15deg); }
+            60% { transform: rotate(-10deg); }
+            80% { transform: rotate(10deg); }
+        }
+        @keyframes phone-indicator-pulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(0, 255, 65, 0.2); }
+            50% { box-shadow: 0 0 35px rgba(0, 255, 65, 0.6); }
+        }
     </style>
 </head>
 
@@ -1537,6 +1631,8 @@
     <!-- HUD Controls -->
     <div class="hud">
         <button class="hud-btn" id="btn-audio" title="Toggle Sound FX (Shortcut: M)">🔊 Audio</button>
+        <button class="hud-btn" id="btn-voice" title="Toggle Movie Quotes Voice (Shortcut: V)">🗣️ Quotes: ON</button>
+        <button class="hud-btn" id="btn-whoosh" title="Bullet-Time Slow-Mo (Shortcut: B)">⚡ Slow-Mo</button>
         <button class="hud-btn" id="btn-zoom-out" title="Zoom Out (Shortcut: -)">−</button>
         <span class="hud-text" id="zoom-level" title="Reset Zoom (Shortcut: 0)">100%</span>
         <button class="hud-btn" id="btn-zoom-in" title="Zoom In (Shortcut: +)">+</button>
@@ -1558,6 +1654,9 @@
             <div class="hero-title">THE MATRIX</div>
             <div class="hero-sub">DECENTRALISED COMMUNICATIONS WITH ESP32</div>
             <p class="prompt typewriter">Press → to take the red pill...</p>
+            <div style="margin-top:24px">
+                <button class="quote-voice-btn" id="btn-quote-0" onclick="playQuoteSlide(0)">🔊 Morpheus: "This is your last chance... Welcome to the real world"</button>
+            </div>
         </div>
 
         <!-- ============ SLIDE 1: THE HOOK ============ -->
@@ -1566,7 +1665,10 @@
             <p class="quote">"When you text a friend sitting 1 meter away, your message travels 5,000 km to cloud
                 servers and back. Today, we kill the middleman."</p>
             <p class="quote-author">— Off-Grid Engineering Manifesto</p>
-            <div class="analogy-card" style="margin-top:28px">
+            <div style="margin-top:12px">
+                <button class="quote-voice-btn" id="btn-quote-1" onclick="playQuoteSlide(1)">🔊 Morpheus: "What if I told you that everything you know was a lie?"</button>
+            </div>
+            <div class="analogy-card" style="margin-top:20px">
                 <b>💡 THE MISSION</b>: Build an autonomous, serverless chat mesh that operates inside a concrete bunker,
                 dense jungle, or during a complete blackout—using raw 2.4 GHz radio signals.
             </div>
@@ -1845,6 +1947,9 @@
             <h2>What is ESP-NOW?</h2>
             <p class="subtitle">Developed by Espressif, ESP-NOW is a <span class="highlight">connectionless 2.4 GHz
                     protocol</span> designed for sub-millisecond, low-power microcontroller telemetry.</p>
+            <div style="margin-top:10px;margin-bottom:14px">
+                <button class="quote-voice-btn" id="btn-quote-8" onclick="playQuoteSlide(8)">🔊 Morpheus: "All I'm offering is the truth. Free your packets."</button>
+            </div>
 
             <table class="compare-table">
                 <thead>
@@ -2492,6 +2597,9 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
         <!-- ============ SLIDE 25: YOUR MISSION ============ -->
         <div class="slide">
             <h2>Your Mission</h2>
+            <div style="margin-top:8px;margin-bottom:14px">
+                <button class="quote-voice-btn" id="btn-quote-25" onclick="playQuoteSlide(25)">🔊 Morpheus: "I can only show you the door. You have to walk through it."</button>
+            </div>
             <div class="steps">
                 <div class="step">
                     <div class="step-num">01</div>
@@ -2551,13 +2659,21 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
         <div class="slide">
             <div class="hero-title" style="font-size:clamp(4.0rem,7.5vw,6.5rem)">JACK IN.</div>
             <p class="quote" style="font-style:normal;margin-top:20px">"Free your mind."</p>
-            <p style="margin-top:32px;color:#88cc88;font-size:1.3rem;letter-spacing:3px">Open your laptops. Set your
+            <div style="margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+                <button class="quote-voice-btn" id="btn-quote-27" onclick="playQuoteSlide(27)">🔊 Morpheus: "Free your mind."</button>
+                <button class="quote-voice-btn" id="btn-jackin-sound" onclick="playModemJackIn()" style="border-color:#ffff00;color:#ffffaa">⚡ Jack-In Audio (DTMF &amp; Modem)</button>
+            </div>
+            <p style="margin-top:24px;color:#88cc88;font-size:1.3rem;letter-spacing:3px">Open your laptops. Set your
                 Node ID. Enter the Matrix.</p>
         </div>
 
         <!-- ============ SLIDE 28: AMBIENT DIGITAL RAIN (THE PAUSE / CHAT LAB) ============ -->
         <div class="slide slide-ambient" id="slide-ambient-rain">
             <!-- Intentionally blank: mesmerizing full-screen green digital rain while students chat -->
+            <div class="ambient-phone-indicator">
+                <span class="phone-pulse-icon">📞</span>
+                <span class="phone-pulse-text">HARDLINE TELEPHONE TRACE ACTIVE...</span>
+            </div>
         </div>
 
         <!-- ============ SLIDE 29: AGENT SMITH // ANOMALY DETECTED ============ -->
@@ -2565,6 +2681,9 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
             <div class="hero-title glitch-smith" style="color:var(--red)">AGENT SMITH</div>
             <div class="hero-sub" style="color:#ff8888">// PROJECT ANOMALY: THE ROGUE TRANSMITTER</div>
             <p class="prompt typewriter" style="color:#aa4444;border-color:var(--red)">Press → to execute protocol 99...</p>
+            <div style="margin-top:24px">
+                <button class="quote-voice-btn" id="btn-quote-29" onclick="playQuoteSlide(29)">🔊 Agent Smith: "Did you really think you could escape, Mr. Anderson?"</button>
+            </div>
         </div>
 
         <!-- ============ SLIDE 30: THE ANOMALY REVEALED ============ -->
@@ -2572,6 +2691,9 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
             <div class="section-tag">// System Breach Detected</div>
             <h2>The Anomaly Revealed</h2>
             <p class="subtitle">You thought you were building a peaceful chat mesh. Look at your NeoPixels right now.</p>
+            <div style="margin-top:10px;margin-bottom:14px">
+                <button class="quote-voice-btn" id="btn-quote-30" onclick="playQuoteSlide(30)">🔊 Agent Smith: "You are a disease, Mr. Anderson. And we are the cure."</button>
+            </div>
             <div class="card-row">
                 <div class="card">
                     <span class="card-icon">🎭</span>
@@ -2668,6 +2790,7 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
                             <span class="il-text"><b>Raw 2.4 GHz Promiscuity</b> — Packets bypass Wi-Fi encryption (WPA2/3) entirely, traversing raw radio channels.</span>
                         </li>
                     </ul>
+                    <button class="quote-voice-btn" id="btn-quote-33" onclick="playQuoteSlide(33)">🔊 Agent Smith: "Never send a human to do a machine's job"</button>
                 </div>
                 <div class="code-box" data-file="smith/main.cpp (spoof injection)">
                     <code><span class="cm">// Forging packets as any student:</span>
@@ -2748,7 +2871,10 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
                         <li><span class="il-icon">🔴</span><span class="il-text"><b>Rapid Red Flash</b> — Hot! Within 1.5 meters. Look for who is hiding the rogue board!</span></li>
                         <li><span class="il-icon">🚨</span><span class="il-text"><b>Solid Blinding Red</b> — Found! You are standing right next to the transmitter.</span></li>
                     </ul>
-                    <button id="btn-demo-geiger" class="nav-btn" style="margin-top:14px;border-color:var(--red);color:#ffcccc;padding:7px 16px;font-size:0.92rem;background:rgba(40,0,8,0.7);cursor:pointer">🔊 Test Geiger Audio (3m → 1m)</button>
+                    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:14px">
+                        <button id="btn-demo-geiger" class="nav-btn" style="border-color:var(--red);color:#ffcccc;padding:7px 16px;font-size:0.92rem;background:rgba(40,0,8,0.7);cursor:pointer">🔊 Test Geiger Audio (3m → 1m)</button>
+                        <button class="quote-voice-btn" id="btn-quote-36" style="margin-top:0" onclick="playQuoteSlide(36)">🔊 Agent Smith: "You cannot hide"</button>
+                    </div>
                 </div>
                 <div>
                     <div class="code-box" data-file="Mission Directive">
@@ -2771,7 +2897,10 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
             <div class="hero-title glitch-smith" style="color:var(--red)">I'M INEVITABLE.</div>
             <p class="quote">"You hear that sound, Mr. Anderson? That is the sound of inevitability... Goodbye, Mr. Anderson."</p>
             <p class="quote-author">— Agent Smith</p>
-            <p style="margin-top:40px;color:#ff6666;font-size:1.3rem;letter-spacing:3px">The Matrix has collapsed. Find the anomaly.</p>
+            <div style="margin-top:24px">
+                <button class="quote-voice-btn" id="btn-quote-37" onclick="playQuoteSlide(37)">🔊 Agent Smith: "The Sound of Inevitability"</button>
+            </div>
+            <p style="margin-top:30px;color:#ff6666;font-size:1.3rem;letter-spacing:3px">The Matrix has collapsed. Find the anomaly.</p>
         </div>
 
         <!-- ============ SLIDE 38: THE ARCHITECTS // CONNECT WITH US ============ -->
@@ -2889,8 +3018,11 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
         document.addEventListener('mousemove', e => { glow.style.left = e.clientX + 'px'; glow.style.top = e.clientY + 'px'; });
 
         // ---- Cyberpunk Web Audio Sound FX Engine ----
+        // ---- Cyberpunk Web Audio Sound FX & Matrix Movie Voice Engine ----
         let audioCtx = null;
         let soundEnabled = true;
+        let quotesEnabled = true;
+        let telephoneInterval = null;
 
         function getAudioContext() {
             if (!audioCtx) {
@@ -2909,39 +3041,469 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
         document.addEventListener('click', () => getAudioContext(), { once: true });
         document.addEventListener('keydown', () => getAudioContext(), { once: true });
 
-        // 1. Subtle High-Tech Slide Click
-        function playSlideSound(isSmith) {
+        // Ensure voices are loaded
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.getVoices();
+            };
+        }
+
+        // 1. Matrix Phosphor Terminal Typing Chirp (Green Mode)
+        // Mainframe telemetry chirp with subtle CRT deflection flyback pulse
+        function playMatrixTerminalChirp() {
             if (!soundEnabled) return;
             const ctx = getAudioContext();
             if (!ctx) return;
 
             const t = ctx.currentTime;
+
+            // CRT high-voltage deflection flyback pulse
+            const crt = ctx.createOscillator();
+            const crtGain = ctx.createGain();
+            crt.type = 'triangle';
+            crt.frequency.setValueAtTime(3800, t);
+            crtGain.gain.setValueAtTime(0.012, t);
+            crtGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.035);
+            crt.connect(crtGain);
+            crtGain.connect(ctx.destination);
+            crt.start(t);
+            crt.stop(t + 0.04);
+
+            // 3-burst mainframe telemetry chirp
+            const baseFreqs = [2100, 1680, 2520];
+            baseFreqs.forEach((freq, i) => {
+                const pulseTime = t + i * 0.016;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const filter = ctx.createBiquadFilter();
+
+                // Randomized slight pitch jitter for retro mainframe feel
+                const jitter = (Math.random() - 0.5) * 80;
+                osc.type = i === 1 ? 'square' : 'sawtooth';
+                osc.frequency.setValueAtTime(freq + jitter, pulseTime);
+                osc.frequency.exponentialRampToValueAtTime((freq + jitter) * 0.65, pulseTime + 0.018);
+
+                filter.type = 'bandpass';
+                filter.frequency.setValueAtTime(freq, pulseTime);
+                filter.Q.setValueAtTime(6.0, pulseTime);
+
+                gain.gain.setValueAtTime(0.045, pulseTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, pulseTime + 0.022);
+
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start(pulseTime);
+                osc.stop(pulseTime + 0.026);
+            });
+        }
+
+        // 2. Agent Smith Heavy Industrial Latch & Sub-Thud (Smith Mode)
+        function playSmithClick() {
+            if (!soundEnabled) return;
+            const ctx = getAudioContext();
+            if (!ctx) return;
+
+            const t = ctx.currentTime;
+
+            // Sub-bass impact thud
+            const sub = ctx.createOscillator();
+            const subGain = ctx.createGain();
+            sub.type = 'sine';
+            sub.frequency.setValueAtTime(105, t);
+            sub.frequency.exponentialRampToValueAtTime(28, t + 0.09);
+            subGain.gain.setValueAtTime(0.14, t);
+            subGain.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+            sub.connect(subGain);
+            subGain.connect(ctx.destination);
+            sub.start(t);
+            sub.stop(t + 0.10);
+
+            // Metallic mechanical snap / heavy latch
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
-
-            if (isSmith) {
-                // Sinister, low mechanical blip
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(260, t);
-                osc.frequency.exponentialRampToValueAtTime(70, t + 0.05);
-                gain.gain.setValueAtTime(0.06, t);
-                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
-            } else {
-                // Crisp Matrix emerald blip
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(920, t);
-                osc.frequency.exponentialRampToValueAtTime(460, t + 0.035);
-                gain.gain.setValueAtTime(0.035, t);
-                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.035);
-            }
-
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(420, t);
+            osc.frequency.exponentialRampToValueAtTime(55, t + 0.05);
+            gain.gain.setValueAtTime(0.09, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.055);
             osc.connect(gain);
             gain.connect(ctx.destination);
             osc.start(t);
             osc.stop(t + 0.06);
         }
 
-        // 2. Ambient Matrix Carrier Drone (for Slide 28)
+        function playSlideSound(isSmith) {
+            if (isSmith) {
+                playSmithClick();
+            } else {
+                playMatrixTerminalChirp();
+            }
+        }
+
+        // 3. Tactical Radio Comms Squelch (precedes movie voice quotes)
+        function playRadioSquelch(callback) {
+            if (!soundEnabled) {
+                if (callback) callback();
+                return;
+            }
+            const ctx = getAudioContext();
+            if (!ctx) {
+                if (callback) callback();
+                return;
+            }
+
+            const t = ctx.currentTime;
+
+            // Noise burst
+            const bufSize = Math.floor(ctx.sampleRate * 0.045);
+            const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1);
+
+            const noise = ctx.createBufferSource();
+            noise.buffer = buf;
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'highpass';
+            filter.frequency.setValueAtTime(3500, t);
+
+            const gain = ctx.createGain();
+            gain.gain.setValueAtTime(0.09, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.045);
+
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+            noise.start(t);
+
+            // End blip
+            const chirp = ctx.createOscillator();
+            const chirpGain = ctx.createGain();
+            chirp.type = 'sine';
+            chirp.frequency.setValueAtTime(1100, t + 0.04);
+            chirpGain.gain.setValueAtTime(0.05, t + 0.04);
+            chirpGain.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+            chirp.connect(chirpGain);
+            chirpGain.connect(ctx.destination);
+            chirp.start(t + 0.04);
+            chirp.stop(t + 0.075);
+
+            if (callback) {
+                setTimeout(callback, 85);
+            }
+        }
+
+        // 4. Matrix Hardline Rotary Telephone Ring
+        // Dual-frequency bell ring: 440 Hz + 480 Hz with mechanical 20 Hz tremolo
+        function playTelephoneRing() {
+            if (!soundEnabled) return;
+            const ctx = getAudioContext();
+            if (!ctx) return;
+
+            const t = ctx.currentTime;
+            const osc1 = ctx.createOscillator();
+            const osc2 = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const tremolo = ctx.createOscillator();
+            const tremGain = ctx.createGain();
+
+            osc1.type = 'sine';
+            osc1.frequency.setValueAtTime(440, t);
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(480, t);
+
+            // 20 Hz mechanical bell hammer tremolo
+            tremolo.type = 'square';
+            tremolo.frequency.setValueAtTime(20, t);
+            tremGain.gain.setValueAtTime(0.07, t);
+            tremolo.connect(gain.gain);
+
+            // Ring cadence: burst 1 (0.0 -> 0.75s), pause, burst 2 (0.95 -> 1.7s)
+            gain.gain.setValueAtTime(0.07, t);
+            gain.gain.setValueAtTime(0.0001, t + 0.75);
+            gain.gain.setValueAtTime(0.07, t + 0.95);
+            gain.gain.exponentialRampToValueAtTime(0.0001, t + 1.7);
+
+            osc1.connect(gain);
+            osc2.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc1.start(t);
+            osc2.start(t);
+            tremolo.start(t);
+
+            osc1.stop(t + 1.75);
+            osc2.stop(t + 1.75);
+            tremolo.stop(t + 1.75);
+        }
+
+        // 5. Matrix Terminal Jack-In (Dial Tone + DTMF Tones + Modem Baud Screech)
+        function playModemJackIn() {
+            if (!soundEnabled) return;
+            const ctx = getAudioContext();
+            if (!ctx) return;
+            const t = ctx.currentTime;
+
+            // Phase 1: Dial tone (350Hz + 440Hz)
+            const dt1 = ctx.createOscillator();
+            const dt2 = ctx.createOscillator();
+            const dtGain = ctx.createGain();
+            dt1.frequency.setValueAtTime(350, t);
+            dt2.frequency.setValueAtTime(440, t);
+            dtGain.gain.setValueAtTime(0.045, t);
+            dtGain.gain.setValueAtTime(0.0001, t + 0.35);
+            dt1.connect(dtGain);
+            dt2.connect(dtGain);
+            dtGain.connect(ctx.destination);
+            dt1.start(t);
+            dt2.start(t);
+            dt1.stop(t + 0.36);
+            dt2.stop(t + 0.36);
+
+            // Phase 2: DTMF Touch Tones (dialing into the mainframe)
+            const dtmfPairs = [[770, 1336], [852, 1209], [941, 1336], [697, 1477]];
+            dtmfPairs.forEach(([f1, f2], idx) => {
+                const toneStart = t + 0.38 + idx * 0.075;
+                const o1 = ctx.createOscillator();
+                const o2 = ctx.createOscillator();
+                const g = ctx.createGain();
+                o1.frequency.setValueAtTime(f1, toneStart);
+                o2.frequency.setValueAtTime(f2, toneStart);
+                g.gain.setValueAtTime(0.055, toneStart);
+                g.gain.setValueAtTime(0.0001, toneStart + 0.055);
+                o1.connect(g);
+                o2.connect(g);
+                g.connect(ctx.destination);
+                o1.start(toneStart);
+                o2.start(toneStart);
+                o1.stop(toneStart + 0.06);
+                o2.stop(toneStart + 0.06);
+            });
+
+            // Phase 3: Baud Handshake Screech (FM synthesis)
+            const modemStart = t + 0.72;
+            const carrier = ctx.createOscillator();
+            const mod = ctx.createOscillator();
+            const modGain = ctx.createGain();
+            const modemGain = ctx.createGain();
+
+            carrier.type = 'sawtooth';
+            carrier.frequency.setValueAtTime(1400, modemStart);
+            carrier.frequency.linearRampToValueAtTime(1850, modemStart + 0.35);
+
+            mod.type = 'square';
+            mod.frequency.setValueAtTime(280, modemStart);
+            modGain.gain.setValueAtTime(650, modemStart);
+
+            mod.connect(modGain);
+            modGain.connect(carrier.frequency);
+
+            modemGain.gain.setValueAtTime(0.045, modemStart);
+            modemGain.gain.linearRampToValueAtTime(0.03, modemStart + 0.35);
+            modemGain.gain.exponentialRampToValueAtTime(0.0001, modemStart + 0.45);
+
+            carrier.connect(modemGain);
+            modemGain.connect(ctx.destination);
+            mod.start(modemStart);
+            carrier.start(modemStart);
+            mod.stop(modemStart + 0.46);
+            carrier.stop(modemStart + 0.46);
+
+            // Phase 4: High-speed carrier noise hiss
+            const noiseStart = modemStart + 0.42;
+            const bufSize = Math.floor(ctx.sampleRate * 0.4);
+            const noiseBuf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+            const nData = noiseBuf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++) nData[i] = Math.random() * 2 - 1;
+            const noiseSource = ctx.createBufferSource();
+            noiseSource.buffer = noiseBuf;
+
+            const noiseFilter = ctx.createBiquadFilter();
+            noiseFilter.type = 'bandpass';
+            noiseFilter.frequency.setValueAtTime(2400, noiseStart);
+            noiseFilter.Q.setValueAtTime(3.2, noiseStart);
+
+            const nGain = ctx.createGain();
+            nGain.gain.setValueAtTime(0.035, noiseStart);
+            nGain.gain.exponentialRampToValueAtTime(0.0001, noiseStart + 0.4);
+
+            noiseSource.connect(noiseFilter);
+            noiseFilter.connect(nGain);
+            nGain.connect(ctx.destination);
+            noiseSource.start(noiseStart);
+        }
+
+        // 6. Bullet-Time Slow-Motion Whoosh (Iconic Neo / Matrix Dodge effect)
+        function playBulletTimeWhoosh() {
+            if (!soundEnabled) return;
+            const ctx = getAudioContext();
+            if (!ctx) return;
+
+            const t = ctx.currentTime;
+            const dur = 0.85;
+
+            // Filtered swept noise
+            const bufSize = Math.floor(ctx.sampleRate * dur);
+            const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+            const noise = ctx.createBufferSource();
+            noise.buffer = buf;
+
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(4500, t);
+            filter.frequency.exponentialRampToValueAtTime(70, t + dur);
+            filter.Q.setValueAtTime(7.0, t);
+
+            const gain = ctx.createGain();
+            gain.gain.setValueAtTime(0.01, t);
+            gain.gain.linearRampToValueAtTime(0.35, t + 0.25);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+            noise.start(t);
+
+            // Sub bass pitch bend
+            const sub = ctx.createOscillator();
+            const subGain = ctx.createGain();
+            sub.type = 'sine';
+            sub.frequency.setValueAtTime(130, t);
+            sub.frequency.exponentialRampToValueAtTime(28, t + dur);
+            subGain.gain.setValueAtTime(0.25, t);
+            subGain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+            sub.connect(subGain);
+            subGain.connect(ctx.destination);
+            sub.start(t);
+            sub.stop(t + dur + 0.05);
+        }
+
+        // 7. The Matrix Movie Voice Quotes Engine
+        const MOVIE_QUOTES = {
+            0: {
+                speaker: 'morpheus',
+                text: "This is your last chance. After this, there is no turning back. You take the blue pill, the story ends. You take the red pill, you stay in Wonderland, and I show you how deep the rabbit hole goes. Welcome to the real world.",
+                btnId: 'btn-quote-0'
+            },
+            1: {
+                speaker: 'morpheus',
+                text: "What if I told you that everything you know was a lie? Today, we kill the middleman.",
+                btnId: 'btn-quote-1'
+            },
+            8: {
+                speaker: 'morpheus',
+                text: "Remember, all I am offering is the truth. Nothing more. Free your packets from the access point.",
+                btnId: 'btn-quote-8'
+            },
+            25: {
+                speaker: 'morpheus',
+                text: "I can only show you the door. You are the one that has to walk through it.",
+                btnId: 'btn-quote-25'
+            },
+            27: {
+                speaker: 'morpheus',
+                text: "Free your mind. Enter the Matrix.",
+                btnId: 'btn-quote-27'
+            },
+            28: {
+                speaker: 'trinity',
+                text: "Neo, the hardline is tapped! They know you are here. Get out of there now!",
+                btnId: null
+            },
+            29: {
+                speaker: 'smith',
+                text: "Did you really think you could escape, Mr. Anderson? The Matrix has collapsed.",
+                btnId: 'btn-quote-29'
+            },
+            30: {
+                speaker: 'smith',
+                text: "I'd like to share a revelation that I've had during my time here. You are a disease, Mr. Anderson. And we... are the cure.",
+                btnId: 'btn-quote-30'
+            },
+            33: {
+                speaker: 'smith',
+                text: "Never send a human to do a machine's job.",
+                btnId: 'btn-quote-33'
+            },
+            36: {
+                speaker: 'smith',
+                text: "You can run... but you cannot hide.",
+                btnId: 'btn-quote-36'
+            },
+            37: {
+                speaker: 'smith',
+                text: "You hear that sound, Mr. Anderson? That is the sound of inevitability... Goodbye, Mr. Anderson.",
+                btnId: 'btn-quote-37'
+            }
+        };
+
+        function speakMatrixQuote(quoteObj) {
+            if (!soundEnabled || !quotesEnabled) return;
+            if (!window.speechSynthesis) return;
+
+            // Cancel any current utterance
+            window.speechSynthesis.cancel();
+            document.querySelectorAll('.quote-voice-btn').forEach(b => b.classList.remove('speaking'));
+
+            playRadioSquelch(() => {
+                const u = new SpeechSynthesisUtterance(quoteObj.text);
+                const voices = window.speechSynthesis.getVoices();
+
+                if (quoteObj.speaker === 'smith') {
+                    // Agent Smith: Cold, sinister, calculated, low pitch
+                    u.pitch = 0.58;
+                    u.rate = 0.80;
+                    const voice = voices.find(v => v.lang.startsWith('en') && (
+                        v.name.includes('David') || v.name.includes('Mark') || v.name.includes('George') || v.name.includes('Male')
+                    ));
+                    if (voice) u.voice = voice;
+                } else if (quoteObj.speaker === 'morpheus') {
+                    // Morpheus: Deep, measured, prophetic
+                    u.pitch = 0.70;
+                    u.rate = 0.86;
+                    const voice = voices.find(v => v.lang.startsWith('en') && (
+                        v.name.includes('George') || v.name.includes('David') || v.name.includes('Natural') || v.name.includes('Male')
+                    ));
+                    if (voice) u.voice = voice;
+                } else if (quoteObj.speaker === 'trinity') {
+                    // Trinity / Operator: Urgent, crisp
+                    u.pitch = 1.05;
+                    u.rate = 0.95;
+                    const voice = voices.find(v => v.lang.startsWith('en') && (
+                        v.name.includes('Zira') || v.name.includes('Susan') || v.name.includes('Female')
+                    ));
+                    if (voice) u.voice = voice;
+                }
+
+                const btn = quoteObj.btnId ? document.getElementById(quoteObj.btnId) : null;
+                if (btn) btn.classList.add('speaking');
+
+                u.onend = () => {
+                    if (btn) btn.classList.remove('speaking');
+                };
+                u.onerror = () => {
+                    if (btn) btn.classList.remove('speaking');
+                };
+
+                window.speechSynthesis.speak(u);
+            });
+        }
+
+        function playQuoteSlide(slideIdx) {
+            getAudioContext();
+            const q = MOVIE_QUOTES[slideIdx];
+            if (q) {
+                const prev = quotesEnabled;
+                quotesEnabled = true;
+                speakMatrixQuote(q);
+                quotesEnabled = prev;
+            }
+        }
+
+        // 7. Ambient Matrix Carrier Drone (for Slide 28)
         let ambientHumNode = null;
         function startAmbientHum() {
             if (!soundEnabled) return;
@@ -2975,9 +3537,26 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
             osc2.start(t);
 
             ambientHumNode = { osc1, osc2, gain, ctx };
+
+            // Ring the hardline telephone every 5.5s while students chat to build Matrix tension!
+            playTelephoneRing();
+            telephoneInterval = setInterval(() => {
+                if (soundEnabled) playTelephoneRing();
+            }, 5500);
+
+            // After 2.5 seconds, Trinity warns that the hardline is tapped
+            setTimeout(() => {
+                if (cur === AMBIENT_RAIN_SLIDE && quotesEnabled) {
+                    speakMatrixQuote(MOVIE_QUOTES[28]);
+                }
+            }, 2500);
         }
 
         function stopAmbientHum(immediate) {
+            if (telephoneInterval) {
+                clearInterval(telephoneInterval);
+                telephoneInterval = null;
+            }
             if (ambientHumNode) {
                 try {
                     const t = ambientHumNode.ctx.currentTime;
@@ -2995,7 +3574,7 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
             }
         }
 
-        // 3. Cinematic Anomaly Breach & Glitch Explosion (Multi-Stage Hollywood Sound Design)
+        // 8. Cinematic Anomaly Breach & Glitch Explosion (Multi-Stage Hollywood Sound Design)
         function playBreachSound() {
             if (!soundEnabled) return;
             const ctx = getAudioContext();
@@ -3148,45 +3727,83 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
                 ringOsc.start(dropTime + 0.08);
                 ringOsc.stop(dropTime + 1.65);
             });
+
+            // Speak Agent Smith's iconic breach quote as the explosion settles
+            setTimeout(() => {
+                if (quotesEnabled) {
+                    speakMatrixQuote(MOVIE_QUOTES[29]);
+                }
+            }, 550);
         }
 
-        // 4. Inevitability Toll Sound (Slide 37: "I'M INEVITABLE")
+        // 9. Inevitability Subway Screech & Doom Toll (Slide 37: "I'M INEVITABLE")
         function playInevitabilitySound() {
             if (!soundEnabled) return;
             const ctx = getAudioContext();
             if (!ctx) return;
             const t = ctx.currentTime;
 
-            // Deep resonant doom bell
+            // Subway metal-on-metal wheel screech on track
+            const screechCarrier = ctx.createOscillator();
+            const screechMod = ctx.createOscillator();
+            const screechModGain = ctx.createGain();
+            const screechGain = ctx.createGain();
+
+            screechCarrier.type = 'sawtooth';
+            screechCarrier.frequency.setValueAtTime(2600, t);
+            screechCarrier.frequency.linearRampToValueAtTime(1400, t + 1.8);
+
+            screechMod.type = 'sine';
+            screechMod.frequency.setValueAtTime(160, t);
+            screechModGain.gain.setValueAtTime(800, t);
+            screechMod.connect(screechModGain);
+            screechModGain.connect(screechCarrier.frequency);
+
+            screechGain.gain.setValueAtTime(0.08, t);
+            screechGain.gain.exponentialRampToValueAtTime(0.0001, t + 2.0);
+
+            screechCarrier.connect(screechGain);
+            screechGain.connect(ctx.destination);
+            screechMod.start(t);
+            screechCarrier.start(t);
+            screechMod.stop(t + 2.1);
+            screechCarrier.stop(t + 2.1);
+
+            // Deep resonant subway rail rumble
+            const rumble = ctx.createOscillator();
+            const rumbleGain = ctx.createGain();
+            rumble.type = 'sine';
+            rumble.frequency.setValueAtTime(38, t);
+            rumbleGain.gain.setValueAtTime(0.35, t);
+            rumbleGain.gain.exponentialRampToValueAtTime(0.0001, t + 2.2);
+            rumble.connect(rumbleGain);
+            rumbleGain.connect(ctx.destination);
+            rumble.start(t);
+            rumble.stop(t + 2.3);
+
+            // Metallic doom bell
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             osc.type = 'sine';
             osc.frequency.setValueAtTime(82.4, t); // Low E2
-            osc.frequency.exponentialRampToValueAtTime(41.2, t + 2.0);
-            gain.gain.setValueAtTime(0.35, t);
-            gain.gain.exponentialRampToValueAtTime(0.0001, t + 2.2);
+            osc.frequency.exponentialRampToValueAtTime(41.2, t + 2.2);
+            gain.gain.setValueAtTime(0.32, t);
+            gain.gain.exponentialRampToValueAtTime(0.0001, t + 2.4);
 
             osc.connect(gain);
             gain.connect(ctx.destination);
             osc.start(t);
-            osc.stop(t + 2.3);
+            osc.stop(t + 2.5);
 
-            // Metallic harmonic toll
-            const harm = ctx.createOscillator();
-            const harmGain = ctx.createGain();
-            harm.type = 'triangle';
-            harm.frequency.setValueAtTime(246.9, t); // B3
-            harm.frequency.exponentialRampToValueAtTime(123, t + 1.4);
-            harmGain.gain.setValueAtTime(0.08, t);
-            harmGain.gain.exponentialRampToValueAtTime(0.0001, t + 1.4);
-
-            harm.connect(harmGain);
-            harmGain.connect(ctx.destination);
-            harm.start(t);
-            harm.stop(t + 1.5);
+            // Speak Agent Smith's famous quote
+            setTimeout(() => {
+                if (quotesEnabled) {
+                    speakMatrixQuote(MOVIE_QUOTES[37]);
+                }
+            }, 600);
         }
 
-        // 5. Triumphant Debrief Chime (Slide 38: The Architects)
+        // 10. Triumphant Debrief Chime (Slide 38: The Architects)
         function playVictoryChime() {
             if (!soundEnabled) return;
             const ctx = getAudioContext();
@@ -3209,7 +3826,7 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
             });
         }
 
-        // 6. Geiger Click Sound Effect
+        // 11. Geiger Click Sound Effect
         function playGeigerClick(volume) {
             if (!soundEnabled) return;
             const ctx = getAudioContext();
@@ -3252,7 +3869,7 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
             });
         }
 
-        // 7. Tactical UI Sound Feedback
+        // 12. Tactical UI Sound Feedback
         function playTickSound(freq, dur) {
             if (!soundEnabled) return;
             const ctx = getAudioContext();
@@ -3302,9 +3919,35 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
                 playToggleChime(true);
             } else {
                 stopAmbientHum(true);
+                if (window.speechSynthesis) window.speechSynthesis.cancel();
             }
         }
         if (btnAudio) btnAudio.addEventListener('click', toggleAudio);
+
+        const btnVoice = document.getElementById('btn-voice');
+        function toggleVoice() {
+            getAudioContext();
+            quotesEnabled = !quotesEnabled;
+            if (btnVoice) {
+                btnVoice.textContent = quotesEnabled ? '🗣️ Quotes: ON' : '🗣️ Quotes: OFF';
+                btnVoice.style.color = quotesEnabled ? '#00ff41' : '#888888';
+                btnVoice.title = quotesEnabled ? 'Movie Quotes Voice Enabled (Shortcut: V)' : 'Movie Quotes Voice Muted (Shortcut: V)';
+            }
+            if (!quotesEnabled && window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+            } else if (quotesEnabled) {
+                playTickSound(1200, 0.03);
+            }
+        }
+        if (btnVoice) btnVoice.addEventListener('click', toggleVoice);
+
+        const btnWhoosh = document.getElementById('btn-whoosh');
+        if (btnWhoosh) {
+            btnWhoosh.addEventListener('click', () => {
+                getAudioContext();
+                playBulletTimeWhoosh();
+            });
+        }
 
         const btnDemoGeiger = document.getElementById('btn-demo-geiger');
         if (btnDemoGeiger) btnDemoGeiger.addEventListener('click', runGeigerDemo);
@@ -3314,6 +3957,7 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
         const progress = document.getElementById('progress');
         const counter = document.getElementById('counter');
         const glitchOverlay = document.getElementById('glitch-overlay');
+        const JACK_IN_SLIDE = 27;
         const AMBIENT_RAIN_SLIDE = 28;
         const SMITH_START_SLIDE = 29;
         const INEVITABLE_SLIDE = 37;
@@ -3360,7 +4004,7 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
             progress.style.width = ((cur / (slides.length - 1)) * 100) + '%';
             counter.textContent = (cur + 1) + ' / ' + slides.length;
 
-            // Audio cues
+            // Audio cues & Movie Quotes
             if (prev !== cur) {
                 // If leaving ambient rain slide (28)
                 if (prev === AMBIENT_RAIN_SLIDE) {
@@ -3375,6 +4019,9 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
                     // Entering ambient rain slide
                     playSlideSound(false);
                     startAmbientHum();
+                } else if (cur === JACK_IN_SLIDE) {
+                    // Entering Jack In slide (dial-up modem & DTMF connect)
+                    playModemJackIn();
                 } else if (cur === SMITH_START_SLIDE && prev < SMITH_START_SLIDE) {
                     stopAmbientHum(true);
                     playBreachSound();
@@ -3384,6 +4031,13 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
                     playVictoryChime();
                 } else {
                     playSlideSound(isSmithMode);
+                }
+
+                // Auto-speak iconic movie quote if available for this slide
+                if (quotesEnabled && MOVIE_QUOTES[cur] && cur !== AMBIENT_RAIN_SLIDE && cur !== SMITH_START_SLIDE && cur !== INEVITABLE_SLIDE) {
+                    setTimeout(() => {
+                        if (cur === n) speakMatrixQuote(MOVIE_QUOTES[cur]);
+                    }, 500);
                 }
             }
         }
@@ -3402,6 +4056,9 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
             else if (e.key === '0') { resetZoom(); }
             else if (e.key === 'f' || e.key === 'F') { toggleFullscreen(); }
             else if (e.key === 'm' || e.key === 'M') { toggleAudio(); }
+            else if (e.key === 'v' || e.key === 'V') { toggleVoice(); }
+            else if (e.key === 'q' || e.key === 'Q') { if (MOVIE_QUOTES[cur]) playQuoteSlide(cur); }
+            else if (e.key === 'b' || e.key === 'B') { playBulletTimeWhoosh(); }
         });
 
         let tx = 0;
