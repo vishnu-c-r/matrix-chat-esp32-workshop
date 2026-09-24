@@ -91,17 +91,17 @@ h1{font-size:1rem;letter-spacing:.15em;color:#00ff41;text-shadow:0 0 8px #00ff41
 #spark{width:80px;height:28px;flex-shrink:0}
 #msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:5px;padding:4px 0}
 .msg{background:rgba(0,15,0,.8);border:1px solid #002200;border-radius:6px;padding:7px 10px}
-.msg.sm{border-color:#440000;background:rgba(25,0,0,.85)}
+.msg.sm{border-color:#550000;background:rgba(28,0,0,.9);box-shadow:inset 0 0 10px rgba(255,0,0,.15)}
 .who{font-size:.72rem;font-weight:700;letter-spacing:.08em;margin-bottom:2px}
 .body{font-size:.88rem;word-break:break-word;line-height:1.4}
-.sm .body{color:#ff4040;animation:glitch .5s step-end infinite}
+.sm .body{color:#ff5555;font-weight:600;letter-spacing:.02em;text-shadow:0 0 3px rgba(255,0,0,.35);animation:glitch 2.5s ease-in-out infinite}
 form{display:flex;gap:8px;flex-shrink:0}
 input{flex:1;background:rgba(0,15,0,.8);border:1px solid #005500;color:#00ff41;padding:9px 11px;border-radius:6px;font-family:inherit;font-size:.9rem;outline:none;min-width:0}
 input:focus{border-color:#00ff41;box-shadow:0 0 5px rgba(0,255,65,.25)}
 button{background:#002200;border:1px solid #005500;color:#00ff41;padding:9px 14px;border-radius:6px;font-family:inherit;cursor:pointer;letter-spacing:.06em;flex-shrink:0;transition:background .15s}
 button:hover{background:#004400}
 @keyframes pls{0%,100%{opacity:1}50%{opacity:.35}}
-@keyframes glitch{0%{text-shadow:2px 0 #f00,-2px 0 #0f0}25%{text-shadow:-2px 0 #f00,2px 0 #0f0}50%{text-shadow:2px 0 #0f0,-2px 0 #f00}75%,100%{text-shadow:none}}
+@keyframes glitch{0%,82%,100%{text-shadow:0 0 3px rgba(255,0,0,.35);transform:none}85%{text-shadow:1.5px 0 #ff0033,-1.5px 0 #00ffff;transform:translateX(1px)}88%{text-shadow:-1.5px 0 #ff0033,1.5px 0 #00ffff;transform:translateX(-1px)}92%{text-shadow:1px 0 #ff0033;transform:none}}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#003300;border-radius:2px}
 #clr{background:rgba(30,0,0,.7);border:1px solid #660000;color:#ff6666;padding:4px 9px;font-size:.74rem;border-radius:4px;cursor:pointer;font-weight:700;letter-spacing:.05em}
 #clr:hover{background:rgba(60,0,0,.9);border-color:#ff2020;color:#ff9999}
