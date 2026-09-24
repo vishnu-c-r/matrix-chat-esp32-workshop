@@ -62,7 +62,7 @@ body {
 /* ---- Typography ---- */
 .hero-title {
     font-family: 'Orbitron', sans-serif;
-    font-size: clamp(4.5rem, 8vw, 6.8rem);
+    font-size: clamp(4.2rem, 7.5vw, 6.5rem);
     font-weight: 900;
     letter-spacing: 10px;
     text-shadow: 0 0 25px var(--green), 0 0 70px var(--green-glow);
@@ -78,9 +78,9 @@ body {
 }
 h2 {
     font-family: 'Orbitron', sans-serif;
-    font-size: clamp(2.3rem, 3.8vw, 3.2rem);
+    font-size: clamp(2.2rem, 3.6vw, 3.1rem);
     font-weight: 700;
-    margin-bottom: 24px;
+    margin-bottom: 22px;
     text-shadow: 0 0 16px var(--green-glow);
     letter-spacing: 3px;
     text-align: center;
@@ -171,7 +171,7 @@ h2 {
     overflow: hidden;
     box-shadow: 0 8px 30px rgba(0,0,0,0.8);
 }
-.code-box.wide { max-width: 1200px; font-size: 1.22rem; }
+.code-box.wide { max-width: 1250px; font-size: 1.18rem; }
 .code-box::before {
     content: attr(data-file);
     position: absolute; top: 0; left: 0; right: 0;
@@ -191,7 +191,7 @@ h2 {
 .fn { color: #00ddff; }
 .tp { color: #dd99ff; }
 
-/* ---- Diagram ---- */
+/* ---- Diagrams ---- */
 .diagram {
     display: flex; align-items: center;
     gap: 24px; flex-wrap: wrap;
@@ -258,65 +258,127 @@ h2 {
 .step-desc { font-size: 1.05rem; color: #88cc88; line-height: 1.5; }
 .step-arrow {
     position: absolute; right: -16px; top: 50%;
-    transform: translateY(-50%); font-size: 1.8rem;
-    color: var(--green); z-index: 2;
+    transform: translateY(-50%);
+    font-size: 1.8rem; color: var(--green);
+    z-index: 2; text-shadow: 0 0 10px #000;
 }
 
-/* ---- Two column layout ---- */
+/* ---- Two-column layout ---- */
 .two-col {
-    display: flex; gap: 36px; max-width: 1350px; width: 100%;
-    align-items: flex-start; flex-wrap: wrap;
-    justify-content: center;
-}
-.two-col > * { flex: 1; min-width: 420px; }
-.two-col .code-box { font-size: 1.15rem; }
-
-/* ---- Big text ---- */
-.big-text {
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(4.5rem, 8vw, 6.5rem);
-    font-weight: 900;
-    text-shadow: 0 0 25px var(--green), 0 0 70px var(--green-glow);
-    letter-spacing: 5px;
-    animation: pulse-glow 2s ease-in-out infinite;
-    text-align: center;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 40px; width: 100%; max-width: 1350px;
+    align-items: center;
 }
 
-/* ---- Packet visual ---- */
+/* ---- Packet visualizer ---- */
 .pkt-vis {
-    display: flex; gap: 0; max-width: 1200px; width: 100%;
-    margin-top: 15px; flex-wrap: wrap; justify-content: center;
+    display: flex; flex-wrap: wrap; gap: 6px;
+    max-width: 1200px; width: 100%; margin-top: 20px;
 }
 .pkt-field {
-    padding: 16px 14px; text-align: center;
-    border: 1.5px solid var(--green-dim);
-    background: rgba(0,25,0,0.85);
-    min-width: 85px;
-    transition: background 0.3s, border-color 0.3s;
+    background: rgba(0,35,0,0.9);
+    border: 1.5px solid var(--green);
+    border-radius: 8px;
+    padding: 12px 14px;
+    text-align: center;
+    flex: 1; min-width: 95px;
+    box-shadow: 0 0 12px rgba(0,255,65,0.2);
 }
-.pkt-field:first-child { border-radius: 10px 0 0 10px; }
-.pkt-field:last-child { border-radius: 0 10px 10px 0; }
-.pkt-field:hover { background: rgba(0,70,0,0.7); border-color: var(--green); }
-.pf-name { font-size: 0.85rem; color: #88cc88; display: block; margin-bottom: 6px; font-weight: bold; }
-.pf-val { font-size: 1.25rem; font-weight: 700; }
-.pf-size { font-size: 0.8rem; color: #44aa44; margin-top: 6px; display: block; }
+.pf-name { display: block; font-size: 0.95rem; color: #88cc88; }
+.pf-val { display: block; font-size: 1.25rem; font-weight: bold; color: #fff; margin: 4px 0; }
+.pf-size { display: block; font-size: 0.85rem; color: #55aa55; }
 
-/* LED visual */
+/* ---- NeoPixel Bitstream & Waveform ---- */
+.bitstream-container {
+    width: 100%; max-width: 1200px;
+    background: rgba(0, 15, 0, 0.9);
+    border: 1.5px solid var(--green-dim);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-top: 15px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.8);
+}
+.grb-bar {
+    display: flex; gap: 4px; width: 100%; margin-bottom: 20px;
+}
+.grb-segment {
+    flex: 1; padding: 12px 10px; text-align: center; border-radius: 6px;
+    font-weight: 700; font-family: 'Orbitron', sans-serif; font-size: 1.15rem;
+}
+.grb-g { background: rgba(0, 255, 65, 0.25); border: 2px solid var(--green); color: var(--green); }
+.grb-r { background: rgba(255, 32, 32, 0.25); border: 2px solid var(--red); color: #ff6666; }
+.grb-b { background: rgba(0, 204, 255, 0.25); border: 2px solid var(--cyan); color: var(--cyan); }
+
+.waveform-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 15px;
+}
+.wave-card {
+    background: rgba(0, 30, 0, 0.6);
+    border: 1px solid var(--green-dim);
+    border-radius: 8px;
+    padding: 16px 20px;
+}
+.wave-card h4 {
+    font-family: 'Orbitron', sans-serif; font-size: 1.15rem; margin-bottom: 10px; color: #fff;
+}
+.pulse-svg { width: 100%; height: 75px; }
+
+/* ---- FreeRTOS Concurrency Architecture ---- */
+.rtos-architecture {
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    gap: 20px; align-items: center; width: 100%; max-width: 1250px;
+    margin-top: 15px;
+}
+.rtos-core-box {
+    background: rgba(0, 25, 0, 0.85);
+    border: 2px solid var(--green-dim);
+    border-radius: 12px;
+    padding: 22px 20px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0,0,0,0.8);
+    transition: border-color 0.3s;
+}
+.rtos-core-box:hover { border-color: var(--green); }
+.rtos-core-box h3 {
+    font-family: 'Orbitron', sans-serif; font-size: 1.25rem; color: #fff; margin-bottom: 12px;
+}
+.rtos-core-box ul { list-style: none; text-align: left; font-size: 1.05rem; line-height: 1.7; }
+.rtos-core-box li b { color: var(--cyan); }
+.rtos-queue-box {
+    background: rgba(0, 45, 20, 0.9);
+    border: 2px dashed var(--yellow);
+    border-radius: 12px;
+    padding: 24px 20px;
+    text-align: center;
+    width: 250px;
+    box-shadow: 0 0 25px rgba(255, 204, 0, 0.2);
+}
+.rtos-queue-box h4 {
+    font-family: 'Orbitron', sans-serif; font-size: 1.15rem; color: var(--yellow); margin-bottom: 8px;
+}
+
+/* ---- LED Demo ---- */
 .led-demo {
-    display: flex; gap: 50px; margin-top: 20px;
-    justify-content: center; flex-wrap: wrap;
+    display: flex; gap: 40px; justify-content: center;
+    margin: 20px 0; flex-wrap: wrap;
 }
-.led-item { text-align: center; }
+.led-item {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 14px;
+}
 .led-circle {
-    width: 85px; height: 85px; border-radius: 50%;
-    margin: 0 auto 15px; border: 3px solid #333;
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.4);
+    transition: box-shadow 0.3s;
 }
-.led-label { font-size: 1.2rem; color: #a4e5a4; line-height: 1.4; }
-.led-label small { font-size: 0.95rem; color: #66aa66; }
 .led-breathing { animation: breathe 3s ease-in-out infinite; }
+.led-label {
+    font-size: 1.05rem; text-align: center; color: #a4e5a4; line-height: 1.4;
+}
 
 /* ---- Badges ---- */
-.badge-tag {
+.badge {
     display: inline-block; padding: 4px 10px; border-radius: 4px;
     font-size: 0.85rem; font-family: 'Orbitron', sans-serif; font-weight: 700;
     margin-bottom: 8px; letter-spacing: 1px;
@@ -326,7 +388,7 @@ h2 {
 .badge-yellow { background: rgba(255,204,0,0.2); border: 1px solid var(--yellow); color: var(--yellow); }
 
 /* ---- Misc ---- */
-.subtitle { font-size: 1.35rem; color: #88cc88; margin-bottom: 26px; text-align: center; max-width: 1100px; line-height: 1.6; }
+.subtitle { font-size: 1.35rem; color: #88cc88; margin-bottom: 24px; text-align: center; max-width: 1150px; line-height: 1.6; }
 .prompt { color: #55aa55; font-size: 1.35rem; margin-top: 36px; letter-spacing: 2px; }
 .quote { font-size: 2.1rem; color: #a4e5a4; font-style: italic; max-width: 1050px; line-height: 1.6; margin-top: 25px; text-align: center; }
 .quote-author { color: #55aa55; font-size: 1.3rem; margin-top: 14px; font-style: normal; }
@@ -334,7 +396,6 @@ h2 {
 .hl-yellow { color: var(--yellow); }
 .hl-cyan { color: var(--cyan); }
 .hl-purple { color: var(--purple); }
-.small-note { font-size: 1.25rem; color: #66aa66; margin-top: 24px; text-align: center; }
 
 /* ---- HUD: Zoom & Fullscreen Controls ---- */
 .hud {
@@ -479,11 +540,11 @@ h2 {
     <p class="quote">"When you text a friend sitting 1 meter away, your message travels 5,000 km to cloud servers and back. Today, we kill the middleman."</p>
     <p class="quote-author">— Off-Grid Engineering Manifesto</p>
     <div class="analogy-card" style="margin-top:35px">
-        <b>💡 THE MISSION</b>: Build an autonomous, serverless chat mesh that operates inside a concrete bunker, dense jungle, or during a complete blackout—using raw radio signals.
+        <b>💡 THE MISSION</b>: Build an autonomous, serverless chat mesh that operates inside a concrete bunker, dense jungle, or during a complete blackout—using raw 2.4 GHz radio signals.
     </div>
 </div>
 
-<!-- ============ SLIDE 2: NO ROUTER ============ -->
+<!-- ============ SLIDE 2: THE PEER-TO-PEER PARADIGM ============ -->
 <div class="slide">
     <h2>No Router. No Problem.</h2>
     <div class="card-row">
@@ -505,9 +566,203 @@ h2 {
     </div>
 </div>
 
-<!-- ============ SLIDE 3: WHAT IS ESP-NOW (COMPARISON) ============ -->
+<!-- ============ SLIDE 3: NEOPIXEL HARDWARE FOUNDATION ============ -->
 <div class="slide">
-    <div class="section-tag">// Protocol Fundamentals</div>
+    <div class="section-tag">// Hardware Deep Dive — Part 1</div>
+    <h2>Smart RGB: WS2812 NeoPixel</h2>
+    <p class="subtitle">A NeoPixel is an <span class="highlight">individually addressable smart RGB LED</span> with an integrated silicon microcontroller inside the epoxy lens.</p>
+    <div class="two-col">
+        <div>
+            <ul class="icon-list">
+                <li>
+                    <span class="il-icon">🔌</span>
+                    <span class="il-text"><b>The 30-Wire Dilemma</b> — A standard RGB LED requires 3 PWM pins. Controlling 10 RGB LEDs would require <b>30 microcontroller GPIO pins</b>!</span>
+                </li>
+                <li>
+                    <span class="il-icon">💡</span>
+                    <span class="il-text"><b>The WS2812 Breakthrough</b> — Chained digital shift register. One single GPIO pin controls hundreds of LEDs in series!</span>
+                </li>
+                <li>
+                    <span class="il-icon">🎨</span>
+                    <span class="il-text"><b>24-bit TrueColor</b> — 8 bits Green + 8 bits Red + 8 bits Blue = <span class="hl-cyan"><b>16,777,216 distinct colors</b></span>.</span>
+                </li>
+                <li>
+                    <span class="il-icon">📍</span>
+                    <span class="il-text"><b>Hardware Pins</b> — Onboard LED on <b>ESP32-C3 is GPIO 2</b>; on <b>ESP32-S3 is GPIO 48</b>.</span>
+                </li>
+            </ul>
+        </div>
+        <div>
+            <div class="code-box" data-file="ESP32 Native API">
+                <code><span class="cm">// One built-in native function call!</span>
+<span class="cm">// Zero bloated third-party libraries needed:</span>
+<span class="fn">neopixelWrite</span>(
+    <span class="vl">PIN_NEOPIXEL</span>,  <span class="cm">// GPIO 2 on ESP32-C3</span>
+    <span class="vl">255</span>,          <span class="cm">// Red   (0-255)</span>
+    <span class="vl">0</span>,            <span class="cm">// Green (0-255)</span>
+    <span class="vl">128</span>           <span class="cm">// Blue  (0-255)</span>
+);
+
+<span class="cm">// Color Mathematics:</span>
+<span class="cm">// 256 (R) × 256 (G) × 256 (B) = 16.7M Colors</span></code>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ SLIDE 4: NEOPIXEL DATA PACKET & BITSTREAM ============ -->
+<div class="slide">
+    <div class="section-tag">// Microsecond Waveforms</div>
+    <h2>NeoPixel Data Packet & Bitstream</h2>
+    <p class="subtitle">How does a single wire transmit Red, Green, and Blue without a clock line? The secret is <span class="highlight">800 kHz High-Speed Pulse Width Encoding</span>.</p>
+    
+    <div class="bitstream-container">
+        <div style="font-size:1.1rem;margin-bottom:10px;color:#a4e5a4"><b>24-BIT DATA FRAME (Transmitted GRB order, High-Bit First / MSB):</b></div>
+        <div class="grb-bar">
+            <div class="grb-segment grb-g">GREEN: 8 Bits (G7 → G0)</div>
+            <div class="grb-segment grb-r">RED: 8 Bits (R7 → R0)</div>
+            <div class="grb-segment grb-b">BLUE: 8 Bits (B7 → B0)</div>
+        </div>
+
+        <div class="waveform-row">
+            <div class="wave-card">
+                <h4>Bit "0" Representation (~1.25 µs)</h4>
+                <svg class="pulse-svg" viewBox="0 0 320 80">
+                    <!-- Low reference line -->
+                    <line x1="10" y1="65" x2="310" y2="65" stroke="#003300" stroke-width="2"/>
+                    <!-- Waveform: 0.4us high, 0.85us low -->
+                    <path d="M 20 65 L 20 20 L 100 20 L 100 65 L 300 65" fill="none" stroke="#00ff41" stroke-width="3.5"/>
+                    <text x="35" y="14" fill="#a4e5a4" font-size="12" font-family="monospace">T0H: 0.4 µs</text>
+                    <text x="160" y="55" fill="#55aa55" font-size="12" font-family="monospace">T0L: 0.85 µs</text>
+                </svg>
+                <div style="font-size:0.95rem;color:#88cc88;margin-top:6px">Short HIGH pulse followed by long LOW</div>
+            </div>
+            <div class="wave-card">
+                <h4>Bit "1" Representation (~1.25 µs)</h4>
+                <svg class="pulse-svg" viewBox="0 0 320 80">
+                    <!-- Low reference line -->
+                    <line x1="10" y1="65" x2="310" y2="65" stroke="#003300" stroke-width="2"/>
+                    <!-- Waveform: 0.8us high, 0.45us low -->
+                    <path d="M 20 65 L 20 20 L 200 20 L 200 65 L 300 65" fill="none" stroke="#00ccff" stroke-width="3.5"/>
+                    <text x="70" y="14" fill="#a4e5a4" font-size="12" font-family="monospace">T1H: 0.8 µs</text>
+                    <text x="220" y="55" fill="#55aa55" font-size="12" font-family="monospace">T1L: 0.45 µs</text>
+                </svg>
+                <div style="font-size:0.95rem;color:#88cc88;margin-top:6px">Long HIGH pulse followed by short LOW</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="analogy-card" style="margin-top:18px">
+        <b>⏱️ THE LATCH RESET (&gt; 50 µs)</b>: After sending all 24 bits, the data line remains LOW for more than 50 microseconds. The internal shift register inside the LED detects this quiet pause and locks the colors into the physical PWM drivers!
+    </div>
+</div>
+
+<!-- ============ SLIDE 5: NON-BLOCKING vs DELAY ============ -->
+<div class="slide">
+    <div class="section-tag">// Real-Time Systems</div>
+    <h2>Why delay() Kills Embedded Code</h2>
+    <p class="subtitle">Calling <code>delay(1000)</code> puts the CPU core into a coma. During that second, incoming radio packets and captive HTTP requests are silently dropped!</p>
+    
+    <table class="compare-table">
+        <thead>
+            <tr>
+                <th>Approach</th>
+                <th>Execution Behavior</th>
+                <th>Real-World Analogy</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><b>Blocking (<code>delay</code>)</b></td>
+                <td>Halts CPU execution loop entirely</td>
+                <td><span style="color:#ff6666"><b>Frozen Chef</b></span>: Standing with eyes closed for 20 mins while rice boils, ignoring the phone ringing and smoke alarms!</td>
+            </tr>
+            <tr>
+                <td><b>Non-Blocking (<code>millis</code>)</b></td>
+                <td>Checks elapsed time on every loop cycle</td>
+                <td><span class="hl-cyan"><b>Smart Chef</b></span>: Glances at wristwatch periodically, keeps stirring food, answers door, and takes orders.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="code-box wide" data-file="Non-Blocking Sine Wave Breathing (led.cpp)" style="margin-top:18px">
+        <code><span class="cm">// Smooth breathing animation computed from current timestamp — ZERO delay()!</span>
+<span class="tp">float</span> phase = (<span class="fn">millis</span>() % <span class="vl">2000</span>) * (<span class="vl">2.0f</span> * <span class="vl">3.14159f</span> / <span class="vl">2000.0f</span>);
+<span class="tp">float</span> brightness = <span class="vl">0.05f</span> + <span class="vl">0.35f</span> * (<span class="vl">0.5f</span> + <span class="vl">0.5f</span> * <span class="fn">sinf</span>(phase));
+<span class="fn">neopixelWrite</span>(<span class="vl">PIN_NEOPIXEL</span>, (uint8_t)(r * brightness), (uint8_t)(g * brightness), (uint8_t)(b * brightness));</code>
+    </div>
+</div>
+
+<!-- ============ SLIDE 6: STANDALONE NEOPIXEL TEST CODE ============ -->
+<div class="slide">
+    <div class="section-tag">// 🧪 Hands-On Lab: Standalone Test 1</div>
+    <h2>Test Your NeoPixel (Single File)</h2>
+    <p class="subtitle">Copy and paste this single-file sketch to test your hardware before touching mesh code: <span class="highlight">examples/01_neopixel_test.ino</span></p>
+    
+    <div class="code-box wide" data-file="examples/01_neopixel_test.ino">
+        <code><span class="kw">#include</span> <span class="st">&lt;Arduino.h&gt;</span>
+<span class="kw">#define</span> RGB_PIN <span class="vl">2</span>  <span class="cm">// ESP32-C3 onboard LED (Use 48 for S3)</span>
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">Serial.begin</span>(<span class="vl">115200</span>);
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+  <span class="tp">uint32_t</span> now = <span class="fn">millis</span>();
+
+  <span class="cm">// Smooth breathing formula: 2-second period sine wave</span>
+  <span class="tp">float</span> phase = (now % <span class="vl">2000</span>) * (<span class="vl">6.28318f</span> / <span class="vl">2000.0f</span>);
+  <span class="tp">float</span> brightness = <span class="vl">0.05f</span> + <span class="vl">0.35f</span> * (<span class="vl">0.5f</span> + <span class="vl">0.5f</span> * <span class="fn">sinf</span>(phase));
+
+  <span class="cm">// Cycle colors: 0=Green, 1=Red, 2=Blue (every 3 seconds)</span>
+  <span class="tp">int</span> mode = (now / <span class="vl">3000</span>) % <span class="vl">3</span>;
+  <span class="tp">uint8_t</span> r = (mode == <span class="vl">1</span>) ? (<span class="tp">uint8_t</span>)(<span class="vl">255</span> * brightness) : <span class="vl">0</span>;
+  <span class="tp">uint8_t</span> g = (mode == <span class="vl">0</span>) ? (<span class="tp">uint8_t</span>)(<span class="vl">255</span> * brightness) : <span class="vl">0</span>;
+  <span class="tp">uint8_t</span> b = (mode == <span class="vl">2</span>) ? (<span class="tp">uint8_t</span>)(<span class="vl">255</span> * brightness) : <span class="vl">0</span>;
+
+  <span class="fn">neopixelWrite</span>(RGB_PIN, r, g, b);
+  <span class="fn">delay</span>(<span class="vl">15</span>); <span class="cm">// 60 FPS update rate</span>
+}</code>
+    </div>
+</div>
+
+<!-- ============ SLIDE 7: WHAT THE LED COMMUNICATES ============ -->
+<div class="slide">
+    <div class="section-tag">// Hardware Feedback</div>
+    <h2>What Your LED Tells You</h2>
+    <p class="subtitle">In our mesh network, the NeoPixel acts as an instant visual radar for radio events and chat alerts:</p>
+    <div class="led-demo">
+        <div class="led-item">
+            <div class="led-circle led-breathing" style="background:#00ff88;color:#00ff88"></div>
+            <div class="led-label">IDLE BREATHING<br><small>Gentle pulsing glow<br>in your node's colour</small></div>
+        </div>
+        <div class="led-item">
+            <div class="led-circle" style="background:#00ccff;box-shadow:0 0 25px #00ccff"></div>
+            <div class="led-label">TRANSMIT (TX)<br><small>Crisp blue pulse<br>broadcasting packet</small></div>
+        </div>
+        <div class="led-item">
+            <div class="led-circle" style="background:#ffcc00;box-shadow:0 0 25px #ffcc00"></div>
+            <div class="led-label">RECEIVE (RX)<br><small>Instant bright flash<br>in sender's colour</small></div>
+        </div>
+        <div class="led-item">
+            <div class="led-circle" style="background:#cc88ff;box-shadow:0 0 25px #cc88ff"></div>
+            <div class="led-label">SYNC / ACTIVE<br><small>Channel active<br>connected to mesh</small></div>
+        </div>
+    </div>
+    <div class="code-box wide" data-file="led.cpp (State Transitions)" style="margin-top:24px">
+        <code><span class="kw">enum class</span> <span class="tp">LedState</span> { <span class="vl">IDLE</span>, <span class="vl">MSG_FLASH</span>, <span class="vl">TX_PULSE</span>, <span class="vl">SYNC_ACTIVE</span> };
+
+<span class="cm">// Transitions occur instantly when network events trigger!</span>
+<span class="kw">void</span> <span class="fn">ledFlashMsg</span>(<span class="tp">Color</span> c) {
+    g_flash_color = c;
+    g_flash_start_ms = <span class="fn">millis</span>();
+}</code>
+    </div>
+</div>
+
+<!-- ============ SLIDE 8: WHAT IS ESP-NOW ============ -->
+<div class="slide">
+    <div class="section-tag">// Protocol Fundamentals — Part 2</div>
     <h2>What is ESP-NOW?</h2>
     <p class="subtitle">Developed by Espressif, ESP-NOW is a <span class="highlight">connectionless 2.4 GHz protocol</span> designed for sub-millisecond, low-power microcontroller telemetry.</p>
     
@@ -522,7 +777,7 @@ h2 {
         <tbody>
             <tr>
                 <td><b>Analogy</b></td>
-                <td>Making a formal phone call</td>
+                <td>Making a formal telephone call</td>
                 <td><span class="hl-cyan"><b>Shouting over a Walkie-Talkie</b></span></td>
             </tr>
             <tr>
@@ -537,27 +792,27 @@ h2 {
             </tr>
             <tr>
                 <td><b>Packet Payload</b></td>
-                <td>1,500+ bytes (HTTP + TCP + IP headers)</td>
+                <td>1,500+ bytes (Heavy HTTP/TCP/IP headers)</td>
                 <td><b>Max 250 bytes</b> (Compact raw data)</td>
             </tr>
         </tbody>
     </table>
 
     <div class="analogy-card">
-        <b>📻 REAL-WORLD ANALOGY</b>: Wi-Fi is like posting a registered letter with stamps, envelopes, and receipts. ESP-NOW is picking up a walkie-talkie and pressing Push-to-Talk. Everyone on the channel hears you immediately.
+        <b>📻 REAL-WORLD ANALOGY</b>: Wi-Fi is like posting a registered letter with stamps, envelopes, and signature receipts. ESP-NOW is picking up a walkie-talkie and pressing Push-to-Talk. Everyone on the channel hears you immediately.
     </div>
 </div>
 
-<!-- ============ SLIDE 4: HOW ESP-NOW WORKS ============ -->
+<!-- ============ SLIDE 9: HOW ESP-NOW WORKS ============ -->
 <div class="slide">
     <div class="section-tag">// Under the Hood</div>
-    <h2>How ESP-NOW Works</h2>
+    <h2>How ESP-NOW Operates</h2>
     <div class="two-col">
         <div>
             <ul class="icon-list">
                 <li>
                     <span class="il-icon">1️⃣</span>
-                    <span class="il-text"><b>Initialize Hardware</b> — Set Wi-Fi radio to AP+STA and initialize the ESP-NOW subsystem.</span>
+                    <span class="il-text"><b>Initialize Hardware</b> — Set Wi-Fi radio to Station or AP+STA and initialize the ESP-NOW subsystem.</span>
                 </li>
                 <li>
                     <span class="il-icon">2️⃣</span>
@@ -573,7 +828,7 @@ h2 {
                 </li>
             </ul>
         </div>
-        <div class="code-box" data-file="radio.cpp (simplified API)">
+        <div class="code-box" data-file="radio.cpp (Essential API Steps)">
             <code><span class="cm">// 1. Initialize Wi-Fi and ESP-NOW</span>
 <span class="fn">WiFi</span>.<span class="fn">mode</span>(<span class="vl">WIFI_AP_STA</span>);
 <span class="fn">esp_now_init</span>();
@@ -589,7 +844,7 @@ h2 {
     </div>
 </div>
 
-<!-- ============ SLIDE 5: BROADCAST vs UNICAST ============ -->
+<!-- ============ SLIDE 10: BROADCAST vs UNICAST ============ -->
 <div class="slide">
     <div class="section-tag">// Addressing Mechanics</div>
     <h2>Broadcast Mode</h2>
@@ -610,7 +865,7 @@ h2 {
     </div>
 </div>
 
-<!-- ============ SLIDE 6: ESP-NOW APPLICATIONS ============ -->
+<!-- ============ SLIDE 11: ESP-NOW APPLICATIONS ============ -->
 <div class="slide">
     <div class="section-tag">// Industry Use Cases</div>
     <h2>Where is ESP-NOW Used?</h2>
@@ -638,49 +893,129 @@ h2 {
     </div>
 </div>
 
-<!-- ============ SLIDE 7: MULTI-FILE ARCHITECTURE ============ -->
+<!-- ============ SLIDE 12: STANDALONE ESP-NOW TEST CODE ============ -->
 <div class="slide">
-    <div class="section-tag">// Professional Firmware Engineering</div>
-    <h2>Multi-File Architecture</h2>
-    <p class="subtitle">Why do real engineers split firmware across multiple files instead of writing a massive 2,000-line <code>.ino</code> file?</p>
+    <div class="section-tag">// 🧪 Hands-On Lab: Standalone Test 2</div>
+    <h2>Test ESP-NOW (Two Boards)</h2>
+    <p class="subtitle">Flash this exact same code to TWO boards. Open Serial Monitor at 115200: <span class="highlight">examples/02_espnow_test.ino</span></p>
     
-    <table class="compare-table">
-        <thead>
-            <tr>
-                <th>File Type</th>
-                <th>What It Contains</th>
-                <th>Real-World Analogy</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><b>Header File (<code>.h</code>)</b></td>
-                <td>Function declarations, struct definitions, <code>#pragma once</code></td>
-                <td><span class="hl-cyan"><b>The Restaurant Menu</b></span> — Shows <i>what</i> is available to order</td>
-            </tr>
-            <tr>
-                <td><b>Source File (<code>.cpp</code>)</b></td>
-                <td>Function logic, algorithms, static internal state</td>
-                <td><span class="hl-yellow"><b>The Kitchen</b></span> — Where the food is actually cooked</td>
-            </tr>
-            <tr>
-                <td><b>Linker</b></td>
-                <td>Stitches compiled objects (<code>.o</code>) into one binary (<code>firmware.bin</code>)</td>
-                <td><b>The Waiter</b> — Connects menu orders to the kitchen</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="code-box wide" data-file="examples/02_espnow_test.ino (Core Snippet)">
+        <code><span class="kw">#include</span> <span class="st">&lt;WiFi.h&gt;</span>
+<span class="kw">#include</span> <span class="st">&lt;esp_now.h&gt;</span>
 
-    <div class="analogy-card">
-        <b>🧩 IN OUR PROJECT</b>: <code>radio.h</code> declares <code>void radioSend(Pkt* p);</code> so <code>main.cpp</code> knows how to use it. <code>main.cpp</code> doesn't need to care about the complex FreeRTOS queues inside <code>radio.cpp</code>!
+<span class="tp">uint8_t</span> bcast[] = {<span class="vl">0xFF</span>, <span class="vl">0xFF</span>, <span class="vl">0xFF</span>, <span class="vl">0xFF</span>, <span class="vl">0xFF</span>, <span class="vl">0xFF</span>};
+
+<span class="cm">// Hardware interrupt callback triggered when packet arrives:</span>
+<span class="kw">void</span> <span class="fn">onDataRecv</span>(<span class="kw">const</span> <span class="tp">esp_now_recv_info_t</span>* info, <span class="kw">const</span> <span class="tp">uint8_t</span>* data, <span class="tp">int</span> len) {
+    <span class="fn">Serial.printf</span>(<span class="st">"[RX] %s | RSSI: %d dBm\n"</span>, (char*)data, info-&gt;rx_ctrl-&gt;rssi);
+    <span class="fn">neopixelWrite</span>(<span class="vl">2</span>, <span class="vl">0</span>, <span class="vl">255</span>, <span class="vl">0</span>); <span class="fn">delay</span>(<span class="vl">40</span>); <span class="fn">neopixelWrite</span>(<span class="vl">2</span>, <span class="vl">0</span>, <span class="vl">0</span>, <span class="vl">0</span>);
+}
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+    <span class="fn">Serial.begin</span>(<span class="vl">115200</span>);
+    <span class="fn">WiFi.mode</span>(<span class="vl">WIFI_STA</span>);
+    <span class="fn">esp_now_init</span>();
+    <span class="fn">esp_now_register_recv_cb</span>(onDataRecv);
+
+    <span class="tp">esp_now_peer_info_t</span> peer = {};
+    <span class="fn">memcpy</span>(peer.peer_addr, bcast, <span class="vl">6</span>);
+    <span class="fn">esp_now_add_peer</span>(&amp;peer);
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {
+    <span class="kw">char</span> msg[] = <span class="st">"Ping from ESP32!"</span>;
+    <span class="fn">esp_now_send</span>(bcast, (<span class="tp">uint8_t</span>*)msg, <span class="kw">sizeof</span>(msg));
+    <span class="fn">delay</span>(<span class="vl">2500</span>); <span class="cm">// Broadcast every 2.5 seconds</span>
+}</code>
     </div>
 </div>
 
-<!-- ============ SLIDE 8: C++ & OOP IN EMBEDDED ============ -->
+<!-- ============ SLIDE 13: HOW IT STAYS FAST (FREERTOS & DUAL-CORE) ============ -->
+<div class="slide">
+    <div class="section-tag">// Real-Time Concurrency</div>
+    <h2>How It Stays Fast: FreeRTOS</h2>
+    <p class="subtitle">How does an ESP32 handle 50 radio packets/sec, host a captive web portal, and calculate smooth sine-wave LED breathing without stuttering or crashing?</p>
+
+    <div class="rtos-architecture">
+        <div class="rtos-core-box">
+            <h3>CORE 0: RF &amp; PROTOCOL</h3>
+            <ul>
+                <li>⚡ <b>Hardware Wi-Fi MAC</b></li>
+                <li>📡 <b>ESP-NOW ISR Interrupts</b></li>
+                <li>📥 <b>Pushes packets into Queue</b></li>
+                <li>⏱️ <i>Zero CPU wasted waiting</i></li>
+            </ul>
+        </div>
+
+        <div class="rtos-queue-box">
+            <h4>FREERTOS QUEUE</h4>
+            <div style="font-size:1.6rem;margin:6px 0">📦 ➔ 📦 ➔ 📦</div>
+            <div style="font-size:0.95rem;color:#ffccaa">Thread-Safe Ring Buffer in RAM</div>
+        </div>
+
+        <div class="rtos-core-box">
+            <h3>CORE 1: APP &amp; UI</h3>
+            <ul>
+                <li>🌐 <b>Captive Web Server (HTTP)</b></li>
+                <li>📜 <b>Deduplication Ring Buffer</b></li>
+                <li>💡 <b>NeoPixel Animation Loop</b></li>
+                <li>💻 <b>USB Serial Monitor CLI</b></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="analogy-card" style="margin-top:20px">
+        <b>🏭 THE FACTORY CONVEYOR BELT</b>: The radio antenna is an express delivery truck dumping boxes onto a conveyor belt (Queue). Core 1 takes boxes off the belt when ready. The delivery truck never has to wait for the factory workers!
+    </div>
+</div>
+
+<!-- ============ SLIDE 14: FREERTOS QUEUES IN CODE ============ -->
+<div class="slide">
+    <div class="section-tag">// Concurrency Patterns</div>
+    <h2>FreeRTOS Queues in Action</h2>
+    <p class="subtitle">In embedded programming, <span class="highlight">Queues</span> provide thread-safe, zero-copy message passing between interrupts and user tasks.</p>
+    
+    <div class="two-col">
+        <div>
+            <ul class="icon-list">
+                <li>
+                    <span class="il-icon">📬</span>
+                    <span class="il-text"><b>xQueueCreate</b> — Allocates a FIFO thread-safe ring buffer in RAM with fixed item size.</span>
+                </li>
+                <li>
+                    <span class="il-icon">⚡</span>
+                    <span class="il-text"><b>xQueueSendFromISR</b> — Called from radio interrupt callbacks without blocking the CPU.</span>
+                </li>
+                <li>
+                    <span class="il-icon">⏳</span>
+                    <span class="il-text"><b>xQueueReceive</b> — Worker task sleeps until a message arrives. Uses <b>0% CPU</b> while waiting!</span>
+                </li>
+            </ul>
+        </div>
+        <div class="code-box" data-file="FreeRTOS Queue API">
+            <code><span class="cm">// 1. Create queue for 10 packets</span>
+<span class="tp">QueueHandle_t</span> q = <span class="fn">xQueueCreate</span>(<span class="vl">10</span>, <span class="kw">sizeof</span>(<span class="tp">Pkt</span>));
+
+<span class="cm">// 2. Push from ESP-NOW interrupt:</span>
+<span class="kw">void</span> <span class="fn">onRecv</span>(...) {
+    <span class="fn">xQueueSendFromISR</span>(q, pkt, NULL);
+}
+
+<span class="cm">// 3. Pull in main loop (Zero busy-wait!):</span>
+<span class="tp">Pkt</span> incoming;
+<span class="kw">if</span> (<span class="fn">xQueueReceive</span>(q, &amp;incoming, <span class="vl">0</span>) == <span class="vl">pdPASS</span>) {
+    <span class="fn">webAddMessage</span>(...);
+    <span class="fn">ledFlashMsg</span>(...);
+}</code>
+        </div>
+    </div>
+</div>
+
+<!-- ============ SLIDE 15: C++ & OOP IN EMBEDDED ============ -->
 <div class="slide">
     <div class="section-tag">// Object-Oriented Embedded C++</div>
-    <h2>OOP & C++ in Microcontrollers</h2>
-    <p class="subtitle">Modern embedded systems rely on C++ design patterns to write safe, maintainable, and lightning-fast code.</p>
+    <h2>OOP &amp; C++ in Microcontrollers</h2>
+    <p class="subtitle">Modern embedded systems rely on C++ design patterns to write safe, modular, and lightning-fast firmware.</p>
     <div class="two-col">
         <div>
             <ul class="icon-list">
@@ -722,7 +1057,7 @@ h2 {
     </div>
 </div>
 
-<!-- ============ SLIDE 9: THE PACKET (MEMORY ANATOMY) ============ -->
+<!-- ============ SLIDE 16: THE PACKET (MEMORY ANATOMY) ============ -->
 <div class="slide">
     <div class="section-tag">// Data Serialization</div>
     <h2>The Packet: Our Message Envelope</h2>
@@ -742,240 +1077,41 @@ h2 {
     </div>
 </div>
 
-<!-- ============ SLIDE 10: NEOPIXEL (HARDWARE MAGIC) ============ -->
+<!-- ============ SLIDE 17: MULTI-FILE ARCHITECTURE ============ -->
 <div class="slide">
-    <div class="section-tag">// Hardware Deep Dive</div>
-    <h2>NeoPixel LED: WS2812</h2>
-    <p class="subtitle">A NeoPixel is an <span class="highlight">individually addressable smart RGB LED</span>. One single GPIO controls millions of colors!</p>
-    <div class="two-col">
-        <div>
-            <ul class="icon-list">
-                <li>
-                    <span class="il-icon">🔌</span>
-                    <span class="il-text"><b>The Problem</b> — Standard RGB LEDs need 3 PWM pins each. Wiring 10 LEDs requires 30 microcontroller pins!</span>
-                </li>
-                <li>
-                    <span class="il-icon">💡</span>
-                    <span class="il-text"><b>The Solution</b> — The WS2812 contains a microscopic microcontroller integrated inside the LED lens.</span>
-                </li>
-                <li>
-                    <span class="il-icon">⚡</span>
-                    <span class="il-text"><b>800 kHz Pulse Protocol</b> — Data is encoded by high/low microsecond pulse widths over a single wire on <span class="hl-yellow">GPIO 2</span>.</span>
-                </li>
-                <li>
-                    <span class="il-icon">🎨</span>
-                    <span class="il-text"><b>24-bit TrueColor</b> — 8 bits Green + 8 bits Red + 8 bits Blue = <b>16.7 Million Colors</b>!</span>
-                </li>
-            </ul>
-        </div>
-        <div>
-            <div class="code-box" data-file="ESP32 Native API">
-                <code><span class="cm">// One native built-in function call!</span>
-<span class="cm">// No bloated third-party libraries needed:</span>
-<span class="fn">neopixelWrite</span>(
-    <span class="vl">PIN_NEOPIXEL</span>,  <span class="cm">// GPIO 2 on C3</span>
-    <span class="vl">255</span>,          <span class="cm">// Red   (0-255)</span>
-    <span class="vl">0</span>,            <span class="cm">// Green (0-255)</span>
-    <span class="vl">128</span>           <span class="cm">// Blue  (0-255)</span>
-);
-
-<span class="cm">// Formula for total colors:</span>
-<span class="cm">// 256 × 256 × 256 = 16,777,216</span></code>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ============ SLIDE 11: NON-BLOCKING vs DELAY ============ -->
-<div class="slide">
-    <div class="section-tag">// Real-Time Systems</div>
-    <h2>Why delay() Kills Embedded Code</h2>
-    <p class="subtitle">Calling <code>delay(1000)</code> puts the entire CPU to sleep. During that second, incoming radio packets and web requests are dropped!</p>
+    <div class="section-tag">// Professional Firmware Engineering</div>
+    <h2>Multi-File Architecture</h2>
+    <p class="subtitle">Why do real engineers split firmware across multiple files instead of writing a massive 2,000-line <code>.ino</code> file?</p>
     
     <table class="compare-table">
         <thead>
             <tr>
-                <th>Approach</th>
-                <th>How It Works</th>
+                <th>File Type</th>
+                <th>What It Contains</th>
                 <th>Real-World Analogy</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td><b>Blocking (<code>delay</code>)</b></td>
-                <td>Halts CPU execution loop entirely</td>
-                <td><span style="color:#ff6666"><b>Frozen Chef</b></span>: Standing with eyes closed for 20 mins while rice boils, ignoring phone calls and fires!</td>
+                <td><b>Header File (<code>.h</code>)</b></td>
+                <td>Function declarations, struct definitions, <code>#pragma once</code></td>
+                <td><span class="hl-cyan"><b>The Restaurant Menu</b></span> — Shows <i>what</i> is available to order</td>
             </tr>
             <tr>
-                <td><b>Non-Blocking (<code>millis</code>)</b></td>
-                <td>Checks elapsed time on every loop cycle</td>
-                <td><span class="hl-cyan"><b>Smart Chef</b></span>: Glances at wristwatch periodically, keeps stirring food, answers door.</td>
+                <td><b>Source File (<code>.cpp</code>)</b></td>
+                <td>Function logic, algorithms, static internal state</td>
+                <td><span class="hl-yellow"><b>The Kitchen</b></span> — Where the food is actually cooked</td>
+            </tr>
+            <tr>
+                <td><b>Linker</b></td>
+                <td>Stitches compiled objects (<code>.o</code>) into one binary (<code>firmware.bin</code>)</td>
+                <td><b>The Waiter</b> — Connects menu orders to the kitchen</td>
             </tr>
         </tbody>
     </table>
 
-    <div class="code-box wide" data-file="led.cpp (Smooth Breathing State Machine)" style="margin-top:20px">
-        <code><span class="cm">// Smooth breathing animation computed from current timestamp — ZERO delay()!</span>
-<span class="tp">float</span> phase = (<span class="fn">millis</span>() % <span class="vl">3000</span>) * (<span class="vl">2.0f</span> * <span class="vl">3.14159f</span> / <span class="vl">3000.0f</span>);
-<span class="tp">float</span> brightness = <span class="vl">0.05f</span> + <span class="vl">0.20f</span> * (<span class="vl">0.5f</span> + <span class="vl">0.5f</span> * <span class="fn">sinf</span>(phase));
-<span class="fn">setRgb</span>(color.r * brightness, color.g * brightness, color.b * brightness);</code>
-    </div>
-</div>
-
-<!-- ============ SLIDE 12: WHAT YOUR LED TELLS YOU ============ -->
-<div class="slide">
-    <div class="section-tag">// Hardware Feedback</div>
-    <h2>What Your LED Tells You</h2>
-    <p class="subtitle">The NeoPixel provides immediate hardware feedback for network activity, packet traffic, and message alerts.</p>
-    <div class="led-demo">
-        <div class="led-item">
-            <div class="led-circle led-breathing" style="background:#00ff88;color:#00ff88"></div>
-            <div class="led-label">IDLE<br><small>Gentle breathing glow<br>in your node colour</small></div>
-        </div>
-        <div class="led-item">
-            <div class="led-circle" style="background:#00ccff;box-shadow:0 0 25px #00ccff"></div>
-            <div class="led-label">TRANSMIT (TX)<br><small>Crisp blue pulse<br>broadcasting packet</small></div>
-        </div>
-        <div class="led-item">
-            <div class="led-circle" style="background:#ffcc00;box-shadow:0 0 25px #ffcc00"></div>
-            <div class="led-label">RECEIVE (RX)<br><small>Instant bright flash<br>in sender's colour</small></div>
-        </div>
-        <div class="led-item">
-            <div class="led-circle" style="background:#cc88ff;box-shadow:0 0 25px #cc88ff"></div>
-            <div class="led-label">SYNC / ACTIVE<br><small>Channel active<br>connected to mesh</small></div>
-        </div>
-    </div>
-    <div class="code-box wide" data-file="led.cpp (state machine)" style="margin-top:24px">
-        <code><span class="kw">enum class</span> <span class="tp">LedState</span> { <span class="vl">IDLE</span>, <span class="vl">MSG_FLASH</span>, <span class="vl">TX_PULSE</span>, <span class="vl">SYNC_ACTIVE</span> };
-
-<span class="cm">// Transitions occur instantly when network events happen!</span>
-<span class="kw">void</span> <span class="fn">ledFlashMsg</span>(<span class="tp">Color</span> c) {
-    g_flash_color = c;
-    g_flash_start_ms = <span class="fn">millis</span>();
-}</code>
-    </div>
-</div>
-
-<!-- ============ SLIDE 13: SYSTEM ARCHITECTURE ============ -->
-<div class="slide">
-    <div class="section-tag">// The Big Picture</div>
-    <h2>How Our Chat System Works</h2>
-    <div class="flow">
-        <div class="flow-box">📱 You type a chat message on your <b>Phone Browser</b></div>
-        <div class="flow-arrow">↓</div>
-        <div class="flow-box">🌐 Phone sends HTTP POST to your board's <b>ESP32 Web Server</b></div>
-        <div class="flow-arrow">↓</div>
-        <div class="flow-box">📦 ESP32 serializes it into a binary <b>Pkt struct</b> (188 bytes)</div>
-        <div class="flow-arrow">↓</div>
-        <div class="flow-box">📡 ESP-NOW <b>broadcasts raw radio frame</b> to all ESP32s in range</div>
-        <div class="flow-arrow">↓</div>
-        <div class="flow-box">📥 Every receiving ESP32 <b>deduplicates</b> and updates its Web UI</div>
-        <div class="flow-arrow">↓</div>
-        <div class="flow-box">💡 The board's NeoPixel <b>flashes</b> in the sender's signature colour</div>
-    </div>
-</div>
-
-<!-- ============ SLIDE 14: SENDING A MESSAGE (CODE) ============ -->
-<div class="slide">
-    <div class="section-tag">// Core Logic</div>
-    <h2>Sending a Message</h2>
-    <p class="subtitle">When you click SEND on the captive chat UI, this function executes on your ESP32:</p>
-    <div class="code-box wide" data-file="main.cpp — sendChatMessage()">
-        <code><span class="kw">void</span> <span class="fn">sendChatMessage</span>(<span class="kw">const</span> <span class="tp">char</span>* text) {
-    <span class="tp">Pkt</span> pkt = {};
-
-    pkt.magic     = <span class="vl">PKT_MAGIC</span>;           <span class="cm">// 0xA5 — Matrix packet signature</span>
-    pkt.ver       = <span class="vl">PKT_VER</span>;             <span class="cm">// Version 1</span>
-    pkt.type      = <span class="vl">PktType::CHAT</span>;       <span class="cm">// Identifies as a user chat</span>
-    pkt.node_id   = <span class="vl">NODE_ID</span>;             <span class="cm">// Your assigned ID (from config.h)</span>
-    pkt.color_idx = <span class="vl">NODE_ID</span> % <span class="vl">N_COLORS</span>;    <span class="cm">// Your unique colour</span>
-    pkt.seq       = g_seq++;            <span class="cm">// Incremented sequence ID</span>
-    <span class="fn">strncpy</span>(pkt.text, text, <span class="vl">179</span>);     <span class="cm">// Safe bounded string copy</span>
-    pkt.len       = <span class="fn">strlen</span>(pkt.text);
-
-    <span class="fn">radioSend</span>(&pkt);                  <span class="cm">// Transmit over 2.4 GHz broadcast!</span>
-}</code>
-    </div>
-</div>
-
-<!-- ============ SLIDE 15: RECEIVING A MESSAGE (CODE) ============ -->
-<div class="slide">
-    <div class="section-tag">// Core Logic</div>
-    <h2>Receiving a Message</h2>
-    <p class="subtitle">When any board transmits an ESP-NOW frame, this interrupt callback triggers automatically:</p>
-    <div class="code-box wide" data-file="main.cpp — onPktRecv()">
-        <code><span class="kw">void</span> <span class="fn">onPktRecv</span>(<span class="kw">const</span> <span class="tp">Pkt</span>* pkt, <span class="tp">int8_t</span> rssi) {
-    <span class="cm">// Step 1: Verify packet type</span>
-    <span class="kw">if</span> (pkt->type != (uint8_t)<span class="vl">PktType::CHAT</span>) <span class="kw">return</span>;
-
-    <span class="cm">// Step 2: Prevent duplicate echoes using circular buffer</span>
-    <span class="kw">if</span> (<span class="fn">dedupeSeen</span>(pkt->node_id, pkt->seq)) <span class="kw">return</span>;
-
-    <span class="cm">// Step 3: New valid message! Push to phone Web UI</span>
-    <span class="tp">Color</span> col = <span class="fn">nodeColor</span>(pkt->color_idx);
-    <span class="fn">webAddMessage</span>(pkt->node_id, sender, col.r, col.g, col.b, pkt->text, <span class="vl">false</span>);
-
-    <span class="cm">// Step 4: Flash the NeoPixel in sender's identity colour</span>
-    <span class="fn">ledFlashMsg</span>(col);
-}</code>
-    </div>
-</div>
-
-<!-- ============ SLIDE 16: THE CAPTIVE PORTAL ============ -->
-<div class="slide">
-    <div class="section-tag">// The User Interface</div>
-    <h2>The Captive Portal</h2>
-    <p class="subtitle">How does your phone automatically open the chat page when connecting to the ESP32's Wi-Fi?</p>
-    <div class="two-col">
-        <div>
-            <ul class="icon-list">
-                <li><span class="il-icon">📶</span><span class="il-text"><b>SoftAP Mode</b> — Your ESP32 broadcasts its own Wi-Fi SSID (e.g. <span class="hl-yellow">NEO-14</span>).</span></li>
-                <li><span class="il-icon">🔗</span><span class="il-text"><b>DNS Hijacking</b> — When your phone pings Apple/Google probe servers, ESP32 answers: <i>"I am that server! Go to 192.168.4.1"</i></span></li>
-                <li><span class="il-icon">🔄</span><span class="il-text"><b>Real-time Polling</b> — The frontend fetches <span class="hl-cyan">/api</span> every second for new network messages.</span></li>
-                <li><span class="il-icon">📜</span><span class="il-text"><b>Ring Buffer</b> — Last 16 messages stored in RAM for instant loading.</span></li>
-            </ul>
-        </div>
-        <div class="code-box" data-file="web.cpp (REST Endpoints)">
-            <code><span class="cm">// Lightweight embedded REST API:</span>
-<span class="kw">GET</span>  <span class="st">/</span>      → Serves inline HTML/CSS/JS
-<span class="kw">GET</span>  <span class="st">/api</span>   → JSON packet stream
-<span class="kw">POST</span> <span class="st">/send</span>  → Submit message from UI
-
-<span class="cm">// Sample JSON response:</span>
-{
-  <span class="st">"name"</span>: <span class="st">"Trinity"</span>,
-  <span class="st">"seq"</span>: <span class="vl">42</span>,
-  <span class="st">"messages"</span>: [ ... ]
-}</code>
-        </div>
-    </div>
-</div>
-
-<!-- ============ SLIDE 17: RSSI & DISTANCE ============ -->
-<div class="slide">
-    <div class="section-tag">// Radio Physics</div>
-    <h2>RSSI → Distance Physics</h2>
-    <p class="subtitle">Every incoming radio transmission includes an <span class="highlight">RSSI</span> (Received Signal Strength Indicator). We calculate physical distance from it.</p>
-    <div class="two-col">
-        <div>
-            <ul class="icon-list">
-                <li><span class="il-icon">📶</span><span class="il-text"><b>RSSI in dBm</b> — Measured in decibels relative to 1 mW. -30 dBm (touching) to -90 dBm (faint edge of range).</span></li>
-                <li><span class="il-icon">📐</span><span class="il-text"><b>Log-Distance Path Loss</b> — Formula calculates approximate distance in centimeters from radio dropoff.</span></li>
-                <li><span class="il-icon">📊</span><span class="il-text"><b>EMA Smoothing</b> — Exponential Moving Average filters out multipath wave reflections.</span></li>
-            </ul>
-        </div>
-        <div class="code-box" data-file="Radio Physics Model">
-            <code><span class="cm">// Free Space Path Loss distance formula</span>
-<span class="tp">float</span> <span class="fn">estimateDistanceCm</span>(<span class="tp">float</span> rssi) {
-  <span class="kw">return</span> <span class="vl">100.0f</span> * <span class="fn">pow</span>(
-    <span class="vl">10.0f</span>,
-    (<span class="vl">-45.0f</span> - rssi) / <span class="vl">30.0f</span>
-  );
-}
-
-<span class="cm">// EMA Filter (α = 0.2):</span>
-filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * filtered;</code>
-        </div>
+    <div class="analogy-card">
+        <b>🧩 IN OUR PROJECT</b>: <code>radio.h</code> declares <code>void radioSend(Pkt* p);</code> so <code>main.cpp</code> knows how to use it. <code>main.cpp</code> doesn't need to care about the complex FreeRTOS queues inside <code>radio.cpp</code>!
     </div>
 </div>
 
@@ -1007,7 +1143,130 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
     </div>
 </div>
 
-<!-- ============ SLIDE 19: SETUP AND LOOP ============ -->
+<!-- ============ SLIDE 19: SYSTEM ARCHITECTURE ============ -->
+<div class="slide">
+    <div class="section-tag">// The Big Picture</div>
+    <h2>How Our Chat System Works</h2>
+    <div class="flow">
+        <div class="flow-box">📱 You type a chat message on your <b>Phone Browser</b></div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-box">🌐 Phone sends HTTP POST to your board's <b>ESP32 Web Server</b></div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-box">📦 ESP32 serializes it into a binary <b>Pkt struct</b> (188 bytes)</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-box">📡 ESP-NOW <b>broadcasts raw radio frame</b> to all ESP32s in range</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-box">📥 Every receiving ESP32 <b>deduplicates</b> and updates its Web UI</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-box">💡 The board's NeoPixel <b>flashes</b> in the sender's signature colour</div>
+    </div>
+</div>
+
+<!-- ============ SLIDE 20: SENDING A MESSAGE (CODE) ============ -->
+<div class="slide">
+    <div class="section-tag">// Core Logic</div>
+    <h2>Sending a Message</h2>
+    <p class="subtitle">When you click SEND on the captive chat UI, this function executes on your ESP32:</p>
+    <div class="code-box wide" data-file="main.cpp — sendChatMessage()">
+        <code><span class="kw">void</span> <span class="fn">sendChatMessage</span>(<span class="kw">const</span> <span class="tp">char</span>* text) {
+    <span class="tp">Pkt</span> pkt = {};
+
+    pkt.magic     = <span class="vl">PKT_MAGIC</span>;           <span class="cm">// 0xA5 — Matrix packet signature</span>
+    pkt.ver       = <span class="vl">PKT_VER</span>;             <span class="cm">// Version 1</span>
+    pkt.type      = <span class="vl">PktType::CHAT</span>;       <span class="cm">// Identifies as a user chat</span>
+    pkt.node_id   = <span class="vl">NODE_ID</span>;             <span class="cm">// Your assigned ID (from config.h)</span>
+    pkt.color_idx = <span class="vl">NODE_ID</span> % <span class="vl">N_COLORS</span>;    <span class="cm">// Your unique colour</span>
+    pkt.seq       = g_seq++;            <span class="cm">// Incremented sequence ID</span>
+    <span class="fn">strncpy</span>(pkt.text, text, <span class="vl">179</span>);     <span class="cm">// Safe bounded string copy</span>
+    pkt.len       = <span class="fn">strlen</span>(pkt.text);
+
+    <span class="fn">radioSend</span>(&amp;pkt);                  <span class="cm">// Transmit over 2.4 GHz broadcast!</span>
+}</code>
+    </div>
+</div>
+
+<!-- ============ SLIDE 21: RECEIVING A MESSAGE (CODE) ============ -->
+<div class="slide">
+    <div class="section-tag">// Core Logic</div>
+    <h2>Receiving a Message</h2>
+    <p class="subtitle">When any board transmits an ESP-NOW frame, this interrupt callback triggers automatically:</p>
+    <div class="code-box wide" data-file="main.cpp — onPktRecv()">
+        <code><span class="kw">void</span> <span class="fn">onPktRecv</span>(<span class="kw">const</span> <span class="tp">Pkt</span>* pkt, <span class="tp">int8_t</span> rssi) {
+    <span class="cm">// Step 1: Verify packet type</span>
+    <span class="kw">if</span> (pkt-&gt;type != (uint8_t)<span class="vl">PktType::CHAT</span>) <span class="kw">return</span>;
+
+    <span class="cm">// Step 2: Prevent duplicate echoes using circular buffer</span>
+    <span class="kw">if</span> (<span class="fn">dedupeSeen</span>(pkt-&gt;node_id, pkt-&gt;seq)) <span class="kw">return</span>;
+
+    <span class="cm">// Step 3: New valid message! Push to phone Web UI</span>
+    <span class="tp">Color</span> col = <span class="fn">nodeColor</span>(pkt-&gt;color_idx);
+    <span class="fn">webAddMessage</span>(pkt-&gt;node_id, sender, col.r, col.g, col.b, pkt-&gt;text, <span class="vl">false</span>);
+
+    <span class="cm">// Step 4: Flash the NeoPixel in sender's identity colour</span>
+    <span class="fn">ledFlashMsg</span>(col);
+}</code>
+    </div>
+</div>
+
+<!-- ============ SLIDE 22: THE CAPTIVE PORTAL ============ -->
+<div class="slide">
+    <div class="section-tag">// The User Interface</div>
+    <h2>The Captive Portal</h2>
+    <p class="subtitle">How does your phone automatically open the chat page when connecting to the ESP32's Wi-Fi?</p>
+    <div class="two-col">
+        <div>
+            <ul class="icon-list">
+                <li><span class="il-icon">📶</span><span class="il-text"><b>SoftAP Mode</b> — Your ESP32 broadcasts its own Wi-Fi SSID (e.g. <span class="hl-yellow">NEO-14</span>).</span></li>
+                <li><span class="il-icon">🔗</span><span class="il-text"><b>DNS Hijacking</b> — When your phone pings Apple/Google probe servers, ESP32 answers: <i>"I am that server! Go to 192.168.4.1"</i></span></li>
+                <li><span class="il-icon">🔄</span><span class="il-text"><b>Real-time Polling</b> — The frontend fetches <span class="hl-cyan">/api</span> every second for new network messages.</span></li>
+                <li><span class="il-icon">📜</span><span class="il-text"><b>Ring Buffer</b> — Last 16 messages stored in RAM for instant loading.</span></li>
+            </ul>
+        </div>
+        <div class="code-box" data-file="web.cpp (REST Endpoints)">
+            <code><span class="cm">// Lightweight embedded REST API:</span>
+<span class="kw">GET</span>  <span class="st">/</span>      → Serves inline HTML/CSS/JS
+<span class="kw">GET</span>  <span class="st">/api</span>   → JSON packet stream
+<span class="kw">POST</span> <span class="st">/send</span>  → Submit message from UI
+
+<span class="cm">// Sample JSON response:</span>
+{
+  <span class="st">"name"</span>: <span class="st">"Trinity"</span>,
+  <span class="st">"seq"</span>: <span class="vl">42</span>,
+  <span class="st">"messages"</span>: [ ... ]
+}</code>
+        </div>
+    </div>
+</div>
+
+<!-- ============ SLIDE 23: RSSI & DISTANCE ============ -->
+<div class="slide">
+    <div class="section-tag">// Radio Physics</div>
+    <h2>RSSI → Distance Physics</h2>
+    <p class="subtitle">Every incoming radio transmission includes an <span class="highlight">RSSI</span> (Received Signal Strength Indicator). We calculate physical distance from it.</p>
+    <div class="two-col">
+        <div>
+            <ul class="icon-list">
+                <li><span class="il-icon">📶</span><span class="il-text"><b>RSSI in dBm</b> — Measured in decibels relative to 1 mW. -30 dBm (touching) to -90 dBm (faint edge of range).</span></li>
+                <li><span class="il-icon">📐</span><span class="il-text"><b>Log-Distance Path Loss</b> — Formula calculates approximate distance in centimeters from radio dropoff.</span></li>
+                <li><span class="il-icon">📊</span><span class="il-text"><b>EMA Smoothing</b> — Exponential Moving Average filters out multipath wave reflections.</span></li>
+            </ul>
+        </div>
+        <div class="code-box" data-file="Radio Physics Model">
+            <code><span class="cm">// Free Space Path Loss distance formula</span>
+<span class="tp">float</span> <span class="fn">estimateDistanceCm</span>(<span class="tp">float</span> rssi) {
+  <span class="kw">return</span> <span class="vl">100.0f</span> * <span class="fn">pow</span>(
+    <span class="vl">10.0f</span>,
+    (<span class="vl">-45.0f</span> - rssi) / <span class="vl">30.0f</span>
+  );
+}
+
+<span class="cm">// EMA Filter (α = 0.2):</span>
+filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * filtered;</code>
+        </div>
+    </div>
+</div>
+
+<!-- ============ SLIDE 24: SETUP AND LOOP ============ -->
 <div class="slide">
     <div class="section-tag">// The Arduino Framework</div>
     <h2>setup() and loop()</h2>
@@ -1048,20 +1307,20 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
     </div>
 </div>
 
-<!-- ============ SLIDE 20: YOUR MISSION ============ -->
+<!-- ============ SLIDE 25: YOUR MISSION ============ -->
 <div class="slide">
     <h2>Your Mission</h2>
     <div class="steps">
         <div class="step">
             <div class="step-num">01</div>
             <div class="step-title">CLONE</div>
-            <div class="step-desc">Pull student repo &<br>open in VS Code</div>
+            <div class="step-desc">Pull student repo &amp;<br>open in VS Code</div>
             <span class="step-arrow">→</span>
         </div>
         <div class="step">
             <div class="step-num">02</div>
             <div class="step-title">CONFIG</div>
-            <div class="step-desc">Edit config.h —<br>assign ID & Name</div>
+            <div class="step-desc">Edit config.h —<br>assign ID &amp; Name</div>
             <span class="step-arrow">→</span>
         </div>
         <div class="step">
@@ -1086,7 +1345,7 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
     </div>
 </div>
 
-<!-- ============ SLIDE 21: PRO TIPS ============ -->
+<!-- ============ SLIDE 26: PRO TIPS ============ -->
 <div class="slide">
     <h2>Pro Tips</h2>
     <ul class="icon-list">
@@ -1098,9 +1357,9 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
     </ul>
 </div>
 
-<!-- ============ SLIDE 22: JACK IN ============ -->
+<!-- ============ SLIDE 27: JACK IN ============ -->
 <div class="slide">
-    <div class="big-text">JACK IN.</div>
+    <div class="hero-title" style="font-size:clamp(4.5rem,8vw,7rem)">JACK IN.</div>
     <p class="quote" style="font-style:normal;margin-top:25px">"Free your mind."</p>
     <p style="margin-top:40px;color:#88cc88;font-size:1.4rem;letter-spacing:3px">Open your laptops. Set your Node ID. Enter the Matrix.</p>
 </div>
