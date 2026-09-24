@@ -46,8 +46,8 @@ void test_pkt_fields_pack()
 void test_pkt_type_enum_values()
 {
     TEST_ASSERT_EQUAL_UINT8(0, (uint8_t)PktType::CHAT);
-    TEST_ASSERT_EQUAL_UINT8(1, (uint8_t)PktType::SMITH_BEACON);
-    TEST_ASSERT_EQUAL_UINT8(2, (uint8_t)PktType::SMITH_CHAT);
+    TEST_ASSERT_EQUAL_UINT8(1, (uint8_t)PktType::SYS_SYNC);
+    TEST_ASSERT_EQUAL_UINT8(2, (uint8_t)PktType::SYS_ALERT);
 }
 
 void test_text_field_max_length()

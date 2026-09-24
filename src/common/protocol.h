@@ -20,10 +20,6 @@ enum class PktType : uint8_t {
     CHAT         = 0,  // Normal peer-to-peer chat message
     SYS_SYNC     = 1,  // Network sync / diagnostic beacon (no text needed)
     SYS_ALERT    = 2,  // System broadcast / network alert
-
-    // Compatibility aliases for rogue beacon
-    SMITH_BEACON = 1,
-    SMITH_CHAT   = 2,
 };
 
 // Packed to guarantee identical layout on every ESP32 variant.
@@ -32,7 +28,7 @@ struct Pkt {
     uint8_t  magic;       // Always PKT_MAGIC (0xA5)
     uint8_t  ver;         // Protocol version
     uint8_t  type;        // PktType cast to uint8_t
-    uint8_t  node_id;     // Sender node ID (1-50; Smith uses 99)
+    uint8_t  node_id;     // Sender node ID (1-50; 99 for network broadcasts)
     uint8_t  color_idx;   // Index into palette (node_id % N_COLORS)
     uint16_t seq;         // Per-sender sequence counter (wraps at 65535)
     uint8_t  len;         // Actual text length (0 for beacons)

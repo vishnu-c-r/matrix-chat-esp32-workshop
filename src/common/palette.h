@@ -1,6 +1,6 @@
 // =============================================================
-//  palette.h — 12 distinguishable hues for node chat colors.
-//  Red is RESERVED for Smith; nodes get color = node_id % N_COLORS.
+//  palette.h — Distinguishable hues for node chat colors.
+//  Red is RESERVED for system alerts; nodes get color = node_id % N_COLORS.
 // =============================================================
 #pragma once
 #include <stdint.h>
@@ -24,8 +24,8 @@ static constexpr Color PALETTE[N_COLORS] = {
     {255, 255,   0},   // 10  yellow
 };
 
-// Red is Smith's exclusive color — never assigned to a node.
-static constexpr Color COLOR_SMITH = {255, 0, 0};
+// Red is reserved for system alerts — never assigned to a normal node.
+static constexpr Color COLOR_ALERT = {255, 0, 0};
 static constexpr Color COLOR_OFF   = {  0, 0, 0};
 
 // Returns the palette color for a given node ID.

@@ -5,7 +5,7 @@
 //    • Arduino WebServer (blocking but brief) on port 80
 //    • DNSServer redirects all DNS queries to 192.168.4.1
 //    • GET /         → serve the embedded HTML page
-//    • GET /api      → JSON snapshot (smith state + messages)
+//    • GET /api      → JSON snapshot (radar state + messages)
 //    • POST /send    → receive a new chat message
 //    • GET /generate_204, /hotspot-detect.html, /ncsi.txt
 //                   → OS captive-portal check redirects
@@ -13,6 +13,7 @@
 // =============================================================
 #include "web.h"
 #include "palette.h"
+#include "config.h"
 
 #include <Arduino.h>
 #include <DNSServer.h>
@@ -26,17 +27,17 @@ static DNSServer g_dns;
 static uint8_t g_node_id = 1;
 static char g_node_name[24] = "Neo";
 
-static uint8_t g_smith_state = 0; // 0=CLEAR 1=NEAR 2=CLOSE
-static float g_smith_rssi = -100.0f;
+static uint8_t g_radar_state = 0; // 0=CLEAR 1=NEAR 2=CLOSE
+static float g_radar_rssi = -100.0f;
 
 // ----- Message history (ring buffer) -----------------------
-static constexpr uint8_t HIST_SIZE = 16;
+static constexpr uint8_t HIST_SIZE = CHAT_HISTORY_SIZE;
 struct WebMsg {
   uint8_t node_id;
   char name[24];
   uint8_t r, g, b;
   char text[181];
-  bool is_smith;
+  bool is_alert;
 };
 static WebMsg g_hist[HIST_SIZE] = {};
 static uint8_t g_hist_head = 0;
@@ -45,7 +46,7 @@ static uint32_t g_total_msg = 0;
 
 // ----- Rate limiting ---------------------------------------
 static uint32_t g_last_send_ms = 0;
-static constexpr uint32_t RATE_LIMIT_MS = 1000;
+static constexpr uint32_t RATE_LIMIT_MS = CHAT_RATE_LIMIT_MS;
 
 static String jsonEscape(const char *s) {
   String out;
@@ -91,17 +92,17 @@ h1{font-size:1rem;letter-spacing:.15em;color:#00ff41;text-shadow:0 0 8px #00ff41
 #spark{width:80px;height:28px;flex-shrink:0}
 #msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:5px;padding:4px 0}
 .msg{background:rgba(0,15,0,.8);border:1px solid #002200;border-radius:6px;padding:7px 10px}
-.msg.sm{border-color:#550000;background:rgba(28,0,0,.9);box-shadow:inset 0 0 10px rgba(255,0,0,.15)}
+.msg.alt{border-color:#550000;background:rgba(28,0,0,.9);box-shadow:inset 0 0 10px rgba(255,0,0,.15)}
 .who{font-size:.72rem;font-weight:700;letter-spacing:.08em;margin-bottom:2px}
 .body{font-size:.88rem;word-break:break-word;line-height:1.4}
-.sm .body{color:#ff5555;font-weight:600;letter-spacing:.02em;text-shadow:0 0 3px rgba(255,0,0,.35);animation:glitch 2.5s ease-in-out infinite}
+.alt .body{color:#ff4444;font-weight:600;letter-spacing:.02em;animation:glitch 1.1s step-end infinite}
 form{display:flex;gap:8px;flex-shrink:0}
 input{flex:1;background:rgba(0,15,0,.8);border:1px solid #005500;color:#00ff41;padding:9px 11px;border-radius:6px;font-family:inherit;font-size:.9rem;outline:none;min-width:0}
 input:focus{border-color:#00ff41;box-shadow:0 0 5px rgba(0,255,65,.25)}
 button{background:#002200;border:1px solid #005500;color:#00ff41;padding:9px 14px;border-radius:6px;font-family:inherit;cursor:pointer;letter-spacing:.06em;flex-shrink:0;transition:background .15s}
 button:hover{background:#004400}
 @keyframes pls{0%,100%{opacity:1}50%{opacity:.35}}
-@keyframes glitch{0%,82%,100%{text-shadow:0 0 3px rgba(255,0,0,.35);transform:none}85%{text-shadow:1.5px 0 #ff0033,-1.5px 0 #00ffff;transform:translateX(1px)}88%{text-shadow:-1.5px 0 #ff0033,1.5px 0 #00ffff;transform:translateX(-1px)}92%{text-shadow:1px 0 #ff0033;transform:none}}
+@keyframes glitch{0%{text-shadow:2px 0 #ff0033,-2px 0 #00ffff;transform:translateX(1px)}14%{text-shadow:none;transform:none}28%{text-shadow:-2px 0 #ff0033,2px 0 #00ffaa;transform:translateX(-1px)}42%{text-shadow:none;transform:none}64%{text-shadow:2px 0 #00ffff,-2px 0 #ff0033;transform:translateX(0.5px)}76%{text-shadow:none;transform:none}88%{text-shadow:-1.5px 0 #ff0000,1.5px 0 #00ffff;transform:translateX(-0.5px)}94%,100%{text-shadow:none;transform:none}}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#003300;border-radius:2px}
 #clr{background:rgba(30,0,0,.7);border:1px solid #660000;color:#ff6666;padding:4px 9px;font-size:.74rem;border-radius:4px;cursor:pointer;font-weight:700;letter-spacing:.05em}
 #clr:hover{background:rgba(60,0,0,.9);border-color:#ff2020;color:#ff9999}
@@ -180,14 +181,14 @@ async function refresh(){
       inp.placeholder='Message as '+d.name+'...';
       inp.setAttribute('data-init','1');
     }
-    const si=d.smith;
+    const si=d.radar;
     badge.className='badge '+SC[si];badge.textContent=SL[si]||'RADAR: CLEAR';
     rssiVal.textContent=si>0?' ('+d.rssi.toFixed(0)+'dBm)':'';
     rh.push(d.rssi);if(rh.length>20)rh.shift();spark();
     if(d.seq!==lastN){
       const addMsg = (m) => {
         const div=document.createElement('div');
-        div.className='msg'+(m.smith?' sm':'');
+        div.className='msg'+(m.alert?' alt':'');
         div.innerHTML='<div class="who" style="color:'+m.col+'">'+esc(m.name)+'</div><div class="body">'+esc(m.text)+'</div>';
         msgs.appendChild(div);
       };
@@ -230,11 +231,11 @@ static void handleApi() {
   json.reserve(3000); // Prevent heap fragmentation truncation
   json = "{\"name\":\"";
   json += jsonEscape(g_node_name);
-  json += "\",\"smith\":";
-  json += String(g_smith_state);
+  json += "\",\"radar\":";
+  json += String(g_radar_state);
   json += ",\"rssi\":";
   // Avoid sprintf/float formatting issues — use integer + decimal
-  int r_int = (int)g_smith_rssi;
+  int r_int = (int)g_radar_rssi;
   json += String(r_int);
   json += ".0,\"seq\":";
   json += String(g_total_msg);
@@ -254,8 +255,8 @@ static void handleApi() {
     json += colorHex(m.r, m.g, m.b);
     json += "\",\"text\":\"";
     json += jsonEscape(m.text);
-    json += "\",\"smith\":";
-    json += m.is_smith ? "true" : "false";
+    json += "\",\"alert\":";
+    json += m.is_alert ? "true" : "false";
     json += "}";
   }
   json += "]}";
@@ -278,7 +279,7 @@ static void handleSend() {
 
   String msg = g_server.arg("message");
   msg.trim();
-  if (msg.length() == 0 || msg.length() > 150) {
+  if (msg.length() == 0 || msg.length() > CHAT_MAX_MSG_LEN) {
     g_server.send(400, "text/plain", "message 1-150 chars");
     return;
   }
@@ -315,7 +316,7 @@ void webBegin(uint8_t node_id, const char *node_name) {
   } else {
     snprintf(ap_name, sizeof(ap_name), "Team-%u", node_id);
   }
-  WiFi.softAP(ap_name, "matrix123");
+  WiFi.softAP(ap_name, WIFI_AP_PASSWORD);
 
   // DNSServer: redirect all DNS queries to the AP IP.
   g_dns.start(53, "*", WiFi.softAPIP());
@@ -339,7 +340,7 @@ void webLoop() {
 }
 
 void webAddMessage(uint8_t node_id, const char *name, uint8_t r, uint8_t g,
-                   uint8_t b, const char *text, bool is_smith) {
+                   uint8_t b, const char *text, bool is_alert) {
   WebMsg &m = g_hist[g_hist_head];
   m.node_id = node_id;
   strncpy(m.name, name, sizeof(m.name) - 1);
@@ -349,7 +350,7 @@ void webAddMessage(uint8_t node_id, const char *name, uint8_t r, uint8_t g,
   m.b = b;
   strncpy(m.text, text, sizeof(m.text) - 1);
   m.text[sizeof(m.text) - 1] = '\0';
-  m.is_smith = is_smith;
+  m.is_alert = is_alert;
 
   g_hist_head = (g_hist_head + 1) % HIST_SIZE;
   if (g_hist_count < HIST_SIZE)
@@ -357,7 +358,7 @@ void webAddMessage(uint8_t node_id, const char *name, uint8_t r, uint8_t g,
   ++g_total_msg;
 }
 
-void webSetSmithStatus(uint8_t state, float rssi_f) {
-  g_smith_state = state;
-  g_smith_rssi = rssi_f;
+void webSetRadarStatus(uint8_t state, float rssi_f) {
+  g_radar_state = state;
+  g_radar_rssi = rssi_f;
 }

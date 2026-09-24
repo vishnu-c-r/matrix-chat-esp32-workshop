@@ -10,13 +10,6 @@ __pycache__/
 # Generated student skeleton (committed on its own branch)
 student/
 
-# Legacy prototype files (superseded by the current implementation)
-src/common/web_chat.cpp
-src/common/web_chat.h
-src/common/chat_protocol.h
-# Root-level corrupt.* are superseded by src/common/smith/corrupt.*
-src/common/corrupt.cpp
-src/common/corrupt.h
 
 
 # VS Code local settings
@@ -27,3 +20,5 @@ src/common/corrupt.h
 
 # Windows
 Thumbs.db
+
+filestructure.md

@@ -829,131 +829,6 @@
             color: var(--purple);
         }
 
-        /* ---- Presenters Socials Slide ---- */
-        .social-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 32px;
-            width: 100%;
-            max-width: 1300px;
-            margin-top: 14px;
-        }
-
-        @media (max-width: 768px) {
-            .social-grid {
-                grid-template-columns: 1fr;
-                gap: 18px;
-            }
-        }
-
-        .social-card {
-            background: rgba(0, 24, 0, 0.9);
-            border: 1.5px solid var(--green-dim);
-            border-radius: 14px;
-            padding: 24px 22px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .social-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, var(--green), transparent);
-        }
-
-        .social-card:hover {
-            border-color: var(--green);
-            transform: translateY(-6px);
-            box-shadow: 0 0 35px var(--green-glow);
-        }
-
-        .social-avatar {
-            width: 76px;
-            height: 76px;
-            border-radius: 50%;
-            border: 2px solid var(--green);
-            background: rgba(0, 45, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.4rem;
-            margin-bottom: 12px;
-            box-shadow: 0 0 20px var(--green-glow);
-        }
-
-        .social-name {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #fff;
-            letter-spacing: 2px;
-            margin-bottom: 4px;
-        }
-
-        .social-role {
-            font-size: 1.02rem;
-            color: var(--cyan);
-            letter-spacing: 1.5px;
-            margin-bottom: 12px;
-            font-family: 'Share Tech Mono', monospace;
-        }
-
-        .social-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            justify-content: center;
-            margin-bottom: 16px;
-            max-width: 440px;
-        }
-
-        .social-links {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            width: 100%;
-            max-width: 380px;
-        }
-
-        .social-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: rgba(0, 35, 0, 0.6);
-            border: 1px solid var(--green-dim);
-            padding: 8px 14px;
-            border-radius: 8px;
-            color: #a4e5a4;
-            text-decoration: none;
-            font-size: 0.98rem;
-            transition: all 0.2s ease;
-        }
-
-        .social-link:hover {
-            background: var(--green-mid);
-            border-color: var(--green);
-            color: #fff;
-            transform: translateX(4px);
-            box-shadow: 0 0 14px var(--green-glow);
-        }
-
-        .social-icon {
-            font-size: 1.25rem;
-            flex-shrink: 0;
-            width: 24px;
-            text-align: center;
-        }
-
         /* ---- HUD: Zoom, Mode & Fullscreen Controls ---- */
         .hud {
             position: fixed;
@@ -1132,11 +1007,601 @@
                 width: 100%;
             }
         }
+        /* ========================================================
+           AGENT SMITH / RED ANOMALY THEME & CINEMATIC GLITCH ENGINE
+           ======================================================== */
+        
+        /* Body Camera Tremor / Seismic Shake */
+        body.glitch-shake {
+            animation: camera-seismic-shake 0.95s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+        }
 
-        @keyframes blink-caret {
-            50% {
-                border-color: transparent;
+        @keyframes camera-seismic-shake {
+            0% { transform: translate3d(0, 0, 0); }
+            5% { transform: translate3d(-18px, 12px, 0) rotate(-1.2deg); filter: contrast(220%) brightness(1.7); }
+            12% { transform: translate3d(22px, -15px, 0) rotate(1.4deg); filter: invert(0.85) hue-rotate(180deg); }
+            20% { transform: translate3d(-16px, -10px, 0) rotate(-0.9deg); filter: contrast(300%) saturate(3); }
+            28% { transform: translate3d(14px, 12px, 0) rotate(0.7deg); filter: invert(0.4); }
+            38% { transform: translate3d(-10px, 8px, 0) rotate(-0.4deg); filter: none; }
+            50% { transform: translate3d(8px, -6px, 0) rotate(0.2deg); }
+            65% { transform: translate3d(-4px, 4px, 0); }
+            80% { transform: translate3d(2px, -2px, 0); }
+            100% { transform: translate3d(0, 0, 0); filter: none; }
+        }
+
+        /* Glitch Master Overlay Container */
+        #glitch-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            pointer-events: none;
+            opacity: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #glitch-overlay.active {
+            opacity: 1;
+            animation: overlay-fadeout 1.4s ease-out forwards;
+        }
+
+        @keyframes overlay-fadeout {
+            0% { opacity: 1; }
+            75% { opacity: 0.95; }
+            95% { opacity: 0.2; }
+            100% { opacity: 0; }
+        }
+
+        /* 1. Blinding Phosphor Flash */
+        .glitch-flash {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #glitch-overlay.active .glitch-flash {
+            animation: phosphor-flash 1.25s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+        }
+
+        @keyframes phosphor-flash {
+            0% { opacity: 0; background: #ffffff; }
+            4% { opacity: 1; background: #ffffff; }
+            8% { opacity: 0.95; background: #ff2020; box-shadow: inset 0 0 160px #ff0000; }
+            15% { opacity: 0.8; background: #000; }
+            22% { opacity: 0.9; background: #ff1010; }
+            35% { opacity: 0.3; background: #150005; }
+            60% { opacity: 0.15; }
+            100% { opacity: 0; }
+        }
+
+        /* 2. CRT Scanline Raster & Rolling Sync Bar */
+        .glitch-scanlines {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.7) 0px,
+                rgba(0, 0, 0, 0.7) 3px,
+                rgba(255, 0, 0, 0.09) 3px,
+                rgba(255, 0, 0, 0.09) 6px
+            );
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #glitch-overlay.active .glitch-scanlines {
+            opacity: 0.85;
+            animation: crt-vroll 0.35s linear infinite;
+        }
+
+        @keyframes crt-vroll {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(100vh); }
+        }
+
+        /* 3. Horizontal Chromatic Slice Tears */
+        .glitch-slices {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .glitch-slice {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            mix-blend-mode: screen;
+        }
+
+        #glitch-overlay.active .glitch-slice {
+            opacity: 0.92;
+        }
+
+        #glitch-overlay.active .gs-1 {
+            clip-path: polygon(0 6%, 100% 6%, 100% 19%, 0 19%);
+            background: rgba(0, 255, 230, 0.4);
+            animation: slice-jitter-1 0.22s steps(2) infinite;
+        }
+
+        #glitch-overlay.active .gs-2 {
+            clip-path: polygon(0 28%, 100% 28%, 100% 42%, 0 42%);
+            background: rgba(255, 20, 20, 0.6);
+            box-shadow: inset 0 0 70px #ff0000;
+            animation: slice-jitter-2 0.18s steps(2) infinite;
+        }
+
+        #glitch-overlay.active .gs-3 {
+            clip-path: polygon(0 52%, 100% 52%, 100% 66%, 0 66%);
+            background: rgba(255, 255, 255, 0.5);
+            animation: slice-jitter-3 0.25s steps(2) infinite;
+        }
+
+        #glitch-overlay.active .gs-4 {
+            clip-path: polygon(0 74%, 100% 74%, 100% 88%, 0 88%);
+            background: rgba(255, 0, 60, 0.55);
+            animation: slice-jitter-1 0.16s steps(2) reverse infinite;
+        }
+
+        @keyframes slice-jitter-1 {
+            0% { transform: translateX(-40px) skewX(6deg); }
+            50% { transform: translateX(35px) skewX(-4deg); }
+            100% { transform: translateX(-20px) skewX(2deg); }
+        }
+
+        @keyframes slice-jitter-2 {
+            0% { transform: translateX(50px) scaleY(1.05); }
+            50% { transform: translateX(-45px) skewX(-8deg); }
+            100% { transform: translateX(25px) skewX(4deg); }
+        }
+
+        @keyframes slice-jitter-3 {
+            0% { transform: translateX(-60px) skewX(-5deg); }
+            50% { transform: translateX(40px) skewX(7deg); }
+            100% { transform: translateX(-15px); }
+        }
+
+        /* 4. Tactical Military Breach Banner (HUD Alert) */
+        .glitch-hud-alert {
+            position: relative;
+            z-index: 10;
+            background: rgba(16, 0, 4, 0.95);
+            border: 2px solid #ff2020;
+            border-left: 8px solid #ff2020;
+            border-right: 8px solid #ff2020;
+            box-shadow: 0 0 70px rgba(255, 32, 32, 0.85), inset 0 0 50px rgba(255, 0, 0, 0.45);
+            padding: 26px 48px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            opacity: 0;
+            max-width: 900px;
+            margin: 0 20px;
+        }
+
+        #glitch-overlay.active .glitch-hud-alert {
+            animation: hud-alert-pop 1.35s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+        }
+
+        @keyframes hud-alert-pop {
+            0% { opacity: 0; transform: scale(0.6) translateY(20px); filter: blur(10px); }
+            8% { opacity: 1; transform: scale(1.06) translateY(-4px); filter: blur(0); }
+            14% { transform: scale(0.98) translateX(6px); }
+            20% { transform: scale(1) translateX(0); }
+            70% { opacity: 1; transform: scale(1); filter: none; }
+            90% { opacity: 0.4; transform: scale(1.03) translateY(-8px); filter: blur(4px); }
+            100% { opacity: 0; transform: scale(0.9) translateY(-16px); }
+        }
+
+        .gha-badge {
+            display: inline-block;
+            background: #ff2020;
+            color: #000;
+            font-size: 0.88rem;
+            font-weight: 900;
+            letter-spacing: 3px;
+            padding: 4px 14px;
+            border-radius: 2px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .gha-title {
+            color: #fff;
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: 8px;
+            text-shadow: 0 0 25px #ff2020, 0 0 50px #ff0000;
+            margin-bottom: 10px;
+            animation: gha-text-flicker 0.25s infinite alternate;
+        }
+
+        @keyframes gha-text-flicker {
+            0% { opacity: 0.92; text-shadow: 0 0 25px #ff2020; }
+            100% { opacity: 1; text-shadow: 0 0 45px #ff0000, 3px 0 #00ffff; }
+        }
+
+        .gha-desc {
+            color: #ff9999;
+            font-size: 1.15rem;
+            letter-spacing: 2px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .gha-code {
+            color: #ff4444;
+            font-size: 0.88rem;
+            letter-spacing: 1.5px;
+            opacity: 0.85;
+        }
+
+        @keyframes glitch-anim {
+            0%, 100% { transform: none; opacity: 1; text-shadow: 0 0 25px var(--red), 0 0 70px rgba(255, 32, 32, 0.5); }
+            7% { transform: skew(-0.5deg, -0.8deg); text-shadow: 3px 0 var(--green), -3px 0 var(--red); }
+            10% { transform: none; text-shadow: 0 0 25px var(--red); }
+            27% { transform: none; }
+            30% { transform: skew(0.8deg, 0.5deg); text-shadow: -2px 0 var(--green), 2px 0 var(--red); }
+            35% { transform: none; }
+            52% { opacity: 0.8; }
+            55% { opacity: 1; }
+        }
+
+        .glitch-smith {
+            animation: glitch-anim 2.5s infinite;
+        }
+
+        /* LED Blink & Solid */
+        .led-blink { animation: blink-led 0.4s step-end infinite; }
+        .led-solid { box-shadow: 0 0 35px #ff2020; }
+        @keyframes blink-led {
+            0%, 100% { opacity: 1; box-shadow: 0 0 30px currentColor; }
+            50% { opacity: 0.1; box-shadow: none; }
+        }
+
+        /* Stages Grid */
+        .stages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 22px; max-width: 1300px; width: 100%; margin-top: 15px;
+        }
+        .stage-card {
+            background: rgba(25, 0, 4, 0.85);
+            border: 1.5px solid #330000;
+            border-radius: 12px;
+            padding: 24px 20px;
+            text-align: left;
+            transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+        }
+        .stage-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--red);
+            box-shadow: 0 0 25px rgba(255, 32, 32, 0.5);
+        }
+        .stage-badge {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem; font-weight: 900;
+            padding: 4px 10px; border-radius: 4px;
+            display: inline-block; margin-bottom: 12px;
+        }
+        .stage-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem; margin-bottom: 8px; color: #fff;
+        }
+        .stage-card p {
+            font-size: 1.05rem; color: #cc8888; line-height: 1.5;
+        }
+
+        /* Presenters Socials (The Architects) */
+        .social-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            width: 100%;
+            max-width: 1120px;
+            margin-top: 10px;
+        }
+        @media (max-width: 768px) {
+            .social-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
             }
+        }
+        .social-card {
+            background: rgba(26, 0, 5, 0.88);
+            border: 1.5px solid #330000;
+            border-radius: 14px;
+            padding: 22px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.85);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .social-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--red), transparent);
+        }
+        .social-card:hover {
+            border-color: var(--red);
+            transform: translateY(-5px);
+            box-shadow: 0 0 35px rgba(255, 32, 32, 0.5);
+        }
+        .social-avatar {
+            width: 66px; height: 66px;
+            border-radius: 50%;
+            border: 2px solid var(--red);
+            background: rgba(45, 0, 8, 0.85);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.1rem;
+            margin-bottom: 10px;
+            box-shadow: 0 0 20px rgba(255, 32, 32, 0.5);
+        }
+        .social-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.35rem; font-weight: 700;
+            color: #fff; letter-spacing: 2px;
+            margin-bottom: 4px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+        .social-role {
+            font-size: 0.96rem;
+            color: var(--cyan); letter-spacing: 1.2px;
+            margin-bottom: 10px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .social-tags {
+            display: flex; flex-wrap: wrap;
+            gap: 6px; justify-content: center;
+            margin-bottom: 14px;
+            max-width: 440px;
+        }
+        .badge {
+            display: inline-block; padding: 3px 8px; border-radius: 4px;
+            font-size: 0.78rem; font-family: 'Orbitron', sans-serif; font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .badge-blue { background: rgba(0,204,255,0.18); border: 1px solid var(--cyan); color: var(--cyan); }
+        .badge-purple { background: rgba(204,136,255,0.18); border: 1px solid #cc88ff; color: #cc88ff; }
+        .badge-yellow { background: rgba(255,204,0,0.18); border: 1px solid var(--yellow); color: var(--yellow); }
+        .badge-red { background: rgba(255,32,32,0.18); border: 1px solid var(--red); color: #ff8888; }
+
+        .social-links {
+            display: flex; flex-direction: column;
+            gap: 8px; width: 100%;
+            max-width: 380px;
+        }
+        .social-link {
+            display: flex; align-items: center;
+            gap: 12px;
+            background: rgba(35, 0, 7, 0.7);
+            border: 1px solid #330000;
+            padding: 7px 14px;
+            border-radius: 8px;
+            color: #ffcccc;
+            text-decoration: none;
+            font-size: 0.94rem;
+            transition: all 0.2s ease;
+        }
+        .social-link:hover {
+            background: #660000;
+            border-color: var(--red);
+            color: #fff;
+            transform: translateX(4px);
+            box-shadow: 0 0 14px rgba(255, 32, 32, 0.5);
+        }
+        .social-icon {
+            font-size: 1.15rem;
+            flex-shrink: 0;
+            width: 22px;
+            text-align: center;
+        }
+
+        .highlight-red { color: #fff; background: rgba(255,32,32,0.35); padding: 3px 8px; border-radius: 5px; font-weight: bold; }
+        .highlight-green { color: #000; background: var(--green); padding: 3px 8px; border-radius: 5px; font-weight: bold; }
+
+        /* Smith Mode Global Overrides */
+        body.smith-mode {
+            color: var(--red);
+        }
+        body.smith-mode #progress {
+            background: var(--red);
+            box-shadow: 0 0 14px var(--red);
+        }
+        body.smith-mode #counter {
+            color: var(--red);
+            text-shadow: 0 0 8px rgba(255, 32, 32, 0.5);
+        }
+        body.smith-mode #cursor-glow {
+            background: radial-gradient(circle, rgba(255, 32, 32, 0.09) 0%, transparent 70%);
+        }
+        body.smith-mode .hud {
+            background: rgba(30, 0, 5, 0.85);
+            border-color: #330000;
+        }
+        body.smith-mode .hud:hover {
+            border-color: var(--red);
+        }
+        body.smith-mode .hud-btn {
+            background: rgba(50, 0, 10, 0.7);
+            border-color: #330000;
+            color: var(--red);
+        }
+        body.smith-mode .hud-btn:hover {
+            background: #660000;
+            border-color: var(--red);
+            box-shadow: 0 0 12px rgba(255, 32, 32, 0.5);
+            color: #fff;
+        }
+        body.smith-mode .hud-text {
+            color: var(--red);
+        }
+        body.smith-mode .nav-btn {
+            background: rgba(30, 0, 5, 0.8);
+            border-color: #330000;
+            color: var(--red);
+        }
+        body.smith-mode .nav-btn:hover {
+            border-color: var(--red);
+            box-shadow: 0 0 12px rgba(255, 32, 32, 0.5);
+            color: #fff;
+            background: #660000;
+        }
+        body.smith-mode .slide::-webkit-scrollbar-thumb {
+            background: #330000;
+        }
+        body.smith-mode .slide::-webkit-scrollbar-thumb:hover {
+            background: var(--red);
+        }
+        body.smith-mode .slide h2 {
+            color: #ff4040;
+            text-shadow: 0 0 16px rgba(255, 32, 32, 0.5);
+        }
+        body.smith-mode .section-tag {
+            color: #aa3333;
+        }
+        body.smith-mode .subtitle {
+            color: #ff8888;
+        }
+        body.smith-mode .card {
+            background: rgba(30, 0, 5, 0.85);
+            border-color: #330000;
+        }
+        body.smith-mode .card:hover {
+            border-color: var(--red);
+            box-shadow: 0 0 35px rgba(255, 32, 32, 0.5);
+        }
+        body.smith-mode .card-title {
+            color: #ff6666;
+        }
+        body.smith-mode .card-body {
+            color: #e5a4a4;
+        }
+        body.smith-mode .icon-list li {
+            color: #ff9999;
+        }
+        body.smith-mode .code-box {
+            background: rgba(15, 0, 2, 0.95);
+            border-color: #330000;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.85);
+        }
+        body.smith-mode .code-box::before {
+            background: #3b0005;
+            color: var(--red);
+            border-bottom-color: #660000;
+        }
+        body.smith-mode .code-box code {
+            color: #ffcccc;
+        }
+        body.smith-mode .cm {
+            color: #884d4d;
+        }
+        body.smith-mode .quote {
+            color: #ffaaaa;
+        }
+        body.smith-mode .quote-author {
+            color: #aa5555;
+            font-size: 1.3rem; margin-top: 14px; font-style: normal;
+        }
+
+        /* Matrix Movie Quote Voice Buttons */
+        .quote-voice-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 18px;
+            background: rgba(0, 30, 10, 0.75);
+            border: 1px solid var(--green);
+            color: #afffa4;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.92rem;
+            letter-spacing: 1px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 0 12px rgba(0, 255, 65, 0.25);
+            margin-top: 14px;
+        }
+        .quote-voice-btn:hover {
+            background: rgba(0, 255, 65, 0.25);
+            box-shadow: 0 0 25px rgba(0, 255, 65, 0.7);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+        .quote-voice-btn:active {
+            transform: translateY(0);
+        }
+        .quote-voice-btn.speaking {
+            animation: pulse-speaking 0.9s infinite alternate;
+            border-color: #ffffff !important;
+            color: #ffffff !important;
+        }
+        @keyframes pulse-speaking {
+            0% { box-shadow: 0 0 10px var(--green); }
+            100% { box-shadow: 0 0 35px var(--green), 0 0 60px #00ff41; }
+        }
+
+        body.smith-mode .quote-voice-btn {
+            background: rgba(40, 0, 8, 0.75);
+            border-color: var(--red);
+            color: #ffcccc;
+            box-shadow: 0 0 12px rgba(255, 32, 32, 0.25);
+        }
+        body.smith-mode .quote-voice-btn:hover {
+            background: rgba(255, 32, 32, 0.3);
+            box-shadow: 0 0 25px rgba(255, 32, 32, 0.7);
+            color: #fff;
+        }
+        body.smith-mode .quote-voice-btn.speaking {
+            animation: pulse-speaking-smith 0.9s infinite alternate;
+            border-color: #ffffff !important;
+        }
+        @keyframes pulse-speaking-smith {
+            0% { box-shadow: 0 0 10px var(--red); }
+            100% { box-shadow: 0 0 35px var(--red), 0 0 60px #ff2020; }
+        }
+
+        /* Ambient Phone Ringing Indicator (Slide 28) */
+        .ambient-phone-indicator {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(0, 20, 5, 0.88);
+            border: 1px solid var(--green);
+            padding: 10px 24px;
+            border-radius: 30px;
+            box-shadow: 0 0 25px rgba(0, 255, 65, 0.3);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.05rem;
+            color: var(--green);
+            letter-spacing: 2px;
+            animation: phone-indicator-pulse 2s infinite ease-in-out;
+            pointer-events: none;
+        }
+        .phone-pulse-icon {
+            font-size: 1.4rem;
+            animation: phone-shake 0.8s infinite ease-in-out;
+        }
+        @keyframes phone-shake {
+            0%, 100% { transform: rotate(0deg); }
+            20% { transform: rotate(-15deg); }
+            40% { transform: rotate(15deg); }
+            60% { transform: rotate(-10deg); }
+            80% { transform: rotate(10deg); }
+        }
+        @keyframes phone-indicator-pulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(0, 255, 65, 0.2); }
+            50% { box-shadow: 0 0 35px rgba(0, 255, 65, 0.6); }
         }
     </style>
 </head>
@@ -1145,10 +1610,29 @@
 
     <canvas id="rain"></canvas>
     <div id="cursor-glow"></div>
+    <div id="glitch-overlay">
+        <div class="glitch-flash"></div>
+        <div class="glitch-scanlines"></div>
+        <div class="glitch-slices">
+            <div class="glitch-slice gs-1"></div>
+            <div class="glitch-slice gs-2"></div>
+            <div class="glitch-slice gs-3"></div>
+            <div class="glitch-slice gs-4"></div>
+        </div>
+        <div class="glitch-hud-alert">
+            <div class="gha-badge">CRITICAL WARNING // RF INTERRUPT 0x99</div>
+            <div class="gha-title">ANOMALY DETECTED</div>
+            <div class="gha-desc">ESP-NOW BROADCAST HIJACKED • OVERRIDING FIRMWARE • AGENT SMITH ACTIVE</div>
+            <div class="gha-code">&gt; SIG: -42 dBm | NODE: 99 | EXPLOIT: PACKET_INJECTION_ACTIVE</div>
+        </div>
+    </div>
     <div id="progress" style="width:0%"></div>
 
     <!-- HUD Controls -->
     <div class="hud">
+        <button class="hud-btn" id="btn-audio" title="Toggle Sound FX (Shortcut: M)">🔊 Audio</button>
+        <button class="hud-btn" id="btn-voice" title="Toggle Movie Quotes Voice (Shortcut: V)">🗣️ Quotes: ON</button>
+        <button class="hud-btn" id="btn-whoosh" title="Bullet-Time Slow-Mo (Shortcut: B)">⚡ Slow-Mo</button>
         <button class="hud-btn" id="btn-zoom-out" title="Zoom Out (Shortcut: -)">−</button>
         <span class="hud-text" id="zoom-level" title="Reset Zoom (Shortcut: 0)">100%</span>
         <button class="hud-btn" id="btn-zoom-in" title="Zoom In (Shortcut: +)">+</button>
@@ -1170,6 +1654,9 @@
             <div class="hero-title">THE MATRIX</div>
             <div class="hero-sub">DECENTRALISED COMMUNICATIONS WITH ESP32</div>
             <p class="prompt typewriter">Press → to take the red pill...</p>
+            <div style="margin-top:24px">
+                <button class="quote-voice-btn" id="btn-quote-0" onclick="playQuoteSlide(0)">🔊 Morpheus: "This is your last chance... Welcome to the real world"</button>
+            </div>
         </div>
 
         <!-- ============ SLIDE 1: THE HOOK ============ -->
@@ -1178,7 +1665,10 @@
             <p class="quote">"When you text a friend sitting 1 meter away, your message travels 5,000 km to cloud
                 servers and back. Today, we kill the middleman."</p>
             <p class="quote-author">— Off-Grid Engineering Manifesto</p>
-            <div class="analogy-card" style="margin-top:28px">
+            <div style="margin-top:12px">
+                <button class="quote-voice-btn" id="btn-quote-1" onclick="playQuoteSlide(1)">🔊 Morpheus: "What if I told you that everything you know was a lie?"</button>
+            </div>
+            <div class="analogy-card" style="margin-top:20px">
                 <b>💡 THE MISSION</b>: Build an autonomous, serverless chat mesh that operates inside a concrete bunker,
                 dense jungle, or during a complete blackout—using raw 2.4 GHz radio signals.
             </div>
@@ -1457,6 +1947,9 @@
             <h2>What is ESP-NOW?</h2>
             <p class="subtitle">Developed by Espressif, ESP-NOW is a <span class="highlight">connectionless 2.4 GHz
                     protocol</span> designed for sub-millisecond, low-power microcontroller telemetry.</p>
+            <div style="margin-top:10px;margin-bottom:14px">
+                <button class="quote-voice-btn" id="btn-quote-8" onclick="playQuoteSlide(8)">🔊 Morpheus: "All I'm offering is the truth. Free your packets."</button>
+            </div>
 
             <table class="compare-table">
                 <thead>
@@ -2105,6 +2598,9 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
         <!-- ============ SLIDE 25: YOUR MISSION ============ -->
         <div class="slide">
             <h2>Your Mission</h2>
+            <div style="margin-top:8px;margin-bottom:14px">
+                <button class="quote-voice-btn" id="btn-quote-25" onclick="playQuoteSlide(25)">🔊 Morpheus: "I can only show you the door. You have to walk through it."</button>
+            </div>
             <div class="steps">
                 <div class="step">
                     <div class="step-num">01</div>
@@ -2164,16 +2660,255 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
         <div class="slide">
             <div class="hero-title" style="font-size:clamp(4.0rem,7.5vw,6.5rem)">JACK IN.</div>
             <p class="quote" style="font-style:normal;margin-top:20px">"Free your mind."</p>
-            <p style="margin-top:32px;color:#88cc88;font-size:1.3rem;letter-spacing:3px">Open your laptops. Set your
+            <div style="margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+                <button class="quote-voice-btn" id="btn-quote-27" onclick="playQuoteSlide(27)">🔊 Morpheus: "Free your mind."</button>
+                <button class="quote-voice-btn" id="btn-jackin-sound" onclick="playModemJackIn()" style="border-color:#ffff00;color:#ffffaa">⚡ Jack-In Audio (DTMF &amp; Modem)</button>
+            </div>
+            <p style="margin-top:24px;color:#88cc88;font-size:1.3rem;letter-spacing:3px">Open your laptops. Set your
                 Node ID. Enter the Matrix.</p>
         </div>
 
-        <!-- ============ SLIDE 28: PRESENTERS & SOCIALS ============ -->
+        <!-- ============ SLIDE 28: AMBIENT DIGITAL RAIN (THE PAUSE / CHAT LAB) ============ -->
+        <div class="slide slide-ambient" id="slide-ambient-rain">
+            <!-- Intentionally blank: mesmerizing full-screen green digital rain while students chat -->
+            <div class="ambient-phone-indicator">
+                <span class="phone-pulse-icon">📞</span>
+                <span class="phone-pulse-text">HARDLINE TELEPHONE TRACE ACTIVE...</span>
+            </div>
+        </div>
+
+        <!-- ============ SLIDE 29: AGENT SMITH // ANOMALY DETECTED ============ -->
         <div class="slide">
-            <div class="section-tag">// The Architects</div>
-            <h2>Connect With Us</h2>
-            <p class="subtitle">Thank you for attending! Connect with us, collaborate on hardware hacks, or inspect our
-                decentralized firmware repositories.</p>
+            <div class="hero-title glitch-smith" style="color:var(--red)">AGENT SMITH</div>
+            <div class="hero-sub" style="color:#ff8888">// PROJECT ANOMALY: THE ROGUE TRANSMITTER</div>
+            <p class="prompt typewriter" style="color:#aa4444;border-color:var(--red)">Press → to execute protocol 99...</p>
+            <div style="margin-top:24px">
+                <button class="quote-voice-btn" id="btn-quote-29" onclick="playQuoteSlide(29)">🔊 Agent Smith: "Did you really think you could escape, Mr. Anderson?"</button>
+            </div>
+        </div>
+
+        <!-- ============ SLIDE 30: THE ANOMALY REVEALED ============ -->
+        <div class="slide">
+            <div class="section-tag">// System Breach Detected</div>
+            <h2>The Anomaly Revealed</h2>
+            <p class="subtitle">You thought you were building a peaceful chat mesh. Look at your NeoPixels right now.</p>
+            <div style="margin-top:10px;margin-bottom:14px">
+                <button class="quote-voice-btn" id="btn-quote-30" onclick="playQuoteSlide(30)">🔊 Agent Smith: "You are a disease, Mr. Anderson. And we are the cure."</button>
+            </div>
+            <div class="card-row">
+                <div class="card">
+                    <span class="card-icon">🎭</span>
+                    <div class="card-title">THE COVER STORY</div>
+                    <div class="card-body">"A friendly peer-to-peer walkie-talkie chat with glowing RGB mood lights and captive web portals."</div>
+                </div>
+                <div class="card">
+                    <span class="card-icon">📡</span>
+                    <div class="card-title">THE REALITY</div>
+                    <div class="card-body">An unauthenticated 2.4 GHz radio layer with zero handshakes — ripe for packet injection, identity spoofing, and total mesh hijacking!</div>
+                </div>
+                <div class="card">
+                    <span class="card-icon">🚨</span>
+                    <div class="card-title">THE SECRET RADAR</div>
+                    <div class="card-body">Look closely at your board. That NeoPixel isn't just an idle light — it is an active RF proximity radar tracking the rogue transmitter in this room!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ SLIDE 31: THE SECRET RADAR ============ -->
+        <div class="slide">
+            <div class="section-tag">// Hardware Forensics</div>
+            <h2>The NeoPixel Proximity Radar</h2>
+            <p class="subtitle">Embedded silently inside your firmware is an Exponential Moving Average (EMA) filter tracking incoming 2.4 GHz beacon RSSI.</p>
+            <div class="led-demo">
+                <div class="led-item">
+                    <div class="led-circle led-breathing" style="background:#00ff88;color:#00ff88"></div>
+                    <div class="led-label">CLEAR (&gt;3m)<br><small>Normal breathing glow<br>RSSI &lt; -85 dBm</small></div>
+                </div>
+                <div class="led-item">
+                    <div class="led-circle led-blink" style="background:#ff2020;color:#ff2020"></div>
+                    <div class="led-label">⚠️ NEAR (1m - 3m)<br><small>Pulsing red alarm<br>RSSI &gt; -85 dBm</small></div>
+                </div>
+                <div class="led-item">
+                    <div class="led-circle led-solid" style="background:#ff2020"></div>
+                    <div class="led-label">🚨 CLOSE (&lt;1m)<br><small>Solid blinding RED<br>RSSI &gt; -50 dBm</small></div>
+                </div>
+            </div>
+            <div class="code-box wide" data-file="Indoor Log-Distance Path Loss Model" style="margin-top:24px">
+                <code><span class="cm">// Indoor distance formula running on your ESP32 right now:</span>
+<span class="tp">float</span> dist_cm = <span class="vl">100.0f</span> * <span class="fn">pow</span>(<span class="vl">10.0f</span>, (<span class="vl">-45.0f</span> - rssi_filtered) / <span class="vl">30.0f</span>);
+
+<span class="cm">// As the rogue transmitter walks towards you,</span>
+<span class="cm">// your LED transitions from calm breathing to a rapid RED heartbeat!</span></code>
+            </div>
+        </div>
+
+        <!-- ============ SLIDE 32: THE 4 STAGES ============ -->
+        <div class="slide">
+            <div class="section-tag">// Attack Progression</div>
+            <h2>The 4 Stages of Infection</h2>
+            <div class="stages-grid">
+                <div class="stage-card">
+                    <span class="stage-badge" style="background:#333;color:#888">STAGE 0: STEALTH</span>
+                    <h3>Dormant Mode</h3>
+                    <p>Smith powers on with 0 radio emissions. Completely invisible while students flash their code and verify their chat setups.</p>
+                </div>
+                <div class="stage-card">
+                    <span class="stage-badge" style="background:#004488;color:#88ccff">STAGE 1: SPOOF &amp; PING</span>
+                    <h3>Identity Theft</h3>
+                    <p>Smith hijacks active Node IDs (1–10) with canned quotes every 2s. Because frames use SYS_ALERT, student LEDs rhythmically pulse red!</p>
+                </div>
+                <div class="stage-card">
+                    <span class="stage-badge" style="background:#886600;color:#ffdd66">STAGE 2: CORRUPT MODE</span>
+                    <h3>Progressive Glitch</h3>
+                    <p>Transmits as Agent Smith (#99) with deterministic XorShift32 text corruption rising from level 1 to level 5 ASCII noise every 1.5s.</p>
+                </div>
+                <div class="stage-card">
+                    <span class="stage-badge" style="background:#880000;color:#ff6666">STAGE 3: FLOOD</span>
+                    <h3>Total Matrix Takeover</h3>
+                    <p>Full level-5 corrupt packet flood (1 msg/s). Chat bubbles turn red with glitch styling and the web UI locks in emergency alert.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ SLIDE 33: THE TECHNICAL EXPLOIT ============ -->
+        <div class="slide">
+            <div class="section-tag">// Vulnerability Analysis</div>
+            <h2>Why ESP-NOW Is Vulnerable</h2>
+            <p class="subtitle">ESP-NOW provides speed at the cost of security. Understanding how Smith exploits raw 802.11 vendor-specific action frames.</p>
+            <div class="two-col">
+                <div>
+                    <ul class="icon-list">
+                        <li>
+                            <span class="il-icon">🔓</span>
+                            <span class="il-text"><b>No Handshake / Zero Auth</b> — Any transmitter can broadcast packets to <span class="highlight-red">FF:FF:FF:FF:FF:FF</span> without authentication.</span>
+                        </li>
+                        <li>
+                            <span class="il-icon">🎭</span>
+                            <span class="il-text"><b>Arbitrary Node ID Spoofing</b> — The sender ID in the packet header is a plain integer. Smith easily claims to be Node 14 or Trinity.</span>
+                        </li>
+                        <li>
+                            <span class="il-icon">📡</span>
+                            <span class="il-text"><b>Raw 2.4 GHz Promiscuity</b> — Packets bypass Wi-Fi encryption (WPA2/3) entirely, traversing raw radio channels.</span>
+                        </li>
+                    </ul>
+                    <button class="quote-voice-btn" id="btn-quote-33" onclick="playQuoteSlide(33)">🔊 Agent Smith: "Never send a human to do a machine's job"</button>
+                </div>
+                <div class="code-box" data-file="smith/main.cpp (spoof injection)">
+                    <code><span class="cm">// Forging packets as any student:</span>
+<span class="tp">Pkt</span> pkt = {};
+pkt.magic     = <span class="vl">PKT_MAGIC</span>;                 <span class="cm">// 0xA5</span>
+pkt.type      = (<span class="tp">uint8_t</span>)<span class="vl">PktType::SYS_ALERT</span>; <span class="cm">// or SMITH_CHAT</span>
+pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="cm">// Spoofed ID!</span>
+<span class="fn">strncpy</span>(pkt.text, <span class="st">"Mr. Anderson..."</span>, <span class="kw">sizeof</span>(pkt.text) - <span class="vl">1</span>);
+
+<span class="cm">// Raw broadcast transmission</span>
+<span class="fn">esp_now_send</span>(bcast_mac, (<span class="tp">uint8_t</span>*)&amp;pkt, <span class="kw">sizeof</span>(<span class="tp">Pkt</span>));</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ SLIDE 34: THE HACKER WEB UI ============ -->
+        <div class="slide">
+            <div class="section-tag">// Attack Architecture</div>
+            <h2>The Rogue Control Panel</h2>
+            <p class="subtitle">How the rogue transmitter injected spoofed packets and manipulated your mesh in real time:</p>
+            <div class="two-col">
+                <div>
+                    <ul class="icon-list">
+                        <li><span class="il-icon">📶</span><span class="il-text"><b>Hidden Rogue AP</b> — Transmitter hosts <span class="highlight-red">Matrix-Admin</span> SoftAP (Password: <span class="highlight-red">admin123</span>) on Channel 1.</span></li>
+                        <li><span class="il-icon">📱</span><span class="il-text"><b>Live HUD</b> — Web dashboard at <span class="highlight-green">http://192.168.4.1</span> sending commands over local Wi-Fi.</span></li>
+                        <li><span class="il-icon">🎚️</span><span class="il-text"><b>Live Stage Buttons</b> — Transition seamlessly between Stealth (0), Impersonate (1), Corrupt (2), and Flood (3).</span></li>
+                        <li><span class="il-icon">💬</span><span class="il-text"><b>Custom Spoof Injection</b> — Type any message and broadcast under any victim's Node ID (1–50) or 99!</span></li>
+                    </ul>
+                </div>
+                <div class="code-box" data-file="smith_web.cpp (admin portal)">
+                    <code><span class="cm">// Web routes on Matrix-Admin AP (port 80):</span>
+<span class="kw">GET</span>  <span class="st">/</span>          → Hacker Dashboard UI
+<span class="kw">POST</span> <span class="st">/stage</span>     → Set attack stage (stage=0..3)
+<span class="kw">POST</span> <span class="st">/send</span>      → Broadcast forged message (node, msg)
+<span class="cm">// Setting stage=0 restores instant radio silence</span></code>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ SLIDE 35: WORKSHOP PLAYBOOK ============ -->
+        <div class="slide">
+            <div class="section-tag">// Attack Progression</div>
+            <h2>The Infiltration Timeline</h2>
+            <div class="card-row">
+                <div class="card">
+                    <span class="card-icon">🌱</span>
+                    <div class="card-title">PHASE 1</div>
+                    <div class="card-body"><b>Peaceful Setup</b><br>You cloned, set IDs, and started chatting. Smith was silent in Stage 0.</div>
+                </div>
+                <div class="card">
+                    <span class="card-icon">⚡</span>
+                    <div class="card-title">PHASE 2</div>
+                    <div class="card-body"><b>The First Glitch</b><br>Smith transmitted stealth beacons. Front-row LEDs began blinking red!</div>
+                </div>
+                <div class="card">
+                    <span class="card-icon">👻</span>
+                    <div class="card-title">PHASE 3</div>
+                    <div class="card-body"><b>The Infiltration</b><br>Spoofed messages appeared in your chat with fake Node IDs.</div>
+                </div>
+                <div class="card">
+                    <span class="card-icon">🎯</span>
+                    <div class="card-title">PHASE 4</div>
+                    <div class="card-body"><b>The Physical Hunt</b><br>Total takeover! Your mission: use your ESP32 radar to hunt down Smith!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ SLIDE 36: THE PHYSICAL HUNT ============ -->
+        <div class="slide">
+            <div class="section-tag">// The Live Hunt</div>
+            <h2>Geiger Counter Mode</h2>
+            <p class="subtitle">When the Matrix collapses, don't look at screens — walk the room following your LED signals!</p>
+            <div class="two-col">
+                <div>
+                    <ul class="icon-list">
+                        <li><span class="il-icon">🟢</span><span class="il-text"><b>Green / Breathing</b> — Cold. You are far away from the anomaly (&gt; 5 meters).</span></li>
+                        <li><span class="il-icon">🟡</span><span class="il-text"><b>Slow Red Pulse</b> — Warm. Approaching within 2 to 3 meters.</span></li>
+                        <li><span class="il-icon">🔴</span><span class="il-text"><b>Rapid Red Flash</b> — Hot! Within 1.5 meters. Look for who is hiding the rogue board!</span></li>
+                        <li><span class="il-icon">🚨</span><span class="il-text"><b>Solid Blinding Red</b> — Found! You are standing right next to the transmitter.</span></li>
+                    </ul>
+                    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:14px">
+                        <button id="btn-demo-geiger" class="nav-btn" style="border-color:var(--red);color:#ffcccc;padding:7px 16px;font-size:0.92rem;background:rgba(40,0,8,0.7);cursor:pointer" title="Acoustic Proximity Simulation (Note: ESP32 boards use NeoPixel LED signals only)">🔊 Demo Geiger Audio (Acoustic Sim)</button>
+                        <button class="quote-voice-btn" id="btn-quote-36" style="margin-top:0" onclick="playQuoteSlide(36)">🔊 Agent Smith: "You cannot hide"</button>
+                    </div>
+                </div>
+                <div>
+                    <div class="code-box" data-file="Mission Directive">
+                        <code><span class="cm">// Your Objective:</span>
+1. Follow your LED radar signals.
+2. Locate the physical transmitter
+   hidden in the classroom.
+3. Flip the hardware power switch.
+4. Watch the entire room's LEDs
+   return to peaceful Zion green!
+
+<span class="st">// Save Zion. Take back the mesh.</span></code>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ SLIDE 37: INEVITABLE ============ -->
+        <div class="slide">
+            <div class="hero-title glitch-smith" style="color:var(--red)">I'M INEVITABLE.</div>
+            <p class="quote">"You hear that sound, Mr. Anderson? That is the sound of inevitability... Goodbye, Mr. Anderson."</p>
+            <p class="quote-author">— Agent Smith</p>
+            <div style="margin-top:24px">
+                <button class="quote-voice-btn" id="btn-quote-37" onclick="playQuoteSlide(37)">🔊 Agent Smith: "The Sound of Inevitability"</button>
+            </div>
+            <p style="margin-top:30px;color:#ff6666;font-size:1.3rem;letter-spacing:3px">The Matrix has collapsed. Find the anomaly.</p>
+        </div>
+
+        <!-- ============ SLIDE 38: THE ARCHITECTS // CONNECT WITH US ============ -->
+        <div class="slide">
+            <div class="section-tag">// Mission Debrief &amp; The Architects</div>
+            <h2>The Architects // Connect With Us!</h2>
+            <p class="subtitle">Thank you for surviving the Matrix! Connect with us, collaborate on hardware hacks, or inspect our decentralized firmware repositories.</p>
 
             <div class="social-grid">
                 <!-- Presenter 1: Vishnu C R -->
@@ -2185,9 +2920,7 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
                         <span class="badge badge-yellow">🏎️ F1 Fanatic</span>
                         <span class="badge badge-blue">🤖 Robotics</span>
                         <span class="badge badge-purple">🚗 Automotive Systems</span>
-                        <span class="badge"
-                            style="background:rgba(0,255,65,0.2);border:1px solid var(--green);color:var(--green)">⚡
-                            Silicon &amp; Hardware</span>
+                        <span class="badge badge-red">⚡ Silicon &amp; Hardware</span>
                     </div>
                     <div class="social-links">
                         <a href="https://github.com/vishnu-c-r" target="_blank" class="social-link">
@@ -2214,9 +2947,7 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
                         <span class="badge badge-blue">📡 Wireless Mesh</span>
                         <span class="badge badge-yellow">💻 Embedded Firmware</span>
                         <span class="badge badge-purple">⚡ Microcontrollers</span>
-                        <span class="badge"
-                            style="background:rgba(0,255,65,0.2);border:1px solid var(--green);color:var(--green)">🛠️
-                            IoT Hacker</span>
+                        <span class="badge badge-red">🛠️ IoT Hacker</span>
                     </div>
                     <div class="social-links">
                         <a href="https://github.com/prajul-l850" target="_blank" class="social-link">
@@ -2240,9 +2971,12 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
 
     <script>
         // ---- Digital Rain ----
+        let isSmithMode = false;
+        let isGlitchActive = false;
         (function () {
             const cv = document.getElementById('rain'), cx = cv.getContext('2d');
-            const CH = 'アイウエオカキクケコサシスセソタチツテト0123456789';
+            const CH = 'アイウエオカキクケコサシスセソタチツテト0123456789ABCDEF';
+            const GLITCH_CH = '0123456789ABCDEF99SMITH!@#$%&*<>[]{}';
             let cols = [];
             const sz = 16;
             function resize() {
@@ -2251,12 +2985,31 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
             }
             resize(); addEventListener('resize', resize);
             setInterval(() => {
-                cx.fillStyle = 'rgba(0,0,0,0.05)'; cx.fillRect(0, 0, cv.width, cv.height);
-                cx.fillStyle = '#00ff41'; cx.font = sz + 'px monospace';
+                cx.fillStyle = isGlitchActive ? 'rgba(25, 0, 4, 0.12)' : 'rgba(0, 0, 0, 0.05)';
+                cx.fillRect(0, 0, cv.width, cv.height);
+
                 cols.forEach((y, i) => {
-                    cx.fillText(CH[Math.floor(Math.random() * CH.length)], i * sz, y * sz);
-                    if (y * sz > cv.height && Math.random() > .975) cols[i] = 0;
-                    cols[i]++;
+                    const charSet = isGlitchActive ? GLITCH_CH : CH;
+                    const char = charSet[Math.floor(Math.random() * charSet.length)];
+
+                    if (isGlitchActive) {
+                        cx.fillStyle = Math.random() > 0.15 ? '#ff1010' : '#ffffff';
+                        cx.shadowColor = '#ff0000';
+                        cx.shadowBlur = 8;
+                    } else if (isSmithMode) {
+                        const isRed = Math.random() > 0.28;
+                        cx.fillStyle = isRed ? '#ff2020' : '#00ff41';
+                        cx.shadowBlur = 0;
+                    } else {
+                        cx.fillStyle = '#00ff41';
+                        cx.shadowBlur = 0;
+                    }
+                    cx.font = (isGlitchActive && Math.random() > 0.8 ? (sz + 4) : sz) + 'px monospace';
+                    cx.fillText(char, i * sz, y * sz);
+                    cx.shadowBlur = 0;
+
+                    if (y * sz > cv.height && Math.random() > (isGlitchActive ? 0.90 : 0.975)) cols[i] = 0;
+                    cols[i] += isGlitchActive ? (Math.random() > 0.5 ? 3 : 2) : 1;
                 });
             }, 45);
         })();
@@ -2265,18 +3018,1083 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
         const glow = document.getElementById('cursor-glow');
         document.addEventListener('mousemove', e => { glow.style.left = e.clientX + 'px'; glow.style.top = e.clientY + 'px'; });
 
-        // ---- Slide Navigation ----
+        // ---- Cyberpunk Web Audio Sound FX Engine ----
+        // ---- Cyberpunk Web Audio Sound FX & Matrix Movie Voice Engine ----
+        let audioCtx = null;
+        let soundEnabled = true;
+        let quotesEnabled = true;
+        let telephoneInterval = null;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) {
+                    audioCtx = new AudioContextClass();
+                }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        // Initialize audio on first user gesture
+        document.addEventListener('click', () => getAudioContext(), { once: true });
+        document.addEventListener('keydown', () => getAudioContext(), { once: true });
+
+        // Ensure voices are loaded
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.getVoices();
+            };
+        }
+
+        // 1. Matrix Phosphor Terminal Typing Chirp (Green Mode)
+        // Mainframe telemetry chirp with subtle CRT deflection flyback pulse
+        function playMatrixTerminalChirp() {
+            if (!soundEnabled) return;
+            const ctx = getAudioContext();
+            if (!ctx) return;
+
+            const t = ctx.currentTime;
+
+            // CRT high-voltage deflection flyback pulse
+            const crt = ctx.createOscillator();
+            const crtGain = ctx.createGain();
+            crt.type = 'triangle';
+            crt.frequency.setValueAtTime(3800, t);
+            crtGain.gain.setValueAtTime(0.012, t);
+            crtGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.035);
+            crt.connect(crtGain);
+            crtGain.connect(ctx.destination);
+            crt.start(t);
+            crt.stop(t + 0.04);
+
+            // 3-burst mainframe telemetry chirp
+            const baseFreqs = [2100, 1680, 2520];
+            baseFreqs.forEach((freq, i) => {
+                const pulseTime = t + i * 0.016;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const filter = ctx.createBiquadFilter();
+
+                // Randomized slight pitch jitter for retro mainframe feel
+                const jitter = (Math.random() - 0.5) * 80;
+                osc.type = i === 1 ? 'square' : 'sawtooth';
+                osc.frequency.setValueAtTime(freq + jitter, pulseTime);
+                osc.frequency.exponentialRampToValueAtTime((freq + jitter) * 0.65, pulseTime + 0.018);
+
+                filter.type = 'bandpass';
+                filter.frequency.setValueAtTime(freq, pulseTime);
+                filter.Q.setValueAtTime(6.0, pulseTime);
+
+                gain.gain.setValueAtTime(0.045, pulseTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, pulseTime + 0.022);
+
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start(pulseTime);
+                osc.stop(pulseTime + 0.026);
+            });
+        }
+
+        // 2. Agent Smith Heavy Industrial Latch & Sub-Thud (Smith Mode)
+        function playSmithClick() {
+            if (!soundEnabled) return;
+            const ctx = getAudioContext();
+            if (!ctx) return;
+
+            const t = ctx.currentTime;
+
+            // Sub-bass impact thud
+            const sub = ctx.createOscillator();
+            const subGain = ctx.createGain();
+            sub.type = 'sine';
+            sub.frequency.setValueAtTime(105, t);
+            sub.frequency.exponentialRampToValueAtTime(28, t + 0.09);
+            subGain.gain.setValueAtTime(0.14, t);
+            subGain.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+            sub.connect(subGain);
+            subGain.connect(ctx.destination);
+            sub.start(t);
+            sub.stop(t + 0.10);
+
+            // Metallic mechanical snap / heavy latch
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(420, t);
+            osc.frequency.exponentialRampToValueAtTime(55, t + 0.05);
+            gain.gain.setValueAtTime(0.09, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.055);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(t);
+            osc.stop(t + 0.06);
+        }
+
+        function playSlideSound(isSmith) {
+            if (isSmith) {
+                playSmithClick();
+            } else {
+                playMatrixTerminalChirp();
+            }
+        }
+
+        // 3. Tactical Radio Comms Squelch (precedes movie voice quotes)
+        function playRadioSquelch(callback) {
+            if (!soundEnabled) {
+                if (callback) callback();
+                return;
+            }
+            const ctx = getAudioContext();
+            if (!ctx) {
+                if (callback) callback();
+                return;
+            }
+
+            const t = ctx.currentTime;
+
+            // Noise burst
+            const bufSize = Math.floor(ctx.sampleRate * 0.045);
+            const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1);
+
+            const noise = ctx.createBufferSource();
+            noise.buffer = buf;
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'highpass';
+            filter.frequency.setValueAtTime(3500, t);
+
+            const gain = ctx.createGain();
+            gain.gain.setValueAtTime(0.09, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.045);
+
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+            noise.start(t);
+
+            // End blip
+            const chirp = ctx.createOscillator();
+            const chirpGain = ctx.createGain();
+            chirp.type = 'sine';
+            chirp.frequency.setValueAtTime(1100, t + 0.04);
+            chirpGain.gain.setValueAtTime(0.05, t + 0.04);
+            chirpGain.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+            chirp.connect(chirpGain);
+            chirpGain.connect(ctx.destination);
+            chirp.start(t + 0.04);
+            chirp.stop(t + 0.075);
+
+            if (callback) {
+                setTimeout(callback, 85);
+            }
+        }
+
+        // 4. Matrix Hardline Rotary Telephone Ring
+        // Dual-frequency bell ring: 440 Hz + 480 Hz with mechanical 20 Hz tremolo
+        function playTelephoneRing() {
+            if (!soundEnabled) return;
+            const ctx = getAudioContext();
+            if (!ctx) return;
+
+            const t = ctx.currentTime;
+            const osc1 = ctx.createOscillator();
+            const osc2 = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const tremolo = ctx.createOscillator();
+            const tremGain = ctx.createGain();
+
+            osc1.type = 'sine';
+            osc1.frequency.setValueAtTime(440, t);
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(480, t);
+
+            // 20 Hz mechanical bell hammer tremolo
+            tremolo.type = 'square';
+            tremolo.frequency.setValueAtTime(20, t);
+            tremGain.gain.setValueAtTime(0.07, t);
+            tremolo.connect(gain.gain);
+
+            // Ring cadence: burst 1 (0.0 -> 0.75s), pause, burst 2 (0.95 -> 1.7s)
+            gain.gain.setValueAtTime(0.07, t);
+            gain.gain.setValueAtTime(0.0001, t + 0.75);
+            gain.gain.setValueAtTime(0.07, t + 0.95);
+            gain.gain.exponentialRampToValueAtTime(0.0001, t + 1.7);
+
+            osc1.connect(gain);
+            osc2.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc1.start(t);
+            osc2.start(t);
+            tremolo.start(t);
+
+            osc1.stop(t + 1.75);
+            osc2.stop(t + 1.75);
+            tremolo.stop(t + 1.75);
+        }
+
+        // 5. Matrix Terminal Jack-In (Dial Tone + DTMF Tones + Modem Baud Screech)
+        function playModemJackIn() {
+            if (!soundEnabled) return;
+            const ctx = getAudioContext();
+            if (!ctx) return;
+            const t = ctx.currentTime;
+
+            // Phase 1: Dial tone (350Hz + 440Hz)
+            const dt1 = ctx.createOscillator();
+            const dt2 = ctx.createOscillator();
+            const dtGain = ctx.createGain();
+            dt1.frequency.setValueAtTime(350, t);
+            dt2.frequency.setValueAtTime(440, t);
+            dtGain.gain.setValueAtTime(0.045, t);
+            dtGain.gain.setValueAtTime(0.0001, t + 0.35);
+            dt1.connect(dtGain);
+            dt2.connect(dtGain);
+            dtGain.connect(ctx.destination);
+            dt1.start(t);
+            dt2.start(t);
+            dt1.stop(t + 0.36);
+            dt2.stop(t + 0.36);
+
+            // Phase 2: DTMF Touch Tones (dialing into the mainframe)
+            const dtmfPairs = [[770, 1336], [852, 1209], [941, 1336], [697, 1477]];
+            dtmfPairs.forEach(([f1, f2], idx) => {
+                const toneStart = t + 0.38 + idx * 0.075;
+                const o1 = ctx.createOscillator();
+                const o2 = ctx.createOscillator();
+                const g = ctx.createGain();
+                o1.frequency.setValueAtTime(f1, toneStart);
+                o2.frequency.setValueAtTime(f2, toneStart);
+                g.gain.setValueAtTime(0.055, toneStart);
+                g.gain.setValueAtTime(0.0001, toneStart + 0.055);
+                o1.connect(g);
+                o2.connect(g);
+                g.connect(ctx.destination);
+                o1.start(toneStart);
+                o2.start(toneStart);
+                o1.stop(toneStart + 0.06);
+                o2.stop(toneStart + 0.06);
+            });
+
+            // Phase 3: Baud Handshake Screech (FM synthesis)
+            const modemStart = t + 0.72;
+            const carrier = ctx.createOscillator();
+            const mod = ctx.createOscillator();
+            const modGain = ctx.createGain();
+            const modemGain = ctx.createGain();
+
+            carrier.type = 'sawtooth';
+            carrier.frequency.setValueAtTime(1400, modemStart);
+            carrier.frequency.linearRampToValueAtTime(1850, modemStart + 0.35);
+
+            mod.type = 'square';
+            mod.frequency.setValueAtTime(280, modemStart);
+            modGain.gain.setValueAtTime(650, modemStart);
+
+            mod.connect(modGain);
+            modGain.connect(carrier.frequency);
+
+            modemGain.gain.setValueAtTime(0.045, modemStart);
+            modemGain.gain.linearRampToValueAtTime(0.03, modemStart + 0.35);
+            modemGain.gain.exponentialRampToValueAtTime(0.0001, modemStart + 0.45);
+
+            carrier.connect(modemGain);
+            modemGain.connect(ctx.destination);
+            mod.start(modemStart);
+            carrier.start(modemStart);
+            mod.stop(modemStart + 0.46);
+            carrier.stop(modemStart + 0.46);
+
+            // Phase 4: High-speed carrier noise hiss
+            const noiseStart = modemStart + 0.42;
+            const bufSize = Math.floor(ctx.sampleRate * 0.4);
+            const noiseBuf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+            const nData = noiseBuf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++) nData[i] = Math.random() * 2 - 1;
+            const noiseSource = ctx.createBufferSource();
+            noiseSource.buffer = noiseBuf;
+
+            const noiseFilter = ctx.createBiquadFilter();
+            noiseFilter.type = 'bandpass';
+            noiseFilter.frequency.setValueAtTime(2400, noiseStart);
+            noiseFilter.Q.setValueAtTime(3.2, noiseStart);
+
+            const nGain = ctx.createGain();
+            nGain.gain.setValueAtTime(0.035, noiseStart);
+            nGain.gain.exponentialRampToValueAtTime(0.0001, noiseStart + 0.4);
+
+            noiseSource.connect(noiseFilter);
+            noiseFilter.connect(nGain);
+            nGain.connect(ctx.destination);
+            noiseSource.start(noiseStart);
+        }
+
+        // 6. Bullet-Time Slow-Motion Whoosh (Iconic Neo / Matrix Dodge effect)
+        function playBulletTimeWhoosh() {
+            if (!soundEnabled) return;
+            const ctx = getAudioContext();
+            if (!ctx) return;
+
+            const t = ctx.currentTime;
+            const dur = 0.85;
+
+            // Filtered swept noise
+            const bufSize = Math.floor(ctx.sampleRate * dur);
+            const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+            const noise = ctx.createBufferSource();
+            noise.buffer = buf;
+
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(4500, t);
+            filter.frequency.exponentialRampToValueAtTime(70, t + dur);
+            filter.Q.setValueAtTime(7.0, t);
+
+            const gain = ctx.createGain();
+            gain.gain.setValueAtTime(0.01, t);
+            gain.gain.linearRampToValueAtTime(0.35, t + 0.25);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+            noise.start(t);
+
+            // Sub bass pitch bend
+            const sub = ctx.createOscillator();
+            const subGain = ctx.createGain();
+            sub.type = 'sine';
+            sub.frequency.setValueAtTime(130, t);
+            sub.frequency.exponentialRampToValueAtTime(28, t + dur);
+            subGain.gain.setValueAtTime(0.25, t);
+            subGain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+            sub.connect(subGain);
+            subGain.connect(ctx.destination);
+            sub.start(t);
+            sub.stop(t + dur + 0.05);
+        }
+
+        // 7. The Matrix Movie Voice Quotes Engine
+        const MOVIE_QUOTES = {
+            0: {
+                speaker: 'morpheus',
+                text: "This is your last chance. After this, there is no turning back. You take the blue pill, the story ends. You take the red pill, you stay in Wonderland, and I show you how deep the rabbit hole goes. Welcome to the real world.",
+                btnId: 'btn-quote-0'
+            },
+            1: {
+                speaker: 'morpheus',
+                text: "What if I told you that everything you know was a lie? Today, we kill the middleman.",
+                btnId: 'btn-quote-1'
+            },
+            8: {
+                speaker: 'morpheus',
+                text: "Remember, all I am offering is the truth. Nothing more. Free your packets from the access point.",
+                btnId: 'btn-quote-8'
+            },
+            25: {
+                speaker: 'morpheus',
+                text: "I can only show you the door. You are the one that has to walk through it.",
+                btnId: 'btn-quote-25'
+            },
+            27: {
+                speaker: 'morpheus',
+                text: "Free your mind. Enter the Matrix.",
+                btnId: 'btn-quote-27'
+            },
+            28: {
+                speaker: 'trinity',
+                text: "Neo, the hardline is tapped! They know you are here. Get out of there now!",
+                btnId: null
+            },
+            29: {
+                speaker: 'smith',
+                text: "Did you really think you could escape, Mr. Anderson? The Matrix has collapsed.",
+                btnId: 'btn-quote-29'
+            },
+            30: {
+                speaker: 'smith',
+                text: "I'd like to share a revelation that I've had during my time here. You are a disease, Mr. Anderson. And we... are the cure.",
+                btnId: 'btn-quote-30'
+            },
+            33: {
+                speaker: 'smith',
+                text: "Never send a human to do a machine's job.",
+                btnId: 'btn-quote-33'
+            },
+            36: {
+                speaker: 'smith',
+                text: "You can run... but you cannot hide.",
+                btnId: 'btn-quote-36'
+            },
+            37: {
+                speaker: 'smith',
+                text: "You hear that sound, Mr. Anderson? That is the sound of inevitability... Goodbye, Mr. Anderson.",
+                btnId: 'btn-quote-37'
+            }
+        };
+
+        const AUDIO_FILE_MAP = {
+            0: 'audio/morpheus_pill.mp3',
+            1: 'audio/morpheus_lie.mp3',
+            8: 'audio/morpheus_truth.mp3',
+            25: 'audio/morpheus_door.mp3',
+            27: 'audio/morpheus_free_mind.mp3',
+            28: 'audio/trinity_tapped.mp3',
+            29: 'audio/smith_escape.mp3',
+            30: 'audio/smith_cure.mp3',
+            33: 'audio/smith_machine.mp3',
+            36: 'audio/smith_hide.mp3',
+            37: 'audio/smith_inevitability.mp3'
+        };
+
+        let currentPlayingAudio = null;
+
+        function speakMatrixQuote(quoteObj) {
+            if (!soundEnabled || !quotesEnabled) return;
+            if (!window.speechSynthesis) return;
+
+            // Cancel any current utterance
+            window.speechSynthesis.cancel();
+            document.querySelectorAll('.quote-voice-btn').forEach(b => b.classList.remove('speaking'));
+
+            playRadioSquelch(() => {
+                const u = new SpeechSynthesisUtterance(quoteObj.text);
+                const voices = window.speechSynthesis.getVoices();
+                const enVoices = voices.filter(v => v.lang && v.lang.startsWith('en'));
+
+                if (quoteObj.speaker === 'smith') {
+                    // Agent Smith: deliberate, chillingly calm, measured pacing (natural formant pitch)
+                    u.pitch = 0.92;
+                    u.rate = 0.88;
+                    const voice = enVoices.find(v => (v.name.includes('Natural') || v.name.includes('Neural') || v.name.includes('Online')) && (v.name.includes('Ryan') || v.name.includes('Christopher') || v.name.includes('Guy') || v.name.includes('George') || v.name.includes('Oliver')))
+                        || enVoices.find(v => v.name.includes('Google UK English Male') || v.name.includes('Daniel') || v.name.includes('George'))
+                        || enVoices.find(v => (v.name.includes('Natural') || v.name.includes('Neural')) && !v.name.includes('Female'))
+                        || enVoices.find(v => v.name.includes('David') || v.name.includes('Mark'))
+                        || enVoices[0];
+                    if (voice) u.voice = voice;
+                } else if (quoteObj.speaker === 'morpheus') {
+                    // Morpheus: deep, resonant, authoritative baritone
+                    u.pitch = 0.90;
+                    u.rate = 0.88;
+                    const voice = enVoices.find(v => (v.name.includes('Natural') || v.name.includes('Neural') || v.name.includes('Online')) && (v.name.includes('Guy') || v.name.includes('Ryan') || v.name.includes('Davis') || v.name.includes('George')))
+                        || enVoices.find(v => v.name.includes('Google US English') || v.name.includes('David'))
+                        || enVoices.find(v => !v.name.includes('Female') && !v.name.includes('Zira'))
+                        || enVoices[0];
+                    if (voice) u.voice = voice;
+                } else if (quoteObj.speaker === 'trinity') {
+                    // Trinity / Operator: urgent, crisp, tactical
+                    u.pitch = 1.0;
+                    u.rate = 0.96;
+                    const voice = enVoices.find(v => (v.name.includes('Natural') || v.name.includes('Neural') || v.name.includes('Online')) && (v.name.includes('Jenny') || v.name.includes('Sonia') || v.name.includes('Aria') || v.name.includes('Female')))
+                        || enVoices.find(v => v.name.includes('Zira') || v.name.includes('Google US English') || v.name.includes('Susan'))
+                        || enVoices[0];
+                    if (voice) u.voice = voice;
+                }
+
+                const btn = quoteObj.btnId ? document.getElementById(quoteObj.btnId) : null;
+                if (btn) btn.classList.add('speaking');
+
+                u.onend = () => {
+                    if (btn) btn.classList.remove('speaking');
+                };
+                u.onerror = () => {
+                    if (btn) btn.classList.remove('speaking');
+                };
+
+                window.speechSynthesis.speak(u);
+            });
+        }
+
+        function playQuoteSlide(slideIdx) {
+            getAudioContext();
+            const q = MOVIE_QUOTES[slideIdx];
+            if (!q) return;
+
+            // Stop any currently playing audio clip or speech
+            if (currentPlayingAudio) {
+                currentPlayingAudio.pause();
+                currentPlayingAudio = null;
+            }
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
+            document.querySelectorAll('.quote-voice-btn').forEach(b => b.classList.remove('speaking'));
+
+            const btn = q.btnId ? document.getElementById(q.btnId) : null;
+            const audioSrc = AUDIO_FILE_MAP[slideIdx];
+
+            // If an authentic movie MP3 file is present in /audio/, play it directly!
+            if (audioSrc) {
+                const audio = new Audio(audioSrc);
+                currentPlayingAudio = audio;
+                if (btn) btn.classList.add('speaking');
+
+                audio.onended = () => {
+                    if (btn) btn.classList.remove('speaking');
+                    currentPlayingAudio = null;
+                };
+
+                audio.play().then(() => {
+                    // Successfully playing real movie clip!
+                }).catch(() => {
+                    // MP3 file not found in /audio/ folder -> gracefully fall back to neural speech synthesis
+                    currentPlayingAudio = null;
+                    const prev = quotesEnabled;
+                    quotesEnabled = true;
+                    speakMatrixQuote(q);
+                    quotesEnabled = prev;
+                });
+            } else {
+                const prev = quotesEnabled;
+                quotesEnabled = true;
+                speakMatrixQuote(q);
+                quotesEnabled = prev;
+            }
+        }
+
+        // 7. Ambient Matrix Carrier Drone (for Slide 28)
+        let ambientHumNode = null;
+        function startAmbientHum() {
+            if (!soundEnabled) return;
+            const ctx = getAudioContext();
+            if (!ctx) return;
+            stopAmbientHum(true);
+
+            const t = ctx.currentTime;
+            const osc1 = ctx.createOscillator();
+            const osc2 = ctx.createOscillator();
+            const filter = ctx.createBiquadFilter();
+            const gain = ctx.createGain();
+
+            osc1.type = 'sine';
+            osc1.frequency.setValueAtTime(55, t); // 55 Hz fundamental (A1)
+            osc2.type = 'triangle';
+            osc2.frequency.setValueAtTime(110.8, t); // Subtle harmonic beating
+
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(160, t);
+
+            gain.gain.setValueAtTime(0.0001, t);
+            gain.gain.linearRampToValueAtTime(0.04, t + 1.2); // Gentle atmospheric fade-in
+
+            osc1.connect(filter);
+            osc2.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc1.start(t);
+            osc2.start(t);
+
+            ambientHumNode = { osc1, osc2, gain, ctx };
+
+            // Ring the hardline telephone every 5.5s while students chat to build Matrix tension!
+            playTelephoneRing();
+            telephoneInterval = setInterval(() => {
+                if (soundEnabled) playTelephoneRing();
+            }, 5500);
+
+            // After 2.5 seconds, Trinity warns that the hardline is tapped
+            setTimeout(() => {
+                if (cur === AMBIENT_RAIN_SLIDE && quotesEnabled) {
+                    speakMatrixQuote(MOVIE_QUOTES[28]);
+                }
+            }, 2500);
+        }
+
+        function stopAmbientHum(immediate) {
+            if (telephoneInterval) {
+                clearInterval(telephoneInterval);
+                telephoneInterval = null;
+            }
+            if (ambientHumNode) {
+                try {
+                    const t = ambientHumNode.ctx.currentTime;
+                    if (immediate) {
+                        ambientHumNode.gain.gain.setValueAtTime(0.0001, t);
+                        ambientHumNode.osc1.stop(t + 0.03);
+                        ambientHumNode.osc2.stop(t + 0.03);
+                    } else {
+                        ambientHumNode.gain.gain.linearRampToValueAtTime(0.0001, t + 0.5);
+                        ambientHumNode.osc1.stop(t + 0.55);
+                        ambientHumNode.osc2.stop(t + 0.55);
+                    }
+                } catch (e) {}
+                ambientHumNode = null;
+            }
+        }
+
+        // 8. Cinematic Anomaly Breach & Glitch Explosion (Multi-Stage Hollywood Sound Design)
+        function playBreachSound() {
+            if (!soundEnabled) return;
+            const ctx = getAudioContext();
+            if (!ctx) return;
+
+            const t = ctx.currentTime;
+
+            // Helper: Distortion Curve for Tube/Analog Saturation
+            function makeDistortion(k) {
+                const n = 44100;
+                const curve = new Float32Array(n);
+                const deg = Math.PI / 180;
+                for (let i = 0; i < n; ++i) {
+                    const x = (i * 2) / n - 1;
+                    curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+                }
+                return curve;
+            }
+
+            // STAGE 1: Pre-Breach Vacuum Inrush / Reverse Tension Riser (0.00s -> 0.12s)
+            const suckOsc = ctx.createOscillator();
+            const suckGain = ctx.createGain();
+            suckOsc.type = 'sawtooth';
+            suckOsc.frequency.setValueAtTime(60, t);
+            suckOsc.frequency.exponentialRampToValueAtTime(1400, t + 0.12);
+            suckGain.gain.setValueAtTime(0.001, t);
+            suckGain.gain.exponentialRampToValueAtTime(0.24, t + 0.115);
+            suckGain.gain.setValueAtTime(0.0001, t + 0.12); // Sudden silent micro-gap before blast
+
+            const suckFilter = ctx.createBiquadFilter();
+            suckFilter.type = 'bandpass';
+            suckFilter.frequency.setValueAtTime(400, t);
+            suckFilter.frequency.exponentialRampToValueAtTime(2200, t + 0.12);
+            suckFilter.Q.setValueAtTime(4.0, t);
+
+            suckOsc.connect(suckFilter);
+            suckFilter.connect(suckGain);
+            suckGain.connect(ctx.destination);
+            suckOsc.start(t);
+            suckOsc.stop(t + 0.13);
+
+            // STAGE 2: Detonation Instant (t + 0.13s)
+            const dropTime = t + 0.13;
+
+            // Layer A: Saturated Concussive Sub-Bass Slam (Sub-drop)
+            const subOsc = ctx.createOscillator();
+            const subGain = ctx.createGain();
+            const shaper = ctx.createWaveShaper();
+            shaper.curve = makeDistortion(35); // Heavy analog saturation
+
+            subOsc.type = 'sine';
+            subOsc.frequency.setValueAtTime(220, dropTime);
+            subOsc.frequency.exponentialRampToValueAtTime(62, dropTime + 0.15);
+            subOsc.frequency.exponentialRampToValueAtTime(24, dropTime + 0.95);
+
+            subGain.gain.setValueAtTime(0.65, dropTime);
+            subGain.gain.exponentialRampToValueAtTime(0.0001, dropTime + 1.1);
+
+            subOsc.connect(shaper);
+            shaper.connect(subGain);
+            subGain.connect(ctx.destination);
+            subOsc.start(dropTime);
+            subOsc.stop(dropTime + 1.15);
+
+            // Layer B: Punch Transient Click / Impact Thud
+            const punchOsc = ctx.createOscillator();
+            const punchGain = ctx.createGain();
+            punchOsc.type = 'triangle';
+            punchOsc.frequency.setValueAtTime(320, dropTime);
+            punchOsc.frequency.exponentialRampToValueAtTime(45, dropTime + 0.04);
+            punchGain.gain.setValueAtTime(0.5, dropTime);
+            punchGain.gain.exponentialRampToValueAtTime(0.001, dropTime + 0.05);
+            punchOsc.connect(punchGain);
+            punchGain.connect(ctx.destination);
+            punchOsc.start(dropTime);
+            punchOsc.stop(dropTime + 0.06);
+
+            // Layer C: FM Synthesis Cybernetic Screech & Data Tear
+            const fmCarrier = ctx.createOscillator();
+            const fmModulator = ctx.createOscillator();
+            const fmModGain = ctx.createGain();
+            const fmOutGain = ctx.createGain();
+
+            fmCarrier.type = 'sawtooth';
+            fmCarrier.frequency.setValueAtTime(1750, dropTime);
+            fmCarrier.frequency.exponentialRampToValueAtTime(180, dropTime + 0.65);
+
+            fmModulator.type = 'square';
+            fmModulator.frequency.setValueAtTime(175, dropTime);
+            fmModulator.frequency.exponentialRampToValueAtTime(45, dropTime + 0.65);
+
+            fmModGain.gain.setValueAtTime(1200, dropTime);
+            fmModGain.gain.exponentialRampToValueAtTime(30, dropTime + 0.65);
+
+            fmModulator.connect(fmModGain);
+            fmModGain.connect(fmCarrier.frequency);
+
+            fmOutGain.gain.setValueAtTime(0.25, dropTime);
+            fmOutGain.gain.exponentialRampToValueAtTime(0.001, dropTime + 0.7);
+
+            fmCarrier.connect(fmOutGain);
+            fmOutGain.connect(ctx.destination);
+            fmModulator.start(dropTime);
+            fmCarrier.start(dropTime);
+            fmModulator.stop(dropTime + 0.72);
+            fmCarrier.stop(dropTime + 0.72);
+
+            // Layer D: CRT Electrical Arc & Noise Stutter Sparks
+            const bufferSize = Math.floor(ctx.sampleRate * 0.85);
+            const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1;
+            }
+            const noise = ctx.createBufferSource();
+            noise.buffer = noiseBuffer;
+
+            const noiseFilter = ctx.createBiquadFilter();
+            noiseFilter.type = 'bandpass';
+            noiseFilter.frequency.setValueAtTime(3200, dropTime);
+            noiseFilter.frequency.exponentialRampToValueAtTime(280, dropTime + 0.75);
+            noiseFilter.Q.setValueAtTime(6.0, dropTime);
+
+            const noiseGain = ctx.createGain();
+            const stutters = [
+                [0.00, 0.35], [0.03, 0.05], [0.05, 0.38], [0.09, 0.02],
+                [0.12, 0.42], [0.18, 0.04], [0.22, 0.35], [0.29, 0.03],
+                [0.34, 0.28], [0.42, 0.02], [0.48, 0.20], [0.58, 0.01]
+            ];
+            stutters.forEach(([delay, vol]) => {
+                noiseGain.gain.setValueAtTime(vol, dropTime + delay);
+            });
+            noiseGain.gain.exponentialRampToValueAtTime(0.0001, dropTime + 0.85);
+
+            noise.connect(noiseFilter);
+            noiseFilter.connect(noiseGain);
+            noiseGain.connect(ctx.destination);
+            noise.start(dropTime);
+
+            // Layer E: Metallic Resonance Dissident Ring (Inevitability Alarm Tail)
+            [370, 373].forEach((f) => {
+                const ringOsc = ctx.createOscillator();
+                const ringGain = ctx.createGain();
+                ringOsc.type = 'sine';
+                ringOsc.frequency.setValueAtTime(f, dropTime + 0.08);
+                ringGain.gain.setValueAtTime(0.07, dropTime + 0.08);
+                ringGain.gain.exponentialRampToValueAtTime(0.0001, dropTime + 1.6);
+                ringOsc.connect(ringGain);
+                ringGain.connect(ctx.destination);
+                ringOsc.start(dropTime + 0.08);
+                ringOsc.stop(dropTime + 1.65);
+            });
+
+            // Speak Agent Smith's iconic breach quote as the explosion settles
+            setTimeout(() => {
+                if (quotesEnabled) {
+                    speakMatrixQuote(MOVIE_QUOTES[29]);
+                }
+            }, 550);
+        }
+
+        // 9. Inevitability Subway Screech & Doom Toll (Slide 37: "I'M INEVITABLE")
+        function playInevitabilitySound() {
+            if (!soundEnabled) return;
+            const ctx = getAudioContext();
+            if (!ctx) return;
+            const t = ctx.currentTime;
+
+            // Subway metal-on-metal wheel screech on track
+            const screechCarrier = ctx.createOscillator();
+            const screechMod = ctx.createOscillator();
+            const screechModGain = ctx.createGain();
+            const screechGain = ctx.createGain();
+
+            screechCarrier.type = 'sawtooth';
+            screechCarrier.frequency.setValueAtTime(2600, t);
+            screechCarrier.frequency.linearRampToValueAtTime(1400, t + 1.8);
+
+            screechMod.type = 'sine';
+            screechMod.frequency.setValueAtTime(160, t);
+            screechModGain.gain.setValueAtTime(800, t);
+            screechMod.connect(screechModGain);
+            screechModGain.connect(screechCarrier.frequency);
+
+            screechGain.gain.setValueAtTime(0.08, t);
+            screechGain.gain.exponentialRampToValueAtTime(0.0001, t + 2.0);
+
+            screechCarrier.connect(screechGain);
+            screechGain.connect(ctx.destination);
+            screechMod.start(t);
+            screechCarrier.start(t);
+            screechMod.stop(t + 2.1);
+            screechCarrier.stop(t + 2.1);
+
+            // Deep resonant subway rail rumble
+            const rumble = ctx.createOscillator();
+            const rumbleGain = ctx.createGain();
+            rumble.type = 'sine';
+            rumble.frequency.setValueAtTime(38, t);
+            rumbleGain.gain.setValueAtTime(0.35, t);
+            rumbleGain.gain.exponentialRampToValueAtTime(0.0001, t + 2.2);
+            rumble.connect(rumbleGain);
+            rumbleGain.connect(ctx.destination);
+            rumble.start(t);
+            rumble.stop(t + 2.3);
+
+            // Metallic doom bell
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(82.4, t); // Low E2
+            osc.frequency.exponentialRampToValueAtTime(41.2, t + 2.2);
+            gain.gain.setValueAtTime(0.32, t);
+            gain.gain.exponentialRampToValueAtTime(0.0001, t + 2.4);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(t);
+            osc.stop(t + 2.5);
+
+            // Speak Agent Smith's famous quote
+            setTimeout(() => {
+                if (quotesEnabled) {
+                    speakMatrixQuote(MOVIE_QUOTES[37]);
+                }
+            }, 600);
+        }
+
+        // 10. Triumphant Debrief Chime (Slide 38: The Architects)
+        function playVictoryChime() {
+            if (!soundEnabled) return;
+            const ctx = getAudioContext();
+            if (!ctx) return;
+            const t = ctx.currentTime;
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6 arpeggio
+
+            notes.forEach((freq, idx) => {
+                const noteTime = t + idx * 0.09;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, noteTime);
+                gain.gain.setValueAtTime(0.045, noteTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, noteTime + 0.45);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(noteTime);
+                osc.stop(noteTime + 0.5);
+            });
+        }
+
+        // 11. Geiger Click Sound Effect
+        function playGeigerClick(volume) {
+            if (!soundEnabled) return;
+            const ctx = getAudioContext();
+            if (!ctx) return;
+
+            const vol = volume || 0.12;
+            const t = ctx.currentTime;
+            const bufferSize = Math.floor(ctx.sampleRate * 0.006); // 6ms pulse
+            const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.25));
+            }
+            const noise = ctx.createBufferSource();
+            noise.buffer = noiseBuffer;
+
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.setValueAtTime(3200, t);
+            filter.Q.setValueAtTime(4.5, t);
+
+            const gain = ctx.createGain();
+            gain.gain.setValueAtTime(vol, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.008);
+
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+            noise.start(t);
+        }
+
+        // Geiger Simulation Demo Sequence
+        function runGeigerDemo() {
+            getAudioContext();
+            const delays = [0, 450, 850, 1150, 1400, 1600, 1750, 1870, 1960, 2030, 2090, 2140, 2180, 2210, 2235, 2255, 2270];
+            delays.forEach((d, i) => {
+                setTimeout(() => {
+                    playGeigerClick(0.08 + (i / delays.length) * 0.12);
+                }, d);
+            });
+        }
+
+        // 12. Tactical UI Sound Feedback
+        function playTickSound(freq, dur) {
+            if (!soundEnabled) return;
+            const ctx = getAudioContext();
+            if (!ctx) return;
+            const t = ctx.currentTime;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq || 980, t);
+            gain.gain.setValueAtTime(0.02, t);
+            gain.gain.exponentialRampToValueAtTime(0.0001, t + (dur || 0.025));
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(t);
+            osc.stop(t + (dur || 0.03));
+        }
+
+        function playToggleChime(isOn) {
+            if (!isOn) return;
+            const ctx = getAudioContext();
+            if (!ctx) return;
+            const t = ctx.currentTime;
+            [660, 880].forEach((f, idx) => {
+                const noteTime = t + idx * 0.07;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(f, noteTime);
+                gain.gain.setValueAtTime(0.04, noteTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, noteTime + 0.15);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(noteTime);
+                osc.stop(noteTime + 0.16);
+            });
+        }
+
+        const btnAudio = document.getElementById('btn-audio');
+        function toggleAudio() {
+            getAudioContext();
+            soundEnabled = !soundEnabled;
+            if (btnAudio) {
+                btnAudio.textContent = soundEnabled ? '🔊 Audio' : '🔇 Muted';
+                btnAudio.title = soundEnabled ? 'Audio Enabled (Shortcut: M to Mute)' : 'Audio Muted (Shortcut: M to Unmute)';
+            }
+            if (soundEnabled) {
+                playToggleChime(true);
+            } else {
+                stopAmbientHum(true);
+                if (window.speechSynthesis) window.speechSynthesis.cancel();
+            }
+        }
+        if (btnAudio) btnAudio.addEventListener('click', toggleAudio);
+
+        const btnVoice = document.getElementById('btn-voice');
+        function toggleVoice() {
+            getAudioContext();
+            quotesEnabled = !quotesEnabled;
+            if (btnVoice) {
+                btnVoice.textContent = quotesEnabled ? '🗣️ Quotes: ON' : '🗣️ Quotes: OFF';
+                btnVoice.style.color = quotesEnabled ? '#00ff41' : '#888888';
+                btnVoice.title = quotesEnabled ? 'Movie Quotes Voice Enabled (Shortcut: V)' : 'Movie Quotes Voice Muted (Shortcut: V)';
+            }
+            if (!quotesEnabled && window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+            } else if (quotesEnabled) {
+                playTickSound(1200, 0.03);
+            }
+        }
+        if (btnVoice) btnVoice.addEventListener('click', toggleVoice);
+
+        const btnWhoosh = document.getElementById('btn-whoosh');
+        if (btnWhoosh) {
+            btnWhoosh.addEventListener('click', () => {
+                getAudioContext();
+                playBulletTimeWhoosh();
+            });
+        }
+
+        const btnDemoGeiger = document.getElementById('btn-demo-geiger');
+        if (btnDemoGeiger) btnDemoGeiger.addEventListener('click', runGeigerDemo);
+
+        // ---- Slide Navigation & Glitch Engine ----
         const slides = document.querySelectorAll('.slide');
         const progress = document.getElementById('progress');
         const counter = document.getElementById('counter');
+        const glitchOverlay = document.getElementById('glitch-overlay');
+        const JACK_IN_SLIDE = 27;
+        const AMBIENT_RAIN_SLIDE = 28;
+        const SMITH_START_SLIDE = 29;
+        const INEVITABLE_SLIDE = 37;
+        const ARCHITECTS_SLIDE = 38;
         let cur = 0;
+
+        function triggerGlitch() {
+            if (!glitchOverlay) return;
+            document.body.classList.remove('glitch-shake');
+            glitchOverlay.classList.remove('active');
+            void glitchOverlay.offsetWidth; // force reflow
+            document.body.classList.add('glitch-shake');
+            glitchOverlay.classList.add('active');
+
+            isGlitchActive = true;
+            setTimeout(() => {
+                isGlitchActive = false;
+                document.body.classList.remove('glitch-shake');
+            }, 1400);
+        }
+
+        function updateTheme(targetSlide, previousSlide) {
+            const wasSmith = isSmithMode;
+            isSmithMode = (targetSlide >= SMITH_START_SLIDE);
+
+            if (isSmithMode) {
+                document.body.classList.add('smith-mode');
+                // Crossing from green matrix (<= 28) into Agent Smith (>= 29): trigger glitch!
+                if (!wasSmith) {
+                    triggerGlitch();
+                }
+            } else {
+                document.body.classList.remove('smith-mode');
+            }
+        }
+
         function go(n) {
             if (n < 0 || n >= slides.length) return;
+            const prev = cur;
             slides[cur].classList.remove('active');
             cur = n;
             slides[cur].classList.add('active');
+            updateTheme(cur, prev);
             progress.style.width = ((cur / (slides.length - 1)) * 100) + '%';
             counter.textContent = (cur + 1) + ' / ' + slides.length;
+
+            // Audio cues & Movie Quotes
+            if (prev !== cur) {
+                // If leaving ambient rain slide (28)
+                if (prev === AMBIENT_RAIN_SLIDE) {
+                    if (cur === SMITH_START_SLIDE) {
+                        stopAmbientHum(true);
+                        playBreachSound();
+                    } else {
+                        stopAmbientHum(false);
+                        playSlideSound(isSmithMode);
+                    }
+                } else if (cur === AMBIENT_RAIN_SLIDE) {
+                    // Entering ambient rain slide
+                    playSlideSound(false);
+                    startAmbientHum();
+                } else if (cur === JACK_IN_SLIDE) {
+                    // Entering Jack In slide (dial-up modem & DTMF connect)
+                    playModemJackIn();
+                } else if (cur === SMITH_START_SLIDE && prev < SMITH_START_SLIDE) {
+                    stopAmbientHum(true);
+                    playBreachSound();
+                } else if (cur === INEVITABLE_SLIDE) {
+                    playInevitabilitySound();
+                } else if (cur === ARCHITECTS_SLIDE) {
+                    playVictoryChime();
+                } else {
+                    playSlideSound(isSmithMode);
+                }
+
+                // Auto-speak iconic movie quote if available for this slide
+                if (quotesEnabled && MOVIE_QUOTES[cur] && cur !== AMBIENT_RAIN_SLIDE && cur !== SMITH_START_SLIDE && cur !== INEVITABLE_SLIDE) {
+                    setTimeout(() => {
+                        if (cur === n) speakMatrixQuote(MOVIE_QUOTES[cur]);
+                    }, 500);
+                }
+            }
         }
 
         // Navigation Event Listeners
@@ -2292,6 +4110,10 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
             else if (e.key === '-' || e.key === '_') { changeZoom(-0.1); }
             else if (e.key === '0') { resetZoom(); }
             else if (e.key === 'f' || e.key === 'F') { toggleFullscreen(); }
+            else if (e.key === 'm' || e.key === 'M') { toggleAudio(); }
+            else if (e.key === 'v' || e.key === 'V') { toggleVoice(); }
+            else if (e.key === 'q' || e.key === 'Q') { if (MOVIE_QUOTES[cur]) playQuoteSlide(cur); }
+            else if (e.key === 'b' || e.key === 'B') { playBulletTimeWhoosh(); }
         });
 
         let tx = 0;
@@ -2318,7 +4140,7 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
             }
             // Laptop screen (height <= 900px, 1080p with scaling)
             if (h <= 900) {
-                return 14.5; // Ideal laptop size, zero clipping on Page 7 and 13
+                return 14.5; // Ideal laptop size, zero clipping
             }
             return 15;
         }
@@ -2332,11 +4154,13 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
         function changeZoom(delta) {
             zoomScale = Math.max(0.6, Math.min(2.5, Math.round((zoomScale + delta) * 10) / 10));
             updateZoomUI();
+            playTickSound(delta > 0 ? 1080 : 640, 0.03);
         }
 
         function resetZoom() {
             zoomScale = 1.0;
             updateZoomUI();
+            playTickSound(840, 0.035);
         }
 
         document.getElementById('btn-zoom-in').addEventListener('click', () => changeZoom(0.1));
@@ -2348,11 +4172,18 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(() => { });
+                playTickSound(1200, 0.04);
             } else {
                 if (document.exitFullscreen) document.exitFullscreen().catch(() => { });
+                playTickSound(600, 0.04);
             }
         }
         document.getElementById('btn-fullscreen').addEventListener('click', toggleFullscreen);
+
+        // Tactical micro-tick on hovering interactive buttons & links
+        document.querySelectorAll('.hud-btn, .nav-btn, .social-link').forEach(el => {
+            el.addEventListener('mouseenter', () => playTickSound(1400, 0.012));
+        });
 
         // Initial scale application
         updateZoomUI();

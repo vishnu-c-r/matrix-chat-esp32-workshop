@@ -32,10 +32,9 @@ static uint16_t g_seq = 0;
 static float g_filtered_rssi = -100.0f;
 static uint32_t g_last_beacon_ms = 0;
 
-// Indoor FSPL distance estimation (Path Loss Exponent N=3.0)
-// Tuned for low TX power: -45 dBm reference at 1 meter.
+// Indoor FSPL distance estimation model
 static float estimateDistanceCm(float rssi) {
-  return 100.0f * pow(10.0f, (-45.0f - rssi) / 30.0f);
+  return 100.0f * pow(10.0f, (RSSI_REF_1M - rssi) / RSSI_PATH_LOSS_EXP);
 }
 
 // ----- Packet receive callback (called from radioLoop) ------
@@ -50,15 +49,17 @@ static void onPktRecv(const Pkt *pkt, int8_t rssi) {
       // Show alert message with highlighted styling
       char sender[28];
       if (pkt->node_id == 99) {
-        // System anomaly signature: "Agent Smith"
+        // Network anomaly signature
         static const uint8_t enc[] = {0x41, 0x67, 0x65, 0x6e, 0x74, 0x20,
                                       0x53, 0x6d, 0x69, 0x74, 0x68, 0x00};
         snprintf(sender, sizeof(sender), "%s", (const char *)enc);
+      } else if (pkt->name[0] != '\0') {
+        snprintf(sender, sizeof(sender), "%s", pkt->name);
       } else {
         snprintf(sender, sizeof(sender), "Node %u", pkt->node_id);
       }
-      webAddMessage(pkt->node_id, sender, COLOR_SMITH.r, COLOR_SMITH.g,
-                    COLOR_SMITH.b, pkt->text, /*is_alert=*/true);
+      webAddMessage(pkt->node_id, sender, COLOR_ALERT.r, COLOR_ALERT.g,
+                    COLOR_ALERT.b, pkt->text, /*is_alert=*/true);
       Serial.printf("[ALERT] %s: %s (RSSI: %d dBm)\n", sender, pkt->text, rssi);
     }
     return;
@@ -83,7 +84,7 @@ void sendChatMessage(const char *text) {
   // Echo to our own chat log (own messages don't come back via ESP-NOW).
   webAddMessage(NODE_ID, NODE_NAME, nodeColor(NODE_ID % N_COLORS).r,
                 nodeColor(NODE_ID % N_COLORS).g,
-                nodeColor(NODE_ID % N_COLORS).b, text, /*is_smith=*/false);
+                nodeColor(NODE_ID % N_COLORS).b, text, /*is_alert=*/false);
 
   Serial.printf("[me] %s: %s\n", NODE_NAME, text);
 }
@@ -134,15 +135,14 @@ void setup() {
   // for your node color.
 
   dedupeInit();
-  // radioInit sets WiFi mode AP+STA and channel before esp_now_init.
+  // radioInit sets WiFi mode AP+STA, channel, and max TX power before esp_now_init.
   radioInit(CHANNEL, onPktRecv);
-  esp_wifi_set_max_tx_power(8); // Match Smith low TX power (2 dBm)
 
   // SoftAP and web server start after radio so they share the channel.
   webBegin(NODE_ID, NODE_NAME);
 
   Serial.printf("MAC:      %s\n", WiFi.macAddress().c_str());
-  Serial.printf("AP SSID:  %s  password: matrix123\n", NODE_NAME);
+  Serial.printf("AP SSID:  %s  password: %s\n", NODE_NAME, WIFI_AP_PASSWORD);
   Serial.printf("Chat URL: http://%s\n", WiFi.softAPIP().toString().c_str());
   Serial.println("Serial: type a message or /id /rssi /state");
 }
@@ -153,7 +153,7 @@ void loop() {
   webLoop();
 
   // TODO(stage3): Calculate distance and call
-  // ledSetSmithState/webSetSmithStatus.
+  // ledSetRadarState/webSetRadarStatus.
 
   ledLoop(millis());
   handleSerial();
