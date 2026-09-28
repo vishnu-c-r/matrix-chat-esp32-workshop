@@ -223,7 +223,11 @@ refresh();setInterval(refresh,1000);
 )END_PAGE";
 
 // ----- HTTP handlers ---------------------------------------
-static void handleRoot() { g_server.send_P(200, "text/html", PAGE); }
+static void handleRoot() {
+  Serial.printf("[web] Client %s loaded chat portal (GET /)\n",
+                g_server.client().remoteIP().toString().c_str());
+  g_server.send_P(200, "text/html", PAGE);
+}
 
 static void handleApi() {
   // Build JSON snapshot
@@ -273,6 +277,8 @@ static void handleSend() {
   // Rate limit: 1 message per second per node (single-client workshop).
   uint32_t now = millis();
   if ((now - g_last_send_ms) < RATE_LIMIT_MS) {
+    Serial.printf("[web] Rate limit: throttled client %s (cooldown active)\n",
+                  g_server.client().remoteIP().toString().c_str());
     g_server.send(429, "text/plain", "slow down");
     return;
   }
@@ -285,11 +291,15 @@ static void handleSend() {
   }
 
   g_last_send_ms = now;
+  Serial.printf("[web] Chat submitted by %s: \"%s\"\n",
+                g_server.client().remoteIP().toString().c_str(), msg.c_str());
   sendChatMessage(msg.c_str());
   g_server.send(200, "text/plain", "ok");
 }
 
 static void handleClear() {
+  Serial.printf("[web] Chat buffer cleared by client %s\n",
+                g_server.client().remoteIP().toString().c_str());
   g_hist_count = 0;
   g_hist_head = 0;
   g_total_msg = 0;

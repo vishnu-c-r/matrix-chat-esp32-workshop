@@ -114,6 +114,8 @@ void radioInit(uint8_t channel, PktRecvCb cb)
             Serial.println("[radio] WARNING: using WIFI_IF_STA — needs hardware validation");
         }
     }
+    Serial.printf("[radio] ESP-NOW initialized on Channel %u (TX power: %d * 0.25 dBm)\n", channel, WIFI_TX_POWER);
+    Serial.println("[radio] Broadcast peer registered (FF:FF:FF:FF:FF:FF)");
 }
 
 // ---------- radioSend (non-blocking) ------------------------
@@ -130,7 +132,7 @@ void radioSend(const Pkt* pkt)
             return;
         }
     }
-    // All slots full: silently drop (shouldn't happen in workshop use).
+    Serial.println("[radio] WARNING: TX queue full, packet dropped!");
 }
 
 // ---------- radioLoop (call from Arduino loop()) ------------
