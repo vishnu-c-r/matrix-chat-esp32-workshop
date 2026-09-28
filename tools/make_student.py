@@ -81,7 +81,7 @@ def sanitize_platformio_ini(content: str) -> str:
 
 def copy_project(src_root: str, dst_root: str) -> None:
     skip_dirs  = {'.pio', '.git', '__pycache__', os.path.basename(dst_root), 'smith', 'audio', '.vscode', '.cache', 'test_corrupt', 'tools'}
-    skip_files = {'INSTRUCTOR.md', 'presentation_smith.html', 'compile_commands.json'}
+    skip_files = {'INSTRUCTOR.md', 'presentation.html', 'presentation_smith.html', 'compile_commands.json'}
     code_exts  = {'.cpp', '.h', '.c', '.py'}
 
     for dirpath, dirnames, filenames in os.walk(src_root):

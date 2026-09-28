@@ -92,7 +92,7 @@ static void onPktRecv(const Pkt *pkt, int8_t rssi) {
     webAddMessage(pkt->node_id, sender, col.r, col.g, col.b, pkt->text,
                   /*is_alert=*/false);
     ledFlashMsg(col);
-    Serial.printf("[chat] %s: %s\n", sender, pkt->text);
+    Serial.printf("[chat RX] %s (Node %u, Seq %u, RSSI: %d dBm): %s\n", sender, pkt->node_id, pkt->seq, rssi, pkt->text);
   }
   // SOLUTION-END
 }
@@ -122,26 +122,48 @@ void sendChatMessage(const char *text) {
                 nodeColor(NODE_ID % N_COLORS).g,
                 nodeColor(NODE_ID % N_COLORS).b, text, /*is_alert=*/false);
 
-  Serial.printf("[me] %s: %s\n", NODE_NAME, text);
+  Serial.printf("[chat TX] Node %u (%s, Seq %u): %s\n", NODE_ID, NODE_NAME, pkt.seq, text);
 }
 
-// ----- Serial command handler --------------------------------
+// ----- Serial command handler (Workshop Diagnostics) ----------
 static void handleSerial() {
   if (!Serial.available())
     return;
   String line = Serial.readStringUntil('\n');
   line.trim();
+  if (line.length() == 0)
+    return;
 
-  if (line == "/id") {
-    Serial.printf("NODE_ID=%u  NAME=%s  MAC=%s\n", NODE_ID, NODE_NAME,
-                  WiFi.macAddress().c_str());
+  if (line == "/help" || line == "/?") {
+    Serial.println("\n--- Matrix Workshop Diagnostic Commands ---");
+    Serial.println("  /id      - Show Node ID, Team Handle, and Hardware MAC");
+    Serial.println("  /wifi    - Show SoftAP IP, SSID, Channel, TX Power, Client Count");
+    Serial.println("  /rssi    - Show Filtered RSSI, Distance, and Beacon Age");
+    Serial.println("  /state   - Show Link Radar Proximity Alert Status");
+    Serial.println("  /sys     - Show Free Heap, Min Heap, CPU Frequency, Uptime");
+    Serial.println("  /peers   - List Connected Wi-Fi Stations (Phones/Laptops)");
+    Serial.println("  /ping    - Broadcast a test network ping message");
+    Serial.println("  /led     - Hardware test: flash RGB LED white");
+    Serial.println("  /clear   - Clear local chat display buffer");
+    Serial.println("  <text>   - Type any text and press Enter to broadcast chat");
+    Serial.println("--------------------------------------------\n");
+  } else if (line == "/id") {
+    Serial.printf("[DIAG] NODE_ID: %u | NAME: '%s' | MAC: %s | CHANNEL: %u\n",
+                  NODE_ID, NODE_NAME, WiFi.macAddress().c_str(), CHANNEL);
   } else if (line == "/rssi") {
-    Serial.printf("rssi_f=%.1f  dist_cm=%.1f\n", g_filtered_rssi,
-                  estimateDistanceCm(g_filtered_rssi));
+    uint32_t age = (g_last_beacon_ms > 0) ? (millis() - g_last_beacon_ms) : 999999;
+    Serial.printf("[DIAG] RSSI: %.1f dBm | Est Distance: %.1f cm | Last Beacon: %lu ms ago (Timeout: %u ms)\n",
+                  g_filtered_rssi, estimateDistanceCm(g_filtered_rssi), age, BEACON_TIMEOUT_MS);
   } else if (line == "/state") {
-    float dist = estimateDistanceCm(g_filtered_rssi);
-    Serial.printf("Proximity dist: %.1f cm (RSSI: %.1f)\n", dist,
-                  g_filtered_rssi);
+    const char *st_names[] = {"0: CLEAR (Safe)", "1: NEAR (Warning - Yellow Blink)", "2: CLOSE (Alert - Solid Red)"};
+    uint8_t cur_st = 0;
+    float dist = 999.0f;
+    if ((millis() - g_last_beacon_ms < BEACON_TIMEOUT_MS) && g_filtered_rssi > -99.0f) {
+      dist = estimateDistanceCm(g_filtered_rssi);
+      cur_st = (dist < 100.0f) ? 2 : ((dist < 300.0f) ? 1 : 0);
+    }
+    Serial.printf("[DIAG] Radar: %s | Distance: %.1f cm (RSSI: %.1f dBm)\n",
+                  st_names[cur_st], dist, g_filtered_rssi);
   } else if (line == "/wifi") {
     wifi_config_t conf = {};
     esp_wifi_get_config(WIFI_IF_AP, &conf);
@@ -149,15 +171,40 @@ static void handleSerial() {
     esp_wifi_get_max_tx_power(&pwr);
     uint8_t proto = 0;
     esp_wifi_get_protocol(WIFI_IF_AP, &proto);
-    Serial.printf("AP SSID: '%s', hidden: %d, ch: %d, auth: %d\n",
-                  (char*)conf.ap.ssid, conf.ap.ssid_hidden, conf.ap.channel, conf.ap.authmode);
-    Serial.printf("IP: %s, TX power: %d, proto: 0x%02X, stations: %d\n",
-                  WiFi.softAPIP().toString().c_str(), pwr, proto, WiFi.softAPgetStationNum());
-  } else if (line.length() > 0 && line[0] != '/') {
+    Serial.printf("[DIAG] SoftAP SSID: '%s' | Password: '%s'\n", (char *)conf.ap.ssid, WIFI_AP_PASSWORD);
+    Serial.printf("[DIAG] IP: http://%s | Channel: %d | Protocol: 0x%02X\n",
+                  WiFi.softAPIP().toString().c_str(), conf.ap.channel, proto);
+    Serial.printf("[DIAG] TX Power: %d (%.2f dBm) | Connected Clients: %d\n",
+                  pwr, (float)pwr * 0.25f, WiFi.softAPgetStationNum());
+  } else if (line == "/sys" || line == "/mem") {
+    Serial.printf("[DIAG] Chip: %s (Rev %u, Cores: %u, Freq: %lu MHz)\n",
+                  ESP.getChipModel(), ESP.getChipRevision(), ESP.getChipCores(), (unsigned long)ESP.getCpuFreqMHz());
+    Serial.printf("[DIAG] Free Heap: %lu bytes (Min Ever: %lu bytes)\n", (unsigned long)ESP.getFreeHeap(), (unsigned long)ESP.getMinFreeHeap());
+    Serial.printf("[DIAG] Uptime: %lu seconds\n", millis() / 1000);
+  } else if (line == "/peers") {
+    wifi_sta_list_t sta_list = {};
+    esp_wifi_ap_get_sta_list(&sta_list);
+    Serial.printf("[DIAG] Connected Wi-Fi Stations: %u\n", sta_list.num);
+    for (int i = 0; i < sta_list.num; i++) {
+      Serial.printf("  [%d] MAC: %02X:%02X:%02X:%02X:%02X:%02X | RSSI: %d dBm\n",
+                    i + 1,
+                    sta_list.sta[i].mac[0], sta_list.sta[i].mac[1], sta_list.sta[i].mac[2],
+                    sta_list.sta[i].mac[3], sta_list.sta[i].mac[4], sta_list.sta[i].mac[5],
+                    sta_list.sta[i].rssi);
+    }
+  } else if (line == "/ping") {
+    sendChatMessage("PING test broadcast");
+  } else if (line == "/led") {
+    ledFlashMsg({255, 255, 255});
+    Serial.println("[DIAG] Hardware LED test: triggered white flash on NeoPixel.");
+  } else if (line == "/clear") {
+    webAddMessage(NODE_ID, "SYSTEM", 0, 255, 65, "Local chat buffer cleared.", false);
+    Serial.println("[DIAG] Local chat display buffer cleared.");
+  } else if (line[0] != '/') {
     // Plain text → send as chat.
     sendChatMessage(line.c_str());
   } else {
-    Serial.println("Commands: /id /rssi /state /wifi  or type a message");
+    Serial.println("Unknown command. Type /help for diagnostic commands.");
   }
 }
 
@@ -165,7 +212,20 @@ static void handleSerial() {
 void setup() {
   Serial.begin(115200);
   delay(1500); // give USB CDC time to attach
-  Serial.printf("\n=== Matrix Chat Node %u (%s) ===\n", NODE_ID, NODE_NAME);
+
+  // Register Wi-Fi SoftAP client connect/disconnect event logs
+  WiFi.onEvent([](WiFiEvent_t event, WiFiEventInfo_t info) {
+    if (event == ARDUINO_EVENT_WIFI_AP_STACONNECTED) {
+      Serial.printf("[WIFI AP] Client connected: %02X:%02X:%02X:%02X:%02X:%02X (Total: %d)\n",
+                    info.wifi_ap_staconnected.mac[0], info.wifi_ap_staconnected.mac[1],
+                    info.wifi_ap_staconnected.mac[2], info.wifi_ap_staconnected.mac[3],
+                    info.wifi_ap_staconnected.mac[4], info.wifi_ap_staconnected.mac[5],
+                    WiFi.softAPgetStationNum());
+    } else if (event == ARDUINO_EVENT_WIFI_AP_STADISCONNECTED) {
+      Serial.printf("[WIFI AP] Client disconnected (Remaining: %d)\n",
+                    WiFi.softAPgetStationNum());
+    }
+  });
 
   // SOLUTION-BEGIN stage:1 hint:"Call ledInit(NODE_ID) to set up the RGB LED
   // for your node color."
@@ -179,10 +239,20 @@ void setup() {
   // SoftAP and web server start after radio so they share the channel.
   webBegin(NODE_ID, NODE_NAME);
 
-  Serial.printf("MAC:      %s\n", WiFi.macAddress().c_str());
-  Serial.printf("AP SSID:  %s  password: %s\n", NODE_NAME, WIFI_AP_PASSWORD);
-  Serial.printf("Chat URL: http://%s\n", WiFi.softAPIP().toString().c_str());
-  Serial.println("Serial: type a message or /id /rssi /state");
+  Serial.println("\n=============================================================");
+  Serial.printf(" MATRIX WORKSHOP — NODE %u (%s)\n", NODE_ID, NODE_NAME);
+  Serial.println("=============================================================");
+  Serial.printf(" Chip Model:     %s (Cores: %u, Freq: %lu MHz)\n",
+                ESP.getChipModel(), ESP.getChipCores(), (unsigned long)ESP.getCpuFreqMHz());
+  Serial.printf(" Hardware MAC:   %s\n", WiFi.macAddress().c_str());
+  Serial.printf(" Free RAM Heap:  %lu bytes\n", (unsigned long)ESP.getFreeHeap());
+  Serial.println("-------------------------------------------------------------");
+  Serial.printf(" Wi-Fi Network:  %s  (Password: %s)\n", NODE_NAME, WIFI_AP_PASSWORD);
+  Serial.printf(" Radio Channel:  %u  (TX Power: %d * 0.25 dBm)\n", CHANNEL, WIFI_TX_POWER);
+  Serial.printf(" Web Chat Portal: http://%s\n", WiFi.softAPIP().toString().c_str());
+  Serial.println("-------------------------------------------------------------");
+  Serial.println(" Type /help for diagnostic commands, or type text to chat.");
+  Serial.println("=============================================================\n");
 }
 
 // ----- loop() -----------------------------------------------
@@ -207,6 +277,15 @@ void loop() {
   ledSetRadarState(st, dist);
   webSetRadarStatus(st, dist);
   // SOLUTION-END
+
+  // Live serial diagnostic on radar state transitions
+  static uint8_t s_last_radar_st = 0;
+  if (st != s_last_radar_st) {
+    const char *st_labels[] = {"CLEAR (Safe)", "NEAR (Warning - Yellow Pulse)", "CLOSE (Alert - Solid Red)"};
+    Serial.printf("[RADAR] State changed -> %s (Est Distance: %.1f cm, RSSI: %.1f dBm)\n",
+                  st_labels[st], dist, g_filtered_rssi);
+    s_last_radar_st = st;
+  }
 
   ledLoop(millis());
   handleSerial();

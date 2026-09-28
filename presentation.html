@@ -1510,63 +1510,6 @@
             font-size: 1.3rem; margin-top: 14px; font-style: normal;
         }
 
-        /* Matrix Movie Quote Voice Buttons */
-        .quote-voice-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 18px;
-            background: rgba(0, 30, 10, 0.75);
-            border: 1px solid var(--green);
-            color: #afffa4;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.92rem;
-            letter-spacing: 1px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
-            box-shadow: 0 0 12px rgba(0, 255, 65, 0.25);
-            margin-top: 14px;
-        }
-        .quote-voice-btn:hover {
-            background: rgba(0, 255, 65, 0.25);
-            box-shadow: 0 0 25px rgba(0, 255, 65, 0.7);
-            color: #fff;
-            transform: translateY(-2px);
-        }
-        .quote-voice-btn:active {
-            transform: translateY(0);
-        }
-        .quote-voice-btn.speaking {
-            animation: pulse-speaking 0.9s infinite alternate;
-            border-color: #ffffff !important;
-            color: #ffffff !important;
-        }
-        @keyframes pulse-speaking {
-            0% { box-shadow: 0 0 10px var(--green); }
-            100% { box-shadow: 0 0 35px var(--green), 0 0 60px #00ff41; }
-        }
-
-        body.smith-mode .quote-voice-btn {
-            background: rgba(40, 0, 8, 0.75);
-            border-color: var(--red);
-            color: #ffcccc;
-            box-shadow: 0 0 12px rgba(255, 32, 32, 0.25);
-        }
-        body.smith-mode .quote-voice-btn:hover {
-            background: rgba(255, 32, 32, 0.3);
-            box-shadow: 0 0 25px rgba(255, 32, 32, 0.7);
-            color: #fff;
-        }
-        body.smith-mode .quote-voice-btn.speaking {
-            animation: pulse-speaking-smith 0.9s infinite alternate;
-            border-color: #ffffff !important;
-        }
-        @keyframes pulse-speaking-smith {
-            0% { box-shadow: 0 0 10px var(--red); }
-            100% { box-shadow: 0 0 35px var(--red), 0 0 60px #ff2020; }
-        }
-
         /* Ambient Phone Ringing Indicator (Slide 28) */
         .ambient-phone-indicator {
             position: absolute;
@@ -1631,7 +1574,6 @@
     <!-- HUD Controls -->
     <div class="hud">
         <button class="hud-btn" id="btn-audio" title="Toggle Sound FX (Shortcut: M)">🔊 Audio</button>
-        <button class="hud-btn" id="btn-voice" title="Toggle Movie Quotes Voice (Shortcut: V)">🗣️ Quotes: ON</button>
         <button class="hud-btn" id="btn-whoosh" title="Bullet-Time Slow-Mo (Shortcut: B)">⚡ Slow-Mo</button>
         <button class="hud-btn" id="btn-zoom-out" title="Zoom Out (Shortcut: -)">−</button>
         <span class="hud-text" id="zoom-level" title="Reset Zoom (Shortcut: 0)">100%</span>
@@ -1654,9 +1596,6 @@
             <div class="hero-title">THE MATRIX</div>
             <div class="hero-sub">DECENTRALISED COMMUNICATIONS WITH ESP32</div>
             <p class="prompt typewriter">Press → to take the red pill...</p>
-            <div style="margin-top:24px">
-                <button class="quote-voice-btn" id="btn-quote-0" onclick="playQuoteSlide(0)">🔊 Morpheus: "This is your last chance... Welcome to the real world"</button>
-            </div>
         </div>
 
         <!-- ============ SLIDE 1: THE HOOK ============ -->
@@ -1665,9 +1604,6 @@
             <p class="quote">"When you text a friend sitting 1 meter away, your message travels 5,000 km to cloud
                 servers and back. Today, we kill the middleman."</p>
             <p class="quote-author">— Off-Grid Engineering Manifesto</p>
-            <div style="margin-top:12px">
-                <button class="quote-voice-btn" id="btn-quote-1" onclick="playQuoteSlide(1)">🔊 Morpheus: "What if I told you that everything you know was a lie?"</button>
-            </div>
             <div class="analogy-card" style="margin-top:20px">
                 <b>💡 THE MISSION</b>: Build an autonomous, serverless chat mesh that operates inside a concrete bunker,
                 dense jungle, or during a complete blackout—using raw 2.4 GHz radio signals.
@@ -1947,9 +1883,6 @@
             <h2>What is ESP-NOW?</h2>
             <p class="subtitle">Developed by Espressif, ESP-NOW is a <span class="highlight">connectionless 2.4 GHz
                     protocol</span> designed for sub-millisecond, low-power microcontroller telemetry.</p>
-            <div style="margin-top:10px;margin-bottom:14px">
-                <button class="quote-voice-btn" id="btn-quote-8" onclick="playQuoteSlide(8)">🔊 Morpheus: "All I'm offering is the truth. Free your packets."</button>
-            </div>
 
             <table class="compare-table">
                 <thead>
@@ -2598,9 +2531,6 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
         <!-- ============ SLIDE 25: YOUR MISSION ============ -->
         <div class="slide">
             <h2>Your Mission</h2>
-            <div style="margin-top:8px;margin-bottom:14px">
-                <button class="quote-voice-btn" id="btn-quote-25" onclick="playQuoteSlide(25)">🔊 Morpheus: "I can only show you the door. You have to walk through it."</button>
-            </div>
             <div class="steps">
                 <div class="step">
                     <div class="step-num">01</div>
@@ -2661,8 +2591,7 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
             <div class="hero-title" style="font-size:clamp(4.0rem,7.5vw,6.5rem)">JACK IN.</div>
             <p class="quote" style="font-style:normal;margin-top:20px">"Free your mind."</p>
             <div style="margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-                <button class="quote-voice-btn" id="btn-quote-27" onclick="playQuoteSlide(27)">🔊 Morpheus: "Free your mind."</button>
-                <button class="quote-voice-btn" id="btn-jackin-sound" onclick="playModemJackIn()" style="border-color:#ffff00;color:#ffffaa">⚡ Jack-In Audio (DTMF &amp; Modem)</button>
+                <button class="hud-btn" id="btn-jackin-sound" onclick="playModemJackIn()" style="border-color:#ffff00;color:#ffffaa;font-size:1rem;padding:8px 18px">⚡ Jack-In Audio (DTMF &amp; Modem)</button>
             </div>
             <p style="margin-top:24px;color:#88cc88;font-size:1.3rem;letter-spacing:3px">Open your laptops. Set your
                 Node ID. Enter the Matrix.</p>
@@ -2682,9 +2611,6 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
             <div class="hero-title glitch-smith" style="color:var(--red)">AGENT SMITH</div>
             <div class="hero-sub" style="color:#ff8888">// PROJECT ANOMALY: THE ROGUE TRANSMITTER</div>
             <p class="prompt typewriter" style="color:#aa4444;border-color:var(--red)">Press → to execute protocol 99...</p>
-            <div style="margin-top:24px">
-                <button class="quote-voice-btn" id="btn-quote-29" onclick="playQuoteSlide(29)">🔊 Agent Smith: "Did you really think you could escape, Mr. Anderson?"</button>
-            </div>
         </div>
 
         <!-- ============ SLIDE 30: THE ANOMALY REVEALED ============ -->
@@ -2692,9 +2618,6 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
             <div class="section-tag">// System Breach Detected</div>
             <h2>The Anomaly Revealed</h2>
             <p class="subtitle">You thought you were building a peaceful chat mesh. Look at your NeoPixels right now.</p>
-            <div style="margin-top:10px;margin-bottom:14px">
-                <button class="quote-voice-btn" id="btn-quote-30" onclick="playQuoteSlide(30)">🔊 Agent Smith: "You are a disease, Mr. Anderson. And we are the cure."</button>
-            </div>
             <div class="card-row">
                 <div class="card">
                     <span class="card-icon">🎭</span>
@@ -2791,7 +2714,6 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
                             <span class="il-text"><b>Raw 2.4 GHz Promiscuity</b> — Packets bypass Wi-Fi encryption (WPA2/3) entirely, traversing raw radio channels.</span>
                         </li>
                     </ul>
-                    <button class="quote-voice-btn" id="btn-quote-33" onclick="playQuoteSlide(33)">🔊 Agent Smith: "Never send a human to do a machine's job"</button>
                 </div>
                 <div class="code-box" data-file="smith/main.cpp (spoof injection)">
                     <code><span class="cm">// Forging packets as any student:</span>
@@ -2874,7 +2796,6 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
                     </ul>
                     <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:14px">
                         <button id="btn-demo-geiger" class="nav-btn" style="border-color:var(--red);color:#ffcccc;padding:7px 16px;font-size:0.92rem;background:rgba(40,0,8,0.7);cursor:pointer" title="Acoustic Proximity Simulation (Note: ESP32 boards use NeoPixel LED signals only)">🔊 Demo Geiger Audio (Acoustic Sim)</button>
-                        <button class="quote-voice-btn" id="btn-quote-36" style="margin-top:0" onclick="playQuoteSlide(36)">🔊 Agent Smith: "You cannot hide"</button>
                     </div>
                 </div>
                 <div>
@@ -2898,9 +2819,6 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
             <div class="hero-title glitch-smith" style="color:var(--red)">I'M INEVITABLE.</div>
             <p class="quote">"You hear that sound, Mr. Anderson? That is the sound of inevitability... Goodbye, Mr. Anderson."</p>
             <p class="quote-author">— Agent Smith</p>
-            <div style="margin-top:24px">
-                <button class="quote-voice-btn" id="btn-quote-37" onclick="playQuoteSlide(37)">🔊 Agent Smith: "The Sound of Inevitability"</button>
-            </div>
             <p style="margin-top:30px;color:#ff6666;font-size:1.3rem;letter-spacing:3px">The Matrix has collapsed. Find the anomaly.</p>
         </div>
 
@@ -3019,10 +2937,9 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
         document.addEventListener('mousemove', e => { glow.style.left = e.clientX + 'px'; glow.style.top = e.clientY + 'px'; });
 
         // ---- Cyberpunk Web Audio Sound FX Engine ----
-        // ---- Cyberpunk Web Audio Sound FX & Matrix Movie Voice Engine ----
+        // ---- Cyberpunk Web Audio Sound FX Engine ----
         let audioCtx = null;
         let soundEnabled = true;
-        let quotesEnabled = true;
         let telephoneInterval = null;
 
         function getAudioContext() {
@@ -3041,13 +2958,6 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
         // Initialize audio on first user gesture
         document.addEventListener('click', () => getAudioContext(), { once: true });
         document.addEventListener('keydown', () => getAudioContext(), { once: true });
-
-        // Ensure voices are loaded
-        if (typeof window !== 'undefined' && window.speechSynthesis) {
-            window.speechSynthesis.onvoiceschanged = () => {
-                window.speechSynthesis.getVoices();
-            };
-        }
 
         // 1. Matrix Phosphor Terminal Typing Chirp (Green Mode)
         // Mainframe telemetry chirp with subtle CRT deflection flyback pulse
@@ -3382,182 +3292,6 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
             sub.stop(t + dur + 0.05);
         }
 
-        // 7. The Matrix Movie Voice Quotes Engine
-        const MOVIE_QUOTES = {
-            0: {
-                speaker: 'morpheus',
-                text: "This is your last chance. After this, there is no turning back. You take the blue pill, the story ends. You take the red pill, you stay in Wonderland, and I show you how deep the rabbit hole goes. Welcome to the real world.",
-                btnId: 'btn-quote-0'
-            },
-            1: {
-                speaker: 'morpheus',
-                text: "What if I told you that everything you know was a lie? Today, we kill the middleman.",
-                btnId: 'btn-quote-1'
-            },
-            8: {
-                speaker: 'morpheus',
-                text: "Remember, all I am offering is the truth. Nothing more. Free your packets from the access point.",
-                btnId: 'btn-quote-8'
-            },
-            25: {
-                speaker: 'morpheus',
-                text: "I can only show you the door. You are the one that has to walk through it.",
-                btnId: 'btn-quote-25'
-            },
-            27: {
-                speaker: 'morpheus',
-                text: "Free your mind. Enter the Matrix.",
-                btnId: 'btn-quote-27'
-            },
-            28: {
-                speaker: 'trinity',
-                text: "Neo, the hardline is tapped! They know you are here. Get out of there now!",
-                btnId: null
-            },
-            29: {
-                speaker: 'smith',
-                text: "Did you really think you could escape, Mr. Anderson? The Matrix has collapsed.",
-                btnId: 'btn-quote-29'
-            },
-            30: {
-                speaker: 'smith',
-                text: "I'd like to share a revelation that I've had during my time here. You are a disease, Mr. Anderson. And we... are the cure.",
-                btnId: 'btn-quote-30'
-            },
-            33: {
-                speaker: 'smith',
-                text: "Never send a human to do a machine's job.",
-                btnId: 'btn-quote-33'
-            },
-            36: {
-                speaker: 'smith',
-                text: "You can run... but you cannot hide.",
-                btnId: 'btn-quote-36'
-            },
-            37: {
-                speaker: 'smith',
-                text: "You hear that sound, Mr. Anderson? That is the sound of inevitability... Goodbye, Mr. Anderson.",
-                btnId: 'btn-quote-37'
-            }
-        };
-
-        const AUDIO_FILE_MAP = {
-            0: 'audio/morpheus_pill.mp3',
-            1: 'audio/morpheus_lie.mp3',
-            8: 'audio/morpheus_truth.mp3',
-            25: 'audio/morpheus_door.mp3',
-            27: 'audio/morpheus_free_mind.mp3',
-            28: 'audio/trinity_tapped.mp3',
-            29: 'audio/smith_escape.mp3',
-            30: 'audio/smith_cure.mp3',
-            33: 'audio/smith_machine.mp3',
-            36: 'audio/smith_hide.mp3',
-            37: 'audio/smith_inevitability.mp3'
-        };
-
-        let currentPlayingAudio = null;
-
-        function speakMatrixQuote(quoteObj) {
-            if (!soundEnabled || !quotesEnabled) return;
-            if (!window.speechSynthesis) return;
-
-            // Cancel any current utterance
-            window.speechSynthesis.cancel();
-            document.querySelectorAll('.quote-voice-btn').forEach(b => b.classList.remove('speaking'));
-
-            playRadioSquelch(() => {
-                const u = new SpeechSynthesisUtterance(quoteObj.text);
-                const voices = window.speechSynthesis.getVoices();
-                const enVoices = voices.filter(v => v.lang && v.lang.startsWith('en'));
-
-                if (quoteObj.speaker === 'smith') {
-                    // Agent Smith: deliberate, chillingly calm, measured pacing (natural formant pitch)
-                    u.pitch = 0.92;
-                    u.rate = 0.88;
-                    const voice = enVoices.find(v => (v.name.includes('Natural') || v.name.includes('Neural') || v.name.includes('Online')) && (v.name.includes('Ryan') || v.name.includes('Christopher') || v.name.includes('Guy') || v.name.includes('George') || v.name.includes('Oliver')))
-                        || enVoices.find(v => v.name.includes('Google UK English Male') || v.name.includes('Daniel') || v.name.includes('George'))
-                        || enVoices.find(v => (v.name.includes('Natural') || v.name.includes('Neural')) && !v.name.includes('Female'))
-                        || enVoices.find(v => v.name.includes('David') || v.name.includes('Mark'))
-                        || enVoices[0];
-                    if (voice) u.voice = voice;
-                } else if (quoteObj.speaker === 'morpheus') {
-                    // Morpheus: deep, resonant, authoritative baritone
-                    u.pitch = 0.90;
-                    u.rate = 0.88;
-                    const voice = enVoices.find(v => (v.name.includes('Natural') || v.name.includes('Neural') || v.name.includes('Online')) && (v.name.includes('Guy') || v.name.includes('Ryan') || v.name.includes('Davis') || v.name.includes('George')))
-                        || enVoices.find(v => v.name.includes('Google US English') || v.name.includes('David'))
-                        || enVoices.find(v => !v.name.includes('Female') && !v.name.includes('Zira'))
-                        || enVoices[0];
-                    if (voice) u.voice = voice;
-                } else if (quoteObj.speaker === 'trinity') {
-                    // Trinity / Operator: urgent, crisp, tactical
-                    u.pitch = 1.0;
-                    u.rate = 0.96;
-                    const voice = enVoices.find(v => (v.name.includes('Natural') || v.name.includes('Neural') || v.name.includes('Online')) && (v.name.includes('Jenny') || v.name.includes('Sonia') || v.name.includes('Aria') || v.name.includes('Female')))
-                        || enVoices.find(v => v.name.includes('Zira') || v.name.includes('Google US English') || v.name.includes('Susan'))
-                        || enVoices[0];
-                    if (voice) u.voice = voice;
-                }
-
-                const btn = quoteObj.btnId ? document.getElementById(quoteObj.btnId) : null;
-                if (btn) btn.classList.add('speaking');
-
-                u.onend = () => {
-                    if (btn) btn.classList.remove('speaking');
-                };
-                u.onerror = () => {
-                    if (btn) btn.classList.remove('speaking');
-                };
-
-                window.speechSynthesis.speak(u);
-            });
-        }
-
-        function playQuoteSlide(slideIdx) {
-            getAudioContext();
-            const q = MOVIE_QUOTES[slideIdx];
-            if (!q) return;
-
-            // Stop any currently playing audio clip or speech
-            if (currentPlayingAudio) {
-                currentPlayingAudio.pause();
-                currentPlayingAudio = null;
-            }
-            if (window.speechSynthesis) window.speechSynthesis.cancel();
-            document.querySelectorAll('.quote-voice-btn').forEach(b => b.classList.remove('speaking'));
-
-            const btn = q.btnId ? document.getElementById(q.btnId) : null;
-            const audioSrc = AUDIO_FILE_MAP[slideIdx];
-
-            // If an authentic movie MP3 file is present in /audio/, play it directly!
-            if (audioSrc) {
-                const audio = new Audio(audioSrc);
-                currentPlayingAudio = audio;
-                if (btn) btn.classList.add('speaking');
-
-                audio.onended = () => {
-                    if (btn) btn.classList.remove('speaking');
-                    currentPlayingAudio = null;
-                };
-
-                audio.play().then(() => {
-                    // Successfully playing real movie clip!
-                }).catch(() => {
-                    // MP3 file not found in /audio/ folder -> gracefully fall back to neural speech synthesis
-                    currentPlayingAudio = null;
-                    const prev = quotesEnabled;
-                    quotesEnabled = true;
-                    speakMatrixQuote(q);
-                    quotesEnabled = prev;
-                });
-            } else {
-                const prev = quotesEnabled;
-                quotesEnabled = true;
-                speakMatrixQuote(q);
-                quotesEnabled = prev;
-            }
-        }
-
         // 7. Ambient Matrix Carrier Drone (for Slide 28)
         let ambientHumNode = null;
         function startAmbientHum() {
@@ -3598,13 +3332,6 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
             telephoneInterval = setInterval(() => {
                 if (soundEnabled) playTelephoneRing();
             }, 5500);
-
-            // After 2.5 seconds, Trinity warns that the hardline is tapped
-            setTimeout(() => {
-                if (cur === AMBIENT_RAIN_SLIDE && quotesEnabled) {
-                    speakMatrixQuote(MOVIE_QUOTES[28]);
-                }
-            }, 2500);
         }
 
         function stopAmbientHum(immediate) {
@@ -3782,13 +3509,6 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
                 ringOsc.start(dropTime + 0.08);
                 ringOsc.stop(dropTime + 1.65);
             });
-
-            // Speak Agent Smith's iconic breach quote as the explosion settles
-            setTimeout(() => {
-                if (quotesEnabled) {
-                    speakMatrixQuote(MOVIE_QUOTES[29]);
-                }
-            }, 550);
         }
 
         // 9. Inevitability Subway Screech & Doom Toll (Slide 37: "I'M INEVITABLE")
@@ -3849,13 +3569,6 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
             gain.connect(ctx.destination);
             osc.start(t);
             osc.stop(t + 2.5);
-
-            // Speak Agent Smith's famous quote
-            setTimeout(() => {
-                if (quotesEnabled) {
-                    speakMatrixQuote(MOVIE_QUOTES[37]);
-                }
-            }, 600);
         }
 
         // 10. Triumphant Debrief Chime (Slide 38: The Architects)
@@ -3974,27 +3687,9 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
                 playToggleChime(true);
             } else {
                 stopAmbientHum(true);
-                if (window.speechSynthesis) window.speechSynthesis.cancel();
             }
         }
         if (btnAudio) btnAudio.addEventListener('click', toggleAudio);
-
-        const btnVoice = document.getElementById('btn-voice');
-        function toggleVoice() {
-            getAudioContext();
-            quotesEnabled = !quotesEnabled;
-            if (btnVoice) {
-                btnVoice.textContent = quotesEnabled ? '🗣️ Quotes: ON' : '🗣️ Quotes: OFF';
-                btnVoice.style.color = quotesEnabled ? '#00ff41' : '#888888';
-                btnVoice.title = quotesEnabled ? 'Movie Quotes Voice Enabled (Shortcut: V)' : 'Movie Quotes Voice Muted (Shortcut: V)';
-            }
-            if (!quotesEnabled && window.speechSynthesis) {
-                window.speechSynthesis.cancel();
-            } else if (quotesEnabled) {
-                playTickSound(1200, 0.03);
-            }
-        }
-        if (btnVoice) btnVoice.addEventListener('click', toggleVoice);
 
         const btnWhoosh = document.getElementById('btn-whoosh');
         if (btnWhoosh) {
@@ -4087,13 +3782,6 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
                 } else {
                     playSlideSound(isSmithMode);
                 }
-
-                // Auto-speak iconic movie quote if available for this slide
-                if (quotesEnabled && MOVIE_QUOTES[cur] && cur !== AMBIENT_RAIN_SLIDE && cur !== SMITH_START_SLIDE && cur !== INEVITABLE_SLIDE) {
-                    setTimeout(() => {
-                        if (cur === n) speakMatrixQuote(MOVIE_QUOTES[cur]);
-                    }, 500);
-                }
             }
         }
 
@@ -4111,8 +3799,6 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
             else if (e.key === '0') { resetZoom(); }
             else if (e.key === 'f' || e.key === 'F') { toggleFullscreen(); }
             else if (e.key === 'm' || e.key === 'M') { toggleAudio(); }
-            else if (e.key === 'v' || e.key === 'V') { toggleVoice(); }
-            else if (e.key === 'q' || e.key === 'Q') { if (MOVIE_QUOTES[cur]) playQuoteSlide(cur); }
             else if (e.key === 'b' || e.key === 'B') { playBulletTimeWhoosh(); }
         });
 
