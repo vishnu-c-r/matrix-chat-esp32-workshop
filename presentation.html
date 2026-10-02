@@ -1966,7 +1966,7 @@
             <div class="section-tag">// Addressing Mechanics</div>
             <h2>Broadcast Mode</h2>
             <p class="subtitle">We broadcast to <span class="highlight">FF:FF:FF:FF:FF:FF</span>. Every ESP32 in the
-                room tuned to Channel 1 receives the packet simultaneously.</p>
+                room tuned to Channel 11 receives the packet simultaneously.</p>
             <div class="diagram">
                 <div class="dia-node" style="border-color:#ffcc00;box-shadow:0 0 20px rgba(255,204,0,0.4)">
                     <span class="dn-icon">📤</span>
@@ -2034,7 +2034,7 @@
                         <li>
                             <span class="il-icon">📡</span>
                             <span class="il-text"><b>Broadcast Addressing</b><br>
-                                Sends to <span class="hl-yellow">FF:FF:FF:FF:FF:FF</span>. Any board on Channel 1 hears
+                                Sends to <span class="hl-yellow">FF:FF:FF:FF:FF:FF</span>. Any board on Channel 11 hears
                                 it.
                             </span>
                         </li>
@@ -2555,7 +2555,7 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
 <span class="kw">#define</span> NODE_NAME <span class="st">"Trinity"</span>
 
 <span class="cm">// Everyone must stay on the same radio channel:</span>
-<span class="kw">#define</span> CHANNEL   <span class="vl">1</span></code>
+<span class="kw">#define</span> CHANNEL   <span class="vl">11</span></code>
             </div>
         </div>
 
@@ -2730,7 +2730,7 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
             <div class="two-col">
                 <div>
                     <ul class="icon-list">
-                        <li><span class="il-icon">📶</span><span class="il-text"><b>Hidden Rogue AP</b> — Transmitter hosts <span class="highlight-red">Matrix-Admin</span> SoftAP (Password: <span class="highlight-red">admin123</span>) on Channel 1.</span></li>
+                        <li><span class="il-icon">📶</span><span class="il-text"><b>Hidden Rogue AP</b> — Transmitter hosts <span class="highlight-red">Matrix-Admin</span> SoftAP (Password: <span class="highlight-red">admin123</span>) on Channel 11.</span></li>
                         <li><span class="il-icon">📱</span><span class="il-text"><b>Live HUD</b> — Web dashboard at <span class="highlight-green">http://192.168.4.1</span> sending commands over local Wi-Fi.</span></li>
                         <li><span class="il-icon">🎚️</span><span class="il-text"><b>Live Stage Buttons</b> — Transition seamlessly between Stealth (0), Impersonate (1), Corrupt (2), and Flood (3).</span></li>
                         <li><span class="il-icon">💬</span><span class="il-text"><b>Custom Spoof Injection</b> — Type any message and broadcast under any victim's Node ID (1–50) or 99!</span></li>
