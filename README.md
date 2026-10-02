@@ -67,7 +67,7 @@ The ESP32-C3 uses an external WS2812 addressable NeoPixel LED connected to **GPI
 1. **Peer-to-Peer Radio Layer**:
    - Messages bypass Wi-Fi routers, the internet, and servers entirely.
    - Nodes transmit 2.4 GHz raw vendor-specific action frames directly over **ESP-NOW** in under 1 millisecond.
-   - All boards in the room listen on the same radio channel (`CHANNEL 1`).
+   - All boards in the room listen on the same radio channel (`CHANNEL 11`).
 
 2. **The Wire Packet (`Pkt`)**:
    - Every transmission is packed into a compact binary `Pkt` struct (188 bytes):

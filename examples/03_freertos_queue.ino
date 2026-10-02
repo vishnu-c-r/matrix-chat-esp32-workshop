@@ -76,29 +76,27 @@ void setup() {
     return;
   }
 
-  // Pin Producer Task to Core 0 (or allow OS to schedule)
-  xTaskCreatePinnedToCore(
+  // Launch Producer Task (Priority 2)
+  xTaskCreate(
     producerTask,   // Task function
     "Producer",     // Name
     3072,           // Stack size (bytes)
     NULL,           // Parameters
     2,              // Priority (higher = 2)
-    NULL,           // Task handle
-    0               // Core 0 (Protocol / Radio core)
+    NULL            // Task handle
   );
 
-  // Pin Consumer Task to Core 1 (Application core)
-  xTaskCreatePinnedToCore(
+  // Launch Consumer Task (Priority 1)
+  xTaskCreate(
     consumerTask,   // Task function
     "Consumer",     // Name
     3072,           // Stack size (bytes)
     NULL,           // Parameters
     1,              // Priority
-    NULL,           // Task handle
-    1               // Core 1 (App / UI core)
+    NULL            // Task handle
   );
 
-  Serial.println("[System] FreeRTOS tasks launched on dual cores!");
+  Serial.println("[System] FreeRTOS concurrent tasks launched!");
 }
 
 void loop() {

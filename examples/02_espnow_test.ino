@@ -12,8 +12,10 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <esp_now.h>
+#include <esp_wifi.h>
 
 #define RGB_PIN 2
+#define WIFI_CHANNEL 11
 
 // Broadcast address: sends to all devices listening on this channel
 static const uint8_t BROADCAST_MAC[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
@@ -36,11 +38,12 @@ void setup() {
   Serial.begin(115200);
   delay(500);
 
-  Serial.println("\n[ESP-NOW] Broadcast Test Ready");
+  Serial.println("\n[ESP-NOW] Broadcast Test Ready (Channel 11)");
 
-  // 1. Set Wi-Fi to Station mode
+  // 1. Set Wi-Fi to Station mode on Channel 11
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();
+  esp_wifi_set_channel(WIFI_CHANNEL, WIFI_SECOND_CHAN_NONE);
 
   // 2. Initialize ESP-NOW
   if (esp_now_init() != ESP_OK) {
