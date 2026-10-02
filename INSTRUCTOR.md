@@ -20,7 +20,7 @@ Flash your rogue ESP32-C3 board:
 ```powershell
 pio run -e esp32c3_smith -t upload --upload-port COMx
 ```
-*(Or use `esp32s3_smith` / `esp32dev_smith` if using an S3 or WROOM board).*
+
 
 ### 2. Connect to the Hacker Web UI
 1. Power on your Smith board (connect NeoPixel to **GPIO 2** for stage status feedback).

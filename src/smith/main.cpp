@@ -111,12 +111,8 @@ static void checkButton()
         g_btn_ms         = now;
 
         // Show stage color briefly at full brightness.
-#if defined(CONFIG_IDF_TARGET_ESP32S3) || defined(CONFIG_IDF_TARGET_ESP32C3)
-        if (HAS_NEOPIXEL) {
-            const Color& c = STAGE_COLORS[g_stage];
-            rgbLedWrite(PIN_NEOPIXEL, c.r, c.g, c.b);
-        }
-#endif
+        const Color& c = STAGE_COLORS[g_stage];
+        rgbLedWrite(PIN_NEOPIXEL, c.r, c.g, c.b);
         Serial.printf("[smith] stage -> %u\n", g_stage);
     }
     g_btn_prev = pressed;
@@ -137,13 +133,7 @@ void smithSetStage(uint8_t stage)
         Serial.printf("[smith] Web changed stage -> %u\n", g_stage);
         
         const Color& c = STAGE_COLORS[g_stage];
-#if defined(CONFIG_IDF_TARGET_ESP32S3) || defined(CONFIG_IDF_TARGET_ESP32C3)
         rgbLedWrite(PIN_NEOPIXEL, c.r / 3, c.g / 3, c.b / 3);
-#else
-        ledcWrite(PIN_LED_R, c.r / 4);
-        ledcWrite(PIN_LED_G, c.g / 4);
-        ledcWrite(PIN_LED_B, c.b / 4);
-#endif
     }
 }
 
@@ -317,14 +307,7 @@ static void updateStageLed()
 {
     const Color& c = STAGE_COLORS[g_stage];
     // Smith has no node LED state machine — just show stage color directly.
-#if defined(CONFIG_IDF_TARGET_ESP32S3) || defined(CONFIG_IDF_TARGET_ESP32C3)
     rgbLedWrite(PIN_NEOPIXEL, c.r / 3, c.g / 3, c.b / 3);  // dim
-#else
-    // LEDC direct write for WROOM/C3 stage indicator.
-    ledcWrite(PIN_LED_R, c.r / 4);
-    ledcWrite(PIN_LED_G, c.g / 4);
-    ledcWrite(PIN_LED_B, c.b / 4);
-#endif
 }
 
 // ----- setup() ----------------------------------------------
@@ -336,12 +319,6 @@ void setup()
     Serial.println("Press BOOT to advance stages (0→1→2→3→0)");
 
     pinMode(PIN_BOOT, INPUT_PULLUP);
-
-#if !defined(CONFIG_IDF_TARGET_ESP32S3) && !defined(CONFIG_IDF_TARGET_ESP32C3)
-    ledcAttach(PIN_LED_R, 5000, 8);
-    ledcAttach(PIN_LED_G, 5000, 8);
-    ledcAttach(PIN_LED_B, 5000, 8);
-#endif
 
     // Low TX power (~2 dBm) makes RSSI distance-sensitive in the workshop.
     // esp_wifi_set_max_tx_power takes units of 0.25 dBm; 8 = 2 dBm.

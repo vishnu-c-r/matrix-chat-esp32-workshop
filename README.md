@@ -13,9 +13,7 @@
 include/config.h
 
 # 2. Flash your board via PlatformIO (replace COMx with your port)
-pio run -e esp32c3_node  -t upload --upload-port COMx    # ESP32-C3 SuperMini (Recommended)
-pio run -e esp32s3_node  -t upload --upload-port COMx    # ESP32-S3 DevKitC-1
-pio run -e esp32dev_node -t upload --upload-port COMx    # ESP32-WROOM-32
+pio run -e esp32c3_node  -t upload --upload-port COMx    # ESP32-C3 SuperMini
 
 # 3. Connect your phone or laptop to your board's Wi-Fi network:
 # SSID:     <NODE_NAME>          (your team's chosen name from config.h)
@@ -62,16 +60,6 @@ The ESP32-C3 uses an external WS2812 addressable NeoPixel LED connected to **GPI
 
 > **Note on C3 Uploads**: If the C3 board does not enter bootloader mode automatically, hold down the **BOOT** button (GPIO 9), tap the **RST** button, and then release BOOT.
 
-### 2. ESP32-S3 DevKitC-1
-No external wiring required. The onboard addressable RGB LED on **GPIO 48** is used automatically (`HAS_NEOPIXEL = true`).
-
-### 3. ESP32-WROOM-32 (esp32dev)
-Uses an external common-cathode RGB LED with 3 × 330 Ω resistors:
-- **Red**: GPIO 25
-- **Green**: GPIO 26
-- **Blue**: GPIO 27
-- **Cathode**: GND
-
 ---
 
 ## 📡 How the Chat System Works
@@ -108,9 +96,7 @@ Uses an external common-cathode RGB LED with 3 × 330 Ω resistors:
 
 | Environment | Board Target | Description |
 |:------------|:-------------|:------------|
-| `esp32c3_node` | ESP32-C3 | Final workshop student chat firmware |
-| `esp32s3_node` | ESP32-S3 | S3 DevKitC-1 student chat firmware |
-| `esp32dev_node` | ESP32-WROOM | Classic ESP32 DevKit chat firmware |
+| `esp32c3_node` | ESP32-C3 | Workshop student chat firmware |
 
 ---
 

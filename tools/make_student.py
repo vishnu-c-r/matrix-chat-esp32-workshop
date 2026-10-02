@@ -155,9 +155,7 @@ Stage guide
   Stage 3 (~40 min) Link RSSI filter + Proximity indicator
 
 Flash commands (replace COMx with your port):
-  Node  (C3):    pio run -e esp32c3_node -t upload --upload-port COMx
-  Node  (S3):    pio run -e esp32s3_node -t upload --upload-port COMx
-  Node  (WROOM): pio run -e esp32dev_node -t upload --upload-port COMx
+  pio run -e esp32c3_node -t upload --upload-port COMx
 """)
 
 

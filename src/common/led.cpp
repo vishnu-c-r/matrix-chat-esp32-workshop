@@ -1,8 +1,5 @@
 // =============================================================
-//  led.cpp — Non-blocking LED driver (LEDC + NeoPixel).
-//
-//  NOTE: ledcSetup/ledcAttachPin are deprecated in Arduino-ESP32 3.x.
-//  We use the new ledcAttach(pin, freq, bits) + ledcWrite(pin, duty) API.
+//  led.cpp — Non-blocking LED driver (ESP32-C3 NeoPixel).
 // =============================================================
 #include "led.h"
 #include "board_pins.h"
@@ -18,19 +15,11 @@ static uint8_t gamma8(uint8_t v)
 // ---- Low-level output ---------------------------------------
 static void setRgb(uint8_t r, uint8_t g, uint8_t b)
 {
-#if defined(CONFIG_IDF_TARGET_ESP32S3) || defined(CONFIG_IDF_TARGET_ESP32C3)
     // Onboard WS2812 — gamma applied inside rgbLedWrite is vendor-specific;
     // we apply our own gamma before calling so output is consistent.
     rgbLedWrite(PIN_NEOPIXEL, gamma8(r), gamma8(g), gamma8(b));
-#else
-    // External common-cathode RGB via LEDC (Arduino-ESP32 3.x API).
-    ledcWrite(PIN_LED_R, gamma8(r));
-    ledcWrite(PIN_LED_G, gamma8(g));
-    ledcWrite(PIN_LED_B, gamma8(b));
-#endif
 }
 
-// ---- State machine ------------------------------------------
 // ---- State machine ------------------------------------------
 enum class LedState : uint8_t { IDLE, MSG_FLASH, RADAR_NEAR, RADAR_CLOSE };
 
@@ -57,14 +46,6 @@ static uint32_t distToHalfPeriod(float dist_cm)
 void ledInit(uint8_t node_id)
 {
     g_node_color = nodeColor(node_id % N_COLORS);
-
-#if !defined(CONFIG_IDF_TARGET_ESP32S3) && !defined(CONFIG_IDF_TARGET_ESP32C3)
-    // Arduino-ESP32 3.x LEDC API: attach pin, then write duty by pin.
-    ledcAttach(PIN_LED_R, 5000, 8);
-    ledcAttach(PIN_LED_G, 5000, 8);
-    ledcAttach(PIN_LED_B, 5000, 8);
-#endif
-
     setRgb(0, 0, 0);  // off until first loop tick
 }
 

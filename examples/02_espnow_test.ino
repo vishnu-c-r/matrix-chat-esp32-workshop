@@ -16,14 +16,8 @@
 #include <WiFi.h>
 #include <esp_now.h>
 
-// Onboard LED pin (ESP32-C3 onboard NeoPixel is GPIO 2)
-#if defined(CONFIG_IDF_TARGET_ESP32C3)
-  #define RGB_PIN 2
-#elif defined(CONFIG_IDF_TARGET_ESP32S3)
-  #define RGB_PIN 48
-#else
-  #define RGB_PIN 2
-#endif
+// ESP32-C3 SuperMini onboard NeoPixel:
+#define RGB_PIN 2
 
 #define WIFI_CHANNEL 1
 
