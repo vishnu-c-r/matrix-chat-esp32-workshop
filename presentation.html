@@ -1798,15 +1798,14 @@
                         </li>
                         <li>
                             <span class="il-icon">⚡</span>
-                            <span class="il-text"><b>Non-Blocking Loop</b><br>
-                                Calculates a 2-second sine wave using <code>millis()</code> instead of blocking
-                                <code>delay()</code>.
+                            <span class="il-text"><b>Hardware Verification</b><br>
+                                Blinks onboard NeoPixel to verify power, GPIO 2, and R/G/B channels.
                             </span>
                         </li>
                         <li>
                             <span class="il-icon">🎨</span>
                             <span class="il-text"><b>RGB Color Cycling</b><br>
-                                Cycles Green → Red → Blue smoothly every 3 seconds.
+                                Cycles Red → Green → Blue → Off every 1 second.
                             </span>
                         </li>
                     </ul>
@@ -1814,25 +1813,21 @@
 
                 <div class="code-box" data-file="examples/01_neopixel_test.ino">
                     <code><span class="kw">#include</span> <span class="st">&lt;Arduino.h&gt;</span>
-<span class="kw">#define</span> RGB_PIN <span class="vl">2</span>  <span class="cm">// ESP32-C3 onboard LED</span>
+<span class="kw">#define</span> RGB_PIN <span class="vl">2</span>  <span class="cm">// ESP32-C3 onboard NeoPixel</span>
 
-<span class="kw">void</span> <span class="fn">setup</span>() { <span class="fn">Serial.begin</span>(<span class="vl">115200</span>); }
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  <span class="fn">Serial.begin</span>(<span class="vl">115200</span>);
+}
 
 <span class="kw">void</span> <span class="fn">loop</span>() {
-  <span class="tp">uint32_t</span> now = <span class="fn">millis</span>();
-
-  <span class="cm">// Smooth breathing: 2-sec sine wave</span>
-  <span class="tp">float</span> phase = (now % <span class="vl">2000</span>) * (<span class="vl">6.28318f</span> / <span class="vl">2000.0f</span>);
-  <span class="tp">float</span> bright = <span class="vl">0.05f</span> + <span class="vl">0.35f</span> * (<span class="vl">0.5f</span> + <span class="vl">0.5f</span> * <span class="fn">sinf</span>(phase));
-
-  <span class="cm">// Cycle colors: 0=Green, 1=Red, 2=Blue</span>
-  <span class="tp">int</span> m = (now / <span class="vl">3000</span>) % <span class="vl">3</span>;
-  <span class="tp">uint8_t</span> r = (m == <span class="vl">1</span>) ? (<span class="tp">uint8_t</span>)(<span class="vl">255</span> * bright) : <span class="vl">0</span>;
-  <span class="tp">uint8_t</span> g = (m == <span class="vl">0</span>) ? (<span class="tp">uint8_t</span>)(<span class="vl">255</span> * bright) : <span class="vl">0</span>;
-  <span class="tp">uint8_t</span> b = (m == <span class="vl">2</span>) ? (<span class="tp">uint8_t</span>)(<span class="vl">255</span> * bright) : <span class="vl">0</span>;
-
-  <span class="fn">neopixelWrite</span>(RGB_PIN, r, g, b);
-  <span class="fn">delay</span>(<span class="vl">15</span>); <span class="cm">// ~60 FPS animation rate</span>
+  <span class="fn">neopixelWrite</span>(RGB_PIN, <span class="vl">50</span>, <span class="vl">0</span>, <span class="vl">0</span>);   <span class="cm">// Red</span>
+  <span class="fn">delay</span>(<span class="vl">1000</span>);
+  <span class="fn">neopixelWrite</span>(RGB_PIN, <span class="vl">0</span>, <span class="vl">50</span>, <span class="vl">0</span>);   <span class="cm">// Green</span>
+  <span class="fn">delay</span>(<span class="vl">1000</span>);
+  <span class="fn">neopixelWrite</span>(RGB_PIN, <span class="vl">0</span>, <span class="vl">0</span>, <span class="vl">50</span>);   <span class="cm">// Blue</span>
+  <span class="fn">delay</span>(<span class="vl">1000</span>);
+  <span class="fn">neopixelWrite</span>(RGB_PIN, <span class="vl">0</span>, <span class="vl">0</span>, <span class="vl">0</span>);    <span class="cm">// Off</span>
+  <span class="fn">delay</span>(<span class="vl">1000</span>);
 }</code>
                 </div>
             </div>
