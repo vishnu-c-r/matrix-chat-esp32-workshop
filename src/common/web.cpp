@@ -209,16 +209,24 @@ async function refresh(){
       }
     }
   }catch(e){}
+  finally{busy=false;}
 }
 document.getElementById('frm').onsubmit=async e=>{
   e.preventDefault();
   const inp=document.getElementById('txt'),v=inp.value.trim();
   if(!v)return;
   inp.value='';
-  await fetch('/send',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'message='+encodeURIComponent(v)});
+  try{
+    await fetch('/send',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'message='+encodeURIComponent(v)});
+  }catch(e){}
   refresh();
 };
-refresh();setInterval(refresh,1000);
+let busy=false;
+async function pollLoop(){
+  await refresh();
+  setTimeout(pollLoop,700);
+}
+pollLoop();
 </script></body></html>
 )END_PAGE";
 
@@ -226,6 +234,7 @@ refresh();setInterval(refresh,1000);
 static void handleRoot() {
   Serial.printf("[web] Client %s loaded chat portal (GET /)\n",
                 g_server.client().remoteIP().toString().c_str());
+  g_server.sendHeader("Connection", "close");
   g_server.send_P(200, "text/html", PAGE);
 }
 
@@ -265,20 +274,23 @@ static void handleApi() {
   }
   json += "]}";
 
+  g_server.sendHeader("Connection", "close");
   g_server.send(200, "application/json", json);
 }
 
 static void handleSend() {
   if (!g_server.hasArg("message")) {
+    g_server.sendHeader("Connection", "close");
     g_server.send(400, "text/plain", "missing message");
     return;
   }
 
-  // Rate limit: 1 message per second per node (single-client workshop).
+  // Rate limit check
   uint32_t now = millis();
   if ((now - g_last_send_ms) < RATE_LIMIT_MS) {
     Serial.printf("[web] Rate limit: throttled client %s (cooldown active)\n",
                   g_server.client().remoteIP().toString().c_str());
+    g_server.sendHeader("Connection", "close");
     g_server.send(429, "text/plain", "slow down");
     return;
   }
@@ -286,6 +298,7 @@ static void handleSend() {
   String msg = g_server.arg("message");
   msg.trim();
   if (msg.length() == 0 || msg.length() > CHAT_MAX_MSG_LEN) {
+    g_server.sendHeader("Connection", "close");
     g_server.send(400, "text/plain", "message 1-150 chars");
     return;
   }
@@ -294,6 +307,7 @@ static void handleSend() {
   Serial.printf("[web] Chat submitted by %s: \"%s\"\n",
                 g_server.client().remoteIP().toString().c_str(), msg.c_str());
   sendChatMessage(msg.c_str());
+  g_server.sendHeader("Connection", "close");
   g_server.send(200, "text/plain", "ok");
 }
 
@@ -303,6 +317,7 @@ static void handleClear() {
   g_hist_count = 0;
   g_hist_head = 0;
   g_total_msg = 0;
+  g_server.sendHeader("Connection", "close");
   g_server.send(200, "text/plain", "ok");
 }
 

@@ -5,10 +5,8 @@
  * Purpose: Learn how the WS2812 single-wire RGB LED works on ESP32
  * without using delay()!
  *
- * Supported Boards:
- *   - ESP32-C3 (SuperMini / DevKit): Onboard RGB LED is on GPIO 2
- *   - ESP32-S3 (Zero / DevKit):      Onboard RGB LED is on GPIO 48
- *   - ESP32 WROOM / External WS2812: Set RGB_PIN to your data pin
+ * Target Board:
+ *   - ESP32-C3 SuperMini: Onboard RGB LED is on GPIO 2
  *
  * Upload this single file to your ESP32, open Serial Monitor at 115200.
  * =========================================================================
@@ -16,14 +14,8 @@
 
 #include <Arduino.h>
 
-// Select the pin for your hardware:
-#if defined(CONFIG_IDF_TARGET_ESP32C3)
-  #define RGB_PIN 2     // ESP32-C3 SuperMini onboard NeoPixel
-#elif defined(CONFIG_IDF_TARGET_ESP32S3)
-  #define RGB_PIN 48    // ESP32-S3 onboard NeoPixel
-#else
-  #define RGB_PIN 2     // Default fallback
-#endif
+// ESP32-C3 SuperMini onboard NeoPixel:
+#define RGB_PIN 2
 
 // Preset palette: Red, Green, Blue, Cyan, Magenta, Yellow
 struct RGBColor { uint8_t r; uint8_t g; uint8_t b; const char* name; };
