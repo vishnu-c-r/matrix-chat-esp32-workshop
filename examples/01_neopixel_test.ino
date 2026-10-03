@@ -1,41 +1,69 @@
 /*
  * =========================================================================
- * MATRIX WORKSHOP — EXAMPLE 01: SIMPLE NEOPIXEL (WS2812) TEST
+ * MATRIX WORKSHOP — EXAMPLE 01: STANDALONE NEOPIXEL (WS2812) TEST
  * =========================================================================
- * Board: ESP32-C3 SuperMini (Onboard NeoPixel is GPIO 2)
+ * Purpose: Learn how the WS2812 single-wire RGB LED works on ESP32
+ * without using delay()!
  *
- * Upload this file and open Serial Monitor at 115200 baud.
+ * Target Board:
+ *   - ESP32-C3 SuperMini: Onboard RGB LED is on GPIO 2
+ *
+ * Upload this single file to your ESP32, open Serial Monitor at 115200.
  * =========================================================================
  */
 
 #include <Arduino.h>
 
+// ESP32-C3 SuperMini onboard NeoPixel:
 #define RGB_PIN 2
+
+// Preset palette: Red, Green, Blue, Cyan, Magenta, Yellow
+struct RGBColor {
+  uint8_t r;
+  uint8_t g;
+  uint8_t b;
+  const char *name;
+};
+const RGBColor PALETTE[] = {{255, 0, 0, "RED"},       {0, 255, 0, "GREEN"},
+                            {0, 0, 255, "BLUE"},      {0, 255, 255, "CYAN"},
+                            {255, 0, 255, "MAGENTA"}, {255, 200, 0, "YELLOW"}};
+const int NUM_COLORS = sizeof(PALETTE) / sizeof(PALETTE[0]);
+
+int colorIndex = 0;
+uint32_t lastColorSwitchMs = 0;
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("\n[NeoPixel] Test Ready (GPIO 2)");
+  delay(1000); // Allow USB Serial to enumerate
+
+  Serial.println("\n======================================");
+  Serial.println("  NeoPixel (WS2812) Standalone Test   ");
+  Serial.printf("  Controlling Pin: GPIO %d\n", RGB_PIN);
+  Serial.println("======================================\n");
 }
 
 void loop() {
-  // Red
-  Serial.println("LED: RED");
-  neopixelWrite(RGB_PIN, 50, 0, 0);
-  delay(1000);
+  uint32_t now = millis();
 
-  // Green
-  Serial.println("LED: GREEN");
-  neopixelWrite(RGB_PIN, 0, 50, 0);
-  delay(1000);
+  // 1. Switch color every 2000 ms (Non-blocking!)
+  if (now - lastColorSwitchMs >= 2000) {
+    lastColorSwitchMs = now;
+    colorIndex = (colorIndex + 1) % NUM_COLORS;
+    Serial.printf("[NeoPixel] Switched to: %s\n", PALETTE[colorIndex].name);
+  }
 
-  // Blue
-  Serial.println("LED: BLUE");
-  neopixelWrite(RGB_PIN, 0, 0, 50);
-  delay(1000);
+  // 2. Compute smooth sine-wave breathing brightness (0.05 to 0.40)
+  // Period = 2000 ms full breath cycle
+  float phase = (now % 2000) * (2.0f * 3.14159f / 2000.0f);
+  float brightness = 0.05f + 0.35f * (0.5f + 0.5f * sinf(phase));
 
-  // Off
-  Serial.println("LED: OFF");
-  neopixelWrite(RGB_PIN, 0, 0, 0);
-  delay(1000);
+  // 3. Write out the GRB 24-bit pulse over single wire
+  uint8_t r = (uint8_t)(PALETTE[colorIndex].r * brightness);
+  uint8_t g = (uint8_t)(PALETTE[colorIndex].g * brightness);
+  uint8_t b = (uint8_t)(PALETTE[colorIndex].b * brightness);
+
+  neopixelWrite(RGB_PIN, r, g, b);
+
+  // Tiny 15ms sleep to give CPU time for background tasks (~60 FPS)
+  delay(15);
 }
-
