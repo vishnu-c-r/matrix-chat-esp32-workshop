@@ -260,11 +260,12 @@ void loop() {
   radioLoop();
   webLoop();
 
-  // SOLUTION-BEGIN stage:3 hint:"Calculate distance and call
-  // ledSetRadarState/webSetRadarStatus."
   uint32_t now = millis();
   uint8_t st = 0;
   float dist = 999.0f;
+
+  // SOLUTION-BEGIN stage:3 hint:"Calculate distance and call
+  // ledSetRadarState/webSetRadarStatus."
   if (now - g_last_beacon_ms < BEACON_TIMEOUT_MS && g_filtered_rssi > -99.0f) {
     dist = estimateDistanceCm(g_filtered_rssi);
     if (dist < 100.0f)
