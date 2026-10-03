@@ -13,11 +13,14 @@ static uint8_t gamma8(uint8_t v)
 }
 
 // ---- Low-level output ---------------------------------------
+static const float LED_BRIGHTNESS = 0.70f;  // global cap (0.0–1.0)
+
 static void setRgb(uint8_t r, uint8_t g, uint8_t b)
 {
-    // Onboard WS2812 — gamma applied inside rgbLedWrite is vendor-specific;
-    // we apply our own gamma before calling so output is consistent.
-    rgbLedWrite(PIN_NEOPIXEL, gamma8(r), gamma8(g), gamma8(b));
+    rgbLedWrite(PIN_NEOPIXEL,
+                gamma8((uint8_t)(r * LED_BRIGHTNESS)),
+                gamma8((uint8_t)(g * LED_BRIGHTNESS)),
+                gamma8((uint8_t)(b * LED_BRIGHTNESS)));
 }
 
 // ---- State machine ------------------------------------------
