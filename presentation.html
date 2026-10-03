@@ -1007,26 +1007,62 @@
                 width: 100%;
             }
         }
+
         /* ========================================================
            AGENT SMITH / RED ANOMALY THEME & CINEMATIC GLITCH ENGINE
            ======================================================== */
-        
+
         /* Body Camera Tremor / Seismic Shake */
         body.glitch-shake {
             animation: camera-seismic-shake 0.95s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
         }
 
         @keyframes camera-seismic-shake {
-            0% { transform: translate3d(0, 0, 0); }
-            5% { transform: translate3d(-18px, 12px, 0) rotate(-1.2deg); filter: contrast(220%) brightness(1.7); }
-            12% { transform: translate3d(22px, -15px, 0) rotate(1.4deg); filter: invert(0.85) hue-rotate(180deg); }
-            20% { transform: translate3d(-16px, -10px, 0) rotate(-0.9deg); filter: contrast(300%) saturate(3); }
-            28% { transform: translate3d(14px, 12px, 0) rotate(0.7deg); filter: invert(0.4); }
-            38% { transform: translate3d(-10px, 8px, 0) rotate(-0.4deg); filter: none; }
-            50% { transform: translate3d(8px, -6px, 0) rotate(0.2deg); }
-            65% { transform: translate3d(-4px, 4px, 0); }
-            80% { transform: translate3d(2px, -2px, 0); }
-            100% { transform: translate3d(0, 0, 0); filter: none; }
+            0% {
+                transform: translate3d(0, 0, 0);
+            }
+
+            5% {
+                transform: translate3d(-18px, 12px, 0) rotate(-1.2deg);
+                filter: contrast(220%) brightness(1.7);
+            }
+
+            12% {
+                transform: translate3d(22px, -15px, 0) rotate(1.4deg);
+                filter: invert(0.85) hue-rotate(180deg);
+            }
+
+            20% {
+                transform: translate3d(-16px, -10px, 0) rotate(-0.9deg);
+                filter: contrast(300%) saturate(3);
+            }
+
+            28% {
+                transform: translate3d(14px, 12px, 0) rotate(0.7deg);
+                filter: invert(0.4);
+            }
+
+            38% {
+                transform: translate3d(-10px, 8px, 0) rotate(-0.4deg);
+                filter: none;
+            }
+
+            50% {
+                transform: translate3d(8px, -6px, 0) rotate(0.2deg);
+            }
+
+            65% {
+                transform: translate3d(-4px, 4px, 0);
+            }
+
+            80% {
+                transform: translate3d(2px, -2px, 0);
+            }
+
+            100% {
+                transform: translate3d(0, 0, 0);
+                filter: none;
+            }
         }
 
         /* Glitch Master Overlay Container */
@@ -1047,10 +1083,21 @@
         }
 
         @keyframes overlay-fadeout {
-            0% { opacity: 1; }
-            75% { opacity: 0.95; }
-            95% { opacity: 0.2; }
-            100% { opacity: 0; }
+            0% {
+                opacity: 1;
+            }
+
+            75% {
+                opacity: 0.95;
+            }
+
+            95% {
+                opacity: 0.2;
+            }
+
+            100% {
+                opacity: 0;
+            }
         }
 
         /* 1. Blinding Phosphor Flash */
@@ -1066,27 +1113,55 @@
         }
 
         @keyframes phosphor-flash {
-            0% { opacity: 0; background: #ffffff; }
-            4% { opacity: 1; background: #ffffff; }
-            8% { opacity: 0.95; background: #ff2020; box-shadow: inset 0 0 160px #ff0000; }
-            15% { opacity: 0.8; background: #000; }
-            22% { opacity: 0.9; background: #ff1010; }
-            35% { opacity: 0.3; background: #150005; }
-            60% { opacity: 0.15; }
-            100% { opacity: 0; }
+            0% {
+                opacity: 0;
+                background: #ffffff;
+            }
+
+            4% {
+                opacity: 1;
+                background: #ffffff;
+            }
+
+            8% {
+                opacity: 0.95;
+                background: #ff2020;
+                box-shadow: inset 0 0 160px #ff0000;
+            }
+
+            15% {
+                opacity: 0.8;
+                background: #000;
+            }
+
+            22% {
+                opacity: 0.9;
+                background: #ff1010;
+            }
+
+            35% {
+                opacity: 0.3;
+                background: #150005;
+            }
+
+            60% {
+                opacity: 0.15;
+            }
+
+            100% {
+                opacity: 0;
+            }
         }
 
         /* 2. CRT Scanline Raster & Rolling Sync Bar */
         .glitch-scanlines {
             position: absolute;
             inset: 0;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(0, 0, 0, 0.7) 0px,
-                rgba(0, 0, 0, 0.7) 3px,
-                rgba(255, 0, 0, 0.09) 3px,
-                rgba(255, 0, 0, 0.09) 6px
-            );
+            background: repeating-linear-gradient(0deg,
+                    rgba(0, 0, 0, 0.7) 0px,
+                    rgba(0, 0, 0, 0.7) 3px,
+                    rgba(255, 0, 0, 0.09) 3px,
+                    rgba(255, 0, 0, 0.09) 6px);
             opacity: 0;
             pointer-events: none;
         }
@@ -1097,8 +1172,13 @@
         }
 
         @keyframes crt-vroll {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(100vh); }
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(100vh);
+            }
         }
 
         /* 3. Horizontal Chromatic Slice Tears */
@@ -1145,21 +1225,45 @@
         }
 
         @keyframes slice-jitter-1 {
-            0% { transform: translateX(-40px) skewX(6deg); }
-            50% { transform: translateX(35px) skewX(-4deg); }
-            100% { transform: translateX(-20px) skewX(2deg); }
+            0% {
+                transform: translateX(-40px) skewX(6deg);
+            }
+
+            50% {
+                transform: translateX(35px) skewX(-4deg);
+            }
+
+            100% {
+                transform: translateX(-20px) skewX(2deg);
+            }
         }
 
         @keyframes slice-jitter-2 {
-            0% { transform: translateX(50px) scaleY(1.05); }
-            50% { transform: translateX(-45px) skewX(-8deg); }
-            100% { transform: translateX(25px) skewX(4deg); }
+            0% {
+                transform: translateX(50px) scaleY(1.05);
+            }
+
+            50% {
+                transform: translateX(-45px) skewX(-8deg);
+            }
+
+            100% {
+                transform: translateX(25px) skewX(4deg);
+            }
         }
 
         @keyframes slice-jitter-3 {
-            0% { transform: translateX(-60px) skewX(-5deg); }
-            50% { transform: translateX(40px) skewX(7deg); }
-            100% { transform: translateX(-15px); }
+            0% {
+                transform: translateX(-60px) skewX(-5deg);
+            }
+
+            50% {
+                transform: translateX(40px) skewX(7deg);
+            }
+
+            100% {
+                transform: translateX(-15px);
+            }
         }
 
         /* 4. Tactical Military Breach Banner (HUD Alert) */
@@ -1184,13 +1288,42 @@
         }
 
         @keyframes hud-alert-pop {
-            0% { opacity: 0; transform: scale(0.6) translateY(20px); filter: blur(10px); }
-            8% { opacity: 1; transform: scale(1.06) translateY(-4px); filter: blur(0); }
-            14% { transform: scale(0.98) translateX(6px); }
-            20% { transform: scale(1) translateX(0); }
-            70% { opacity: 1; transform: scale(1); filter: none; }
-            90% { opacity: 0.4; transform: scale(1.03) translateY(-8px); filter: blur(4px); }
-            100% { opacity: 0; transform: scale(0.9) translateY(-16px); }
+            0% {
+                opacity: 0;
+                transform: scale(0.6) translateY(20px);
+                filter: blur(10px);
+            }
+
+            8% {
+                opacity: 1;
+                transform: scale(1.06) translateY(-4px);
+                filter: blur(0);
+            }
+
+            14% {
+                transform: scale(0.98) translateX(6px);
+            }
+
+            20% {
+                transform: scale(1) translateX(0);
+            }
+
+            70% {
+                opacity: 1;
+                transform: scale(1);
+                filter: none;
+            }
+
+            90% {
+                opacity: 0.4;
+                transform: scale(1.03) translateY(-8px);
+                filter: blur(4px);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(0.9) translateY(-16px);
+            }
         }
 
         .gha-badge {
@@ -1217,8 +1350,15 @@
         }
 
         @keyframes gha-text-flicker {
-            0% { opacity: 0.92; text-shadow: 0 0 25px #ff2020; }
-            100% { opacity: 1; text-shadow: 0 0 45px #ff0000, 3px 0 #00ffff; }
+            0% {
+                opacity: 0.92;
+                text-shadow: 0 0 25px #ff2020;
+            }
+
+            100% {
+                opacity: 1;
+                text-shadow: 0 0 45px #ff0000, 3px 0 #00ffff;
+            }
         }
 
         .gha-desc {
@@ -1237,14 +1377,44 @@
         }
 
         @keyframes glitch-anim {
-            0%, 100% { transform: none; opacity: 1; text-shadow: 0 0 25px var(--red), 0 0 70px rgba(255, 32, 32, 0.5); }
-            7% { transform: skew(-0.5deg, -0.8deg); text-shadow: 3px 0 var(--green), -3px 0 var(--red); }
-            10% { transform: none; text-shadow: 0 0 25px var(--red); }
-            27% { transform: none; }
-            30% { transform: skew(0.8deg, 0.5deg); text-shadow: -2px 0 var(--green), 2px 0 var(--red); }
-            35% { transform: none; }
-            52% { opacity: 0.8; }
-            55% { opacity: 1; }
+
+            0%,
+            100% {
+                transform: none;
+                opacity: 1;
+                text-shadow: 0 0 25px var(--red), 0 0 70px rgba(255, 32, 32, 0.5);
+            }
+
+            7% {
+                transform: skew(-0.5deg, -0.8deg);
+                text-shadow: 3px 0 var(--green), -3px 0 var(--red);
+            }
+
+            10% {
+                transform: none;
+                text-shadow: 0 0 25px var(--red);
+            }
+
+            27% {
+                transform: none;
+            }
+
+            30% {
+                transform: skew(0.8deg, 0.5deg);
+                text-shadow: -2px 0 var(--green), 2px 0 var(--red);
+            }
+
+            35% {
+                transform: none;
+            }
+
+            52% {
+                opacity: 0.8;
+            }
+
+            55% {
+                opacity: 1;
+            }
         }
 
         .glitch-smith {
@@ -1252,19 +1422,38 @@
         }
 
         /* LED Blink & Solid */
-        .led-blink { animation: blink-led 0.4s step-end infinite; }
-        .led-solid { box-shadow: 0 0 35px #ff2020; }
+        .led-blink {
+            animation: blink-led 0.4s step-end infinite;
+        }
+
+        .led-solid {
+            box-shadow: 0 0 35px #ff2020;
+        }
+
         @keyframes blink-led {
-            0%, 100% { opacity: 1; box-shadow: 0 0 30px currentColor; }
-            50% { opacity: 0.1; box-shadow: none; }
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 30px currentColor;
+            }
+
+            50% {
+                opacity: 0.1;
+                box-shadow: none;
+            }
         }
 
         /* Stages Grid */
         .stages-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 22px; max-width: 1300px; width: 100%; margin-top: 15px;
+            gap: 22px;
+            max-width: 1300px;
+            width: 100%;
+            margin-top: 15px;
         }
+
         .stage-card {
             background: rgba(25, 0, 4, 0.85);
             border: 1.5px solid #330000;
@@ -1273,23 +1462,34 @@
             text-align: left;
             transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
         }
+
         .stage-card:hover {
             transform: translateY(-5px);
             border-color: var(--red);
             box-shadow: 0 0 25px rgba(255, 32, 32, 0.5);
         }
+
         .stage-badge {
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.9rem; font-weight: 900;
-            padding: 4px 10px; border-radius: 4px;
-            display: inline-block; margin-bottom: 12px;
+            font-size: 0.9rem;
+            font-weight: 900;
+            padding: 4px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 12px;
         }
+
         .stage-card h3 {
             font-family: 'Orbitron', sans-serif;
-            font-size: 1.3rem; margin-bottom: 8px; color: #fff;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            color: #fff;
         }
+
         .stage-card p {
-            font-size: 1.05rem; color: #cc8888; line-height: 1.5;
+            font-size: 1.05rem;
+            color: #cc8888;
+            line-height: 1.5;
         }
 
         /* Presenters Socials (The Architects) */
@@ -1301,12 +1501,14 @@
             max-width: 1120px;
             margin-top: 10px;
         }
+
         @media (max-width: 768px) {
             .social-grid {
                 grid-template-columns: 1fr;
                 gap: 16px;
             }
         }
+
         .social-card {
             background: rgba(26, 0, 5, 0.88);
             border: 1.5px solid #330000;
@@ -1321,64 +1523,109 @@
             position: relative;
             overflow: hidden;
         }
+
         .social-card::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             height: 3px;
             background: linear-gradient(90deg, transparent, var(--red), transparent);
         }
+
         .social-card:hover {
             border-color: var(--red);
             transform: translateY(-5px);
             box-shadow: 0 0 35px rgba(255, 32, 32, 0.5);
         }
+
         .social-avatar {
-            width: 66px; height: 66px;
+            width: 66px;
+            height: 66px;
             border-radius: 50%;
             border: 2px solid var(--red);
             background: rgba(45, 0, 8, 0.85);
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 2.1rem;
             margin-bottom: 10px;
             box-shadow: 0 0 20px rgba(255, 32, 32, 0.5);
         }
+
         .social-name {
             font-family: 'Orbitron', sans-serif;
-            font-size: 1.35rem; font-weight: 700;
-            color: #fff; letter-spacing: 2px;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 2px;
             margin-bottom: 4px;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
         }
+
         .social-role {
             font-size: 0.96rem;
-            color: var(--cyan); letter-spacing: 1.2px;
+            color: var(--cyan);
+            letter-spacing: 1.2px;
             margin-bottom: 10px;
             font-family: 'Share Tech Mono', monospace;
         }
+
         .social-tags {
-            display: flex; flex-wrap: wrap;
-            gap: 6px; justify-content: center;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
             margin-bottom: 14px;
             max-width: 440px;
         }
+
         .badge {
-            display: inline-block; padding: 3px 8px; border-radius: 4px;
-            font-size: 0.78rem; font-family: 'Orbitron', sans-serif; font-weight: 700;
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.78rem;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
             letter-spacing: 1px;
         }
-        .badge-blue { background: rgba(0,204,255,0.18); border: 1px solid var(--cyan); color: var(--cyan); }
-        .badge-purple { background: rgba(204,136,255,0.18); border: 1px solid #cc88ff; color: #cc88ff; }
-        .badge-yellow { background: rgba(255,204,0,0.18); border: 1px solid var(--yellow); color: var(--yellow); }
-        .badge-red { background: rgba(255,32,32,0.18); border: 1px solid var(--red); color: #ff8888; }
+
+        .badge-blue {
+            background: rgba(0, 204, 255, 0.18);
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+        }
+
+        .badge-purple {
+            background: rgba(204, 136, 255, 0.18);
+            border: 1px solid #cc88ff;
+            color: #cc88ff;
+        }
+
+        .badge-yellow {
+            background: rgba(255, 204, 0, 0.18);
+            border: 1px solid var(--yellow);
+            color: var(--yellow);
+        }
+
+        .badge-red {
+            background: rgba(255, 32, 32, 0.18);
+            border: 1px solid var(--red);
+            color: #ff8888;
+        }
 
         .social-links {
-            display: flex; flex-direction: column;
-            gap: 8px; width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
             max-width: 380px;
         }
+
         .social-link {
-            display: flex; align-items: center;
+            display: flex;
+            align-items: center;
             gap: 12px;
             background: rgba(35, 0, 7, 0.7);
             border: 1px solid #330000;
@@ -1389,6 +1636,7 @@
             font-size: 0.94rem;
             transition: all 0.2s ease;
         }
+
         .social-link:hover {
             background: #660000;
             border-color: var(--red);
@@ -1396,6 +1644,7 @@
             transform: translateX(4px);
             box-shadow: 0 0 14px rgba(255, 32, 32, 0.5);
         }
+
         .social-icon {
             font-size: 1.15rem;
             flex-shrink: 0;
@@ -1403,111 +1652,152 @@
             text-align: center;
         }
 
-        .highlight-red { color: #fff; background: rgba(255,32,32,0.35); padding: 3px 8px; border-radius: 5px; font-weight: bold; }
-        .highlight-green { color: #000; background: var(--green); padding: 3px 8px; border-radius: 5px; font-weight: bold; }
+        .highlight-red {
+            color: #fff;
+            background: rgba(255, 32, 32, 0.35);
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .highlight-green {
+            color: #000;
+            background: var(--green);
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
 
         /* Smith Mode Global Overrides */
         body.smith-mode {
             color: var(--red);
         }
+
         body.smith-mode #progress {
             background: var(--red);
             box-shadow: 0 0 14px var(--red);
         }
+
         body.smith-mode #counter {
             color: var(--red);
             text-shadow: 0 0 8px rgba(255, 32, 32, 0.5);
         }
+
         body.smith-mode #cursor-glow {
             background: radial-gradient(circle, rgba(255, 32, 32, 0.09) 0%, transparent 70%);
         }
+
         body.smith-mode .hud {
             background: rgba(30, 0, 5, 0.85);
             border-color: #330000;
         }
+
         body.smith-mode .hud:hover {
             border-color: var(--red);
         }
+
         body.smith-mode .hud-btn {
             background: rgba(50, 0, 10, 0.7);
             border-color: #330000;
             color: var(--red);
         }
+
         body.smith-mode .hud-btn:hover {
             background: #660000;
             border-color: var(--red);
             box-shadow: 0 0 12px rgba(255, 32, 32, 0.5);
             color: #fff;
         }
+
         body.smith-mode .hud-text {
             color: var(--red);
         }
+
         body.smith-mode .nav-btn {
             background: rgba(30, 0, 5, 0.8);
             border-color: #330000;
             color: var(--red);
         }
+
         body.smith-mode .nav-btn:hover {
             border-color: var(--red);
             box-shadow: 0 0 12px rgba(255, 32, 32, 0.5);
             color: #fff;
             background: #660000;
         }
+
         body.smith-mode .slide::-webkit-scrollbar-thumb {
             background: #330000;
         }
+
         body.smith-mode .slide::-webkit-scrollbar-thumb:hover {
             background: var(--red);
         }
+
         body.smith-mode .slide h2 {
             color: #ff4040;
             text-shadow: 0 0 16px rgba(255, 32, 32, 0.5);
         }
+
         body.smith-mode .section-tag {
             color: #aa3333;
         }
+
         body.smith-mode .subtitle {
             color: #ff8888;
         }
+
         body.smith-mode .card {
             background: rgba(30, 0, 5, 0.85);
             border-color: #330000;
         }
+
         body.smith-mode .card:hover {
             border-color: var(--red);
             box-shadow: 0 0 35px rgba(255, 32, 32, 0.5);
         }
+
         body.smith-mode .card-title {
             color: #ff6666;
         }
+
         body.smith-mode .card-body {
             color: #e5a4a4;
         }
+
         body.smith-mode .icon-list li {
             color: #ff9999;
         }
+
         body.smith-mode .code-box {
             background: rgba(15, 0, 2, 0.95);
             border-color: #330000;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.85);
         }
+
         body.smith-mode .code-box::before {
             background: #3b0005;
             color: var(--red);
             border-bottom-color: #660000;
         }
+
         body.smith-mode .code-box code {
             color: #ffcccc;
         }
+
         body.smith-mode .cm {
             color: #884d4d;
         }
+
         body.smith-mode .quote {
             color: #ffaaaa;
         }
+
         body.smith-mode .quote-author {
             color: #aa5555;
-            font-size: 1.3rem; margin-top: 14px; font-style: normal;
+            font-size: 1.3rem;
+            margin-top: 14px;
+            font-style: normal;
         }
 
         /* Ambient Phone Ringing Indicator (Slide 28) */
@@ -1531,20 +1821,46 @@
             animation: phone-indicator-pulse 2s infinite ease-in-out;
             pointer-events: none;
         }
+
         .phone-pulse-icon {
             font-size: 1.4rem;
             animation: phone-shake 0.8s infinite ease-in-out;
         }
+
         @keyframes phone-shake {
-            0%, 100% { transform: rotate(0deg); }
-            20% { transform: rotate(-15deg); }
-            40% { transform: rotate(15deg); }
-            60% { transform: rotate(-10deg); }
-            80% { transform: rotate(10deg); }
+
+            0%,
+            100% {
+                transform: rotate(0deg);
+            }
+
+            20% {
+                transform: rotate(-15deg);
+            }
+
+            40% {
+                transform: rotate(15deg);
+            }
+
+            60% {
+                transform: rotate(-10deg);
+            }
+
+            80% {
+                transform: rotate(10deg);
+            }
         }
+
         @keyframes phone-indicator-pulse {
-            0%, 100% { box-shadow: 0 0 15px rgba(0, 255, 65, 0.2); }
-            50% { box-shadow: 0 0 35px rgba(0, 255, 65, 0.6); }
+
+            0%,
+            100% {
+                box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 0 35px rgba(0, 255, 65, 0.6);
+            }
         }
     </style>
 </head>
@@ -1661,7 +1977,8 @@
                         </li>
                         <li>
                             <span class="il-icon">📍</span>
-                            <span class="il-text"><b>Hardware Pins</b> — Onboard LED on <b>ESP32-C3 is GPIO 2</b>.</span>
+                            <span class="il-text"><b>Hardware Pins</b> — Onboard LED on <b>ESP32-C3 is GPIO
+                                    2</b>.</span>
                         </li>
                     </ul>
                 </div>
@@ -2419,7 +2736,8 @@
                 <div>
                     <ul class="icon-list">
                         <li><span class="il-icon">📶</span><span class="il-text"><b>SoftAP Mode</b> — Your ESP32
-                                broadcasts its own Wi-Fi SSID using your team's chosen name (e.g. <span class="hl-yellow">Trinity</span>).</span></li>
+                                broadcasts its own Wi-Fi SSID using your team's chosen name (e.g. <span
+                                    class="hl-yellow">Trinity</span>).</span></li>
                         <li><span class="il-icon">🔗</span><span class="il-text"><b>DNS Hijacking</b> — When your phone
                                 pings Apple/Google probe servers, ESP32 answers: <i>"I am that server! Go to
                                     192.168.4.1"</i></span></li>
@@ -2584,7 +2902,9 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
             <div class="hero-title" style="font-size:clamp(4.0rem,7.5vw,6.5rem)">JACK IN.</div>
             <p class="quote" style="font-style:normal;margin-top:20px">"Free your mind."</p>
             <div style="margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-                <button class="hud-btn" id="btn-jackin-sound" onclick="playModemJackIn()" style="border-color:#ffff00;color:#ffffaa;font-size:1rem;padding:8px 18px">⚡ Jack-In Audio (DTMF &amp; Modem)</button>
+                <button class="hud-btn" id="btn-jackin-sound" onclick="playModemJackIn()"
+                    style="border-color:#ffff00;color:#ffffaa;font-size:1rem;padding:8px 18px">⚡ Jack-In Audio (DTMF
+                    &amp; Modem)</button>
             </div>
             <p style="margin-top:24px;color:#88cc88;font-size:1.3rem;letter-spacing:3px">Open your laptops. Set your
                 Node ID. Enter the Matrix.</p>
@@ -2603,29 +2923,34 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
         <div class="slide">
             <div class="hero-title glitch-smith" style="color:var(--red)">AGENT SMITH</div>
             <div class="hero-sub" style="color:#ff8888">// PROJECT ANOMALY: THE ROGUE TRANSMITTER</div>
-            <p class="prompt typewriter" style="color:#aa4444;border-color:var(--red)">Press → to execute protocol 99...</p>
+            <p class="prompt typewriter" style="color:#aa4444;border-color:var(--red)">Press → to execute protocol 99...
+            </p>
         </div>
 
         <!-- ============ SLIDE 30: THE ANOMALY REVEALED ============ -->
         <div class="slide">
             <div class="section-tag">// System Breach Detected</div>
             <h2>The Anomaly Revealed</h2>
-            <p class="subtitle">You thought you were building a peaceful chat mesh. Look at your NeoPixels right now.</p>
+            <p class="subtitle">You thought you were building a peaceful chat mesh. Look at your NeoPixels right now.
+            </p>
             <div class="card-row">
                 <div class="card">
                     <span class="card-icon">🎭</span>
                     <div class="card-title">THE COVER STORY</div>
-                    <div class="card-body">"A friendly peer-to-peer walkie-talkie chat with glowing RGB mood lights and captive web portals."</div>
+                    <div class="card-body">"A friendly peer-to-peer walkie-talkie chat with glowing RGB mood lights and
+                        captive web portals."</div>
                 </div>
                 <div class="card">
                     <span class="card-icon">📡</span>
                     <div class="card-title">THE REALITY</div>
-                    <div class="card-body">An unauthenticated 2.4 GHz radio layer with zero handshakes — ripe for packet injection, identity spoofing, and total mesh hijacking!</div>
+                    <div class="card-body">An unauthenticated 2.4 GHz radio layer with zero handshakes — ripe for packet
+                        injection, identity spoofing, and total mesh hijacking!</div>
                 </div>
                 <div class="card">
                     <span class="card-icon">🚨</span>
                     <div class="card-title">THE SECRET RADAR</div>
-                    <div class="card-body">Look closely at your board. That NeoPixel isn't just an idle light — it is an active RF proximity radar tracking the rogue transmitter in this room!</div>
+                    <div class="card-body">Look closely at your board. That NeoPixel isn't just an idle light — it is an
+                        active RF proximity radar tracking the rogue transmitter in this room!</div>
                 </div>
             </div>
         </div>
@@ -2634,19 +2959,23 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
         <div class="slide">
             <div class="section-tag">// Hardware Forensics</div>
             <h2>The NeoPixel Proximity Radar</h2>
-            <p class="subtitle">Embedded silently inside your firmware is an Exponential Moving Average (EMA) filter tracking incoming 2.4 GHz beacon RSSI.</p>
+            <p class="subtitle">Embedded silently inside your firmware is an Exponential Moving Average (EMA) filter
+                tracking incoming 2.4 GHz beacon RSSI.</p>
             <div class="led-demo">
                 <div class="led-item">
                     <div class="led-circle led-breathing" style="background:#00ff88;color:#00ff88"></div>
-                    <div class="led-label">CLEAR (&gt;3m)<br><small>Normal breathing glow<br>RSSI &lt; -85 dBm</small></div>
+                    <div class="led-label">CLEAR (&gt;3m)<br><small>Normal breathing glow<br>RSSI &lt; -85 dBm</small>
+                    </div>
                 </div>
                 <div class="led-item">
                     <div class="led-circle led-blink" style="background:#ff2020;color:#ff2020"></div>
-                    <div class="led-label">⚠️ NEAR (1m - 3m)<br><small>Pulsing red alarm<br>RSSI &gt; -85 dBm</small></div>
+                    <div class="led-label">⚠️ NEAR (1m - 3m)<br><small>Pulsing red alarm<br>RSSI &gt; -85 dBm</small>
+                    </div>
                 </div>
                 <div class="led-item">
                     <div class="led-circle led-solid" style="background:#ff2020"></div>
-                    <div class="led-label">🚨 CLOSE (&lt;1m)<br><small>Solid blinding RED<br>RSSI &gt; -50 dBm</small></div>
+                    <div class="led-label">🚨 CLOSE (&lt;1m)<br><small>Solid blinding RED<br>RSSI &gt; -50 dBm</small>
+                    </div>
                 </div>
             </div>
             <div class="code-box wide" data-file="Indoor Log-Distance Path Loss Model" style="margin-top:24px">
@@ -2666,22 +2995,26 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
                 <div class="stage-card">
                     <span class="stage-badge" style="background:#333;color:#888">STAGE 0: STEALTH</span>
                     <h3>Dormant Mode</h3>
-                    <p>Smith powers on with 0 radio emissions. Completely invisible while students flash their code and verify their chat setups.</p>
+                    <p>Smith powers on with 0 radio emissions. Completely invisible while students flash their code and
+                        verify their chat setups.</p>
                 </div>
                 <div class="stage-card">
                     <span class="stage-badge" style="background:#004488;color:#88ccff">STAGE 1: SPOOF &amp; PING</span>
                     <h3>Identity Theft</h3>
-                    <p>Smith hijacks active Node IDs (1–10) with canned quotes every 2s. Because frames use SYS_ALERT, student LEDs rhythmically pulse red!</p>
+                    <p>Smith hijacks active Node IDs (1–10) with canned quotes every 2s. Because frames use SYS_ALERT,
+                        student LEDs rhythmically pulse red!</p>
                 </div>
                 <div class="stage-card">
                     <span class="stage-badge" style="background:#886600;color:#ffdd66">STAGE 2: CORRUPT MODE</span>
                     <h3>Progressive Glitch</h3>
-                    <p>Transmits as Agent Smith (#99) with deterministic XorShift32 text corruption rising from level 1 to level 5 ASCII noise every 1.5s.</p>
+                    <p>Transmits as Agent Smith (#99) with deterministic XorShift32 text corruption rising from level 1
+                        to level 5 ASCII noise every 1.5s.</p>
                 </div>
                 <div class="stage-card">
                     <span class="stage-badge" style="background:#880000;color:#ff6666">STAGE 3: FLOOD</span>
                     <h3>Total Matrix Takeover</h3>
-                    <p>Full level-5 corrupt packet flood (1 msg/s). Chat bubbles turn red with glitch styling and the web UI locks in emergency alert.</p>
+                    <p>Full level-5 corrupt packet flood (1 msg/s). Chat bubbles turn red with glitch styling and the
+                        web UI locks in emergency alert.</p>
                 </div>
             </div>
         </div>
@@ -2690,21 +3023,26 @@ filtered = <span class="vl">0.2</span> * raw + <span class="vl">0.8</span> * fil
         <div class="slide">
             <div class="section-tag">// Vulnerability Analysis</div>
             <h2>Why ESP-NOW Is Vulnerable</h2>
-            <p class="subtitle">ESP-NOW provides speed at the cost of security. Understanding how Smith exploits raw 802.11 vendor-specific action frames.</p>
+            <p class="subtitle">ESP-NOW provides speed at the cost of security. Understanding how Smith exploits raw
+                802.11 vendor-specific action frames.</p>
             <div class="two-col">
                 <div>
                     <ul class="icon-list">
                         <li>
                             <span class="il-icon">🔓</span>
-                            <span class="il-text"><b>No Handshake / Zero Auth</b> — Any transmitter can broadcast packets to <span class="highlight-red">FF:FF:FF:FF:FF:FF</span> without authentication.</span>
+                            <span class="il-text"><b>No Handshake / Zero Auth</b> — Any transmitter can broadcast
+                                packets to <span class="highlight-red">FF:FF:FF:FF:FF:FF</span> without
+                                authentication.</span>
                         </li>
                         <li>
                             <span class="il-icon">🎭</span>
-                            <span class="il-text"><b>Arbitrary Node ID Spoofing</b> — The sender ID in the packet header is a plain integer. Smith easily claims to be Node 14 or Trinity.</span>
+                            <span class="il-text"><b>Arbitrary Node ID Spoofing</b> — The sender ID in the packet header
+                                is a plain integer. Smith easily claims to be Node 14 or Trinity.</span>
                         </li>
                         <li>
                             <span class="il-icon">📡</span>
-                            <span class="il-text"><b>Raw 2.4 GHz Promiscuity</b> — Packets bypass Wi-Fi encryption (WPA2/3) entirely, traversing raw radio channels.</span>
+                            <span class="il-text"><b>Raw 2.4 GHz Promiscuity</b> — Packets bypass Wi-Fi encryption
+                                (WPA2/3) entirely, traversing raw radio channels.</span>
                         </li>
                     </ul>
                 </div>
@@ -2726,14 +3064,21 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
         <div class="slide">
             <div class="section-tag">// Attack Architecture</div>
             <h2>The Rogue Control Panel</h2>
-            <p class="subtitle">How the rogue transmitter injected spoofed packets and manipulated your mesh in real time:</p>
+            <p class="subtitle">How the rogue transmitter injected spoofed packets and manipulated your mesh in real
+                time:</p>
             <div class="two-col">
                 <div>
                     <ul class="icon-list">
-                        <li><span class="il-icon">📶</span><span class="il-text"><b>Hidden Rogue AP</b> — Transmitter hosts <span class="highlight-red">Matrix-Admin</span> SoftAP (Password: <span class="highlight-red">admin123</span>) on Channel 11.</span></li>
-                        <li><span class="il-icon">📱</span><span class="il-text"><b>Live HUD</b> — Web dashboard at <span class="highlight-green">http://192.168.4.1</span> sending commands over local Wi-Fi.</span></li>
-                        <li><span class="il-icon">🎚️</span><span class="il-text"><b>Live Stage Buttons</b> — Transition seamlessly between Stealth (0), Impersonate (1), Corrupt (2), and Flood (3).</span></li>
-                        <li><span class="il-icon">💬</span><span class="il-text"><b>Custom Spoof Injection</b> — Type any message and broadcast under any victim's Node ID (1–50) or 99!</span></li>
+                        <li><span class="il-icon">📶</span><span class="il-text"><b>Hidden Rogue AP</b> — Transmitter
+                                hosts <span class="highlight-red">Matrix-Admin</span> SoftAP (Password: <span
+                                    class="highlight-red">admin123</span>) on Channel 11.</span></li>
+                        <li><span class="il-icon">📱</span><span class="il-text"><b>Live HUD</b> — Web dashboard at
+                                <span class="highlight-green">http://192.168.4.1</span> sending commands over local
+                                Wi-Fi.</span></li>
+                        <li><span class="il-icon">🎚️</span><span class="il-text"><b>Live Stage Buttons</b> — Transition
+                                seamlessly between Stealth (0), Impersonate (1), Corrupt (2), and Flood (3).</span></li>
+                        <li><span class="il-icon">💬</span><span class="il-text"><b>Custom Spoof Injection</b> — Type
+                                any message and broadcast under any victim's Node ID (1–50) or 99!</span></li>
                     </ul>
                 </div>
                 <div class="code-box" data-file="smith_web.cpp (admin portal)">
@@ -2754,22 +3099,26 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
                 <div class="card">
                     <span class="card-icon">🌱</span>
                     <div class="card-title">PHASE 1</div>
-                    <div class="card-body"><b>Peaceful Setup</b><br>You cloned, set IDs, and started chatting. Smith was silent in Stage 0.</div>
+                    <div class="card-body"><b>Peaceful Setup</b><br>You cloned, set IDs, and started chatting. Smith was
+                        silent in Stage 0.</div>
                 </div>
                 <div class="card">
                     <span class="card-icon">⚡</span>
                     <div class="card-title">PHASE 2</div>
-                    <div class="card-body"><b>The First Glitch</b><br>Smith transmitted stealth beacons. Front-row LEDs began blinking red!</div>
+                    <div class="card-body"><b>The First Glitch</b><br>Smith transmitted stealth beacons. Front-row LEDs
+                        began blinking red!</div>
                 </div>
                 <div class="card">
                     <span class="card-icon">👻</span>
                     <div class="card-title">PHASE 3</div>
-                    <div class="card-body"><b>The Infiltration</b><br>Spoofed messages appeared in your chat with fake Node IDs.</div>
+                    <div class="card-body"><b>The Infiltration</b><br>Spoofed messages appeared in your chat with fake
+                        Node IDs.</div>
                 </div>
                 <div class="card">
                     <span class="card-icon">🎯</span>
                     <div class="card-title">PHASE 4</div>
-                    <div class="card-body"><b>The Physical Hunt</b><br>Total takeover! Your mission: use your ESP32 radar to hunt down Smith!</div>
+                    <div class="card-body"><b>The Physical Hunt</b><br>Total takeover! Your mission: use your ESP32
+                        radar to hunt down Smith!</div>
                 </div>
             </div>
         </div>
@@ -2778,17 +3127,25 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
         <div class="slide">
             <div class="section-tag">// The Live Hunt</div>
             <h2>Geiger Counter Mode</h2>
-            <p class="subtitle">When the Matrix collapses, don't look at screens — walk the room following your LED signals!</p>
+            <p class="subtitle">When the Matrix collapses, don't look at screens — walk the room following your LED
+                signals!</p>
             <div class="two-col">
                 <div>
                     <ul class="icon-list">
-                        <li><span class="il-icon">🟢</span><span class="il-text"><b>Green / Breathing</b> — Cold. You are far away from the anomaly (&gt; 5 meters).</span></li>
-                        <li><span class="il-icon">🟡</span><span class="il-text"><b>Slow Red Pulse</b> — Warm. Approaching within 2 to 3 meters.</span></li>
-                        <li><span class="il-icon">🔴</span><span class="il-text"><b>Rapid Red Flash</b> — Hot! Within 1.5 meters. Look for who is hiding the rogue board!</span></li>
-                        <li><span class="il-icon">🚨</span><span class="il-text"><b>Solid Blinding Red</b> — Found! You are standing right next to the transmitter.</span></li>
+                        <li><span class="il-icon">🟢</span><span class="il-text"><b>Green / Breathing</b> — Cold. You
+                                are far away from the anomaly (&gt; 5 meters).</span></li>
+                        <li><span class="il-icon">🟡</span><span class="il-text"><b>Slow Red Pulse</b> — Warm.
+                                Approaching within 2 to 3 meters.</span></li>
+                        <li><span class="il-icon">🔴</span><span class="il-text"><b>Rapid Red Flash</b> — Hot! Within
+                                1.5 meters. Look for who is hiding the rogue board!</span></li>
+                        <li><span class="il-icon">🚨</span><span class="il-text"><b>Solid Blinding Red</b> — Found! You
+                                are standing right next to the transmitter.</span></li>
                     </ul>
                     <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:14px">
-                        <button id="btn-demo-geiger" class="nav-btn" style="border-color:var(--red);color:#ffcccc;padding:7px 16px;font-size:0.92rem;background:rgba(40,0,8,0.7);cursor:pointer" title="Acoustic Proximity Simulation (Note: ESP32 boards use NeoPixel LED signals only)">🔊 Demo Geiger Audio (Acoustic Sim)</button>
+                        <button id="btn-demo-geiger" class="nav-btn"
+                            style="border-color:var(--red);color:#ffcccc;padding:7px 16px;font-size:0.92rem;background:rgba(40,0,8,0.7);cursor:pointer"
+                            title="Acoustic Proximity Simulation (Note: ESP32 boards use NeoPixel LED signals only)">🔊
+                            Demo Geiger Audio (Acoustic Sim)</button>
                     </div>
                 </div>
                 <div>
@@ -2810,16 +3167,19 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
         <!-- ============ SLIDE 37: INEVITABLE ============ -->
         <div class="slide">
             <div class="hero-title glitch-smith" style="color:var(--red)">I'M INEVITABLE.</div>
-            <p class="quote">"You hear that sound, Mr. Anderson? That is the sound of inevitability... Goodbye, Mr. Anderson."</p>
+            <p class="quote">"You hear that sound, Mr. Anderson? That is the sound of inevitability... Goodbye, Mr.
+                Anderson."</p>
             <p class="quote-author">— Agent Smith</p>
-            <p style="margin-top:30px;color:#ff6666;font-size:1.3rem;letter-spacing:3px">The Matrix has collapsed. Find the anomaly.</p>
+            <p style="margin-top:30px;color:#ff6666;font-size:1.3rem;letter-spacing:3px">The Matrix has collapsed. Find
+                the anomaly.</p>
         </div>
 
         <!-- ============ SLIDE 38: THE ARCHITECTS // CONNECT WITH US ============ -->
         <div class="slide">
             <div class="section-tag">// Mission Debrief &amp; The Architects</div>
             <h2>The Architects // Connect With Us!</h2>
-            <p class="subtitle">Thank you for surviving the Matrix! Connect with us, collaborate on hardware hacks, or inspect our decentralized firmware repositories.</p>
+            <p class="subtitle">Thank you for surviving the Matrix! Connect with us, collaborate on hardware hacks, or
+                inspect our decentralized firmware repositories.</p>
 
             <div class="social-grid">
                 <!-- Presenter 1: Vishnu C R -->
@@ -2832,6 +3192,7 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
                         <span class="badge badge-blue">🤖 Robotics</span>
                         <span class="badge badge-purple">🚗 Automotive Systems</span>
                         <span class="badge badge-red">⚡ Silicon &amp; Hardware</span>
+                        <span class="badge badge-blue">&#x1FA7A; Medical Devices</span>
                     </div>
                     <div class="social-links">
                         <a href="https://github.com/vishnu-c-r" target="_blank" class="social-link">
@@ -2851,7 +3212,7 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
 
                 <!-- Presenter 2: Prajul Francis -->
                 <div class="social-card">
-                    <div class="social-avatar">⚡</div>
+                    <div class="social-avatar">🏁</div>
                     <div class="social-name">Prajul Francis</div>
                     <div class="social-role">Firmware &amp; Embedded Systems Engineer</div>
                     <div class="social-tags">
@@ -2859,6 +3220,7 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
                         <span class="badge badge-red">&#x1F6E0;&#xFE0F; IoT Hacker</span>
                         <span class="badge badge-purple">&#x1F916; Robotics</span>
                         <span class="badge badge-blue">&#x1F3CE;&#xFE0F; F1 Fanatic</span>
+                        <span class="badge badge-purple">&#x26A1; Microcontrollers</span>
                     </div>
                     <div class="social-links">
                         <a href="https://github.com/prajul-l850" target="_blank" class="social-link">
@@ -3344,7 +3706,7 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
                         ambientHumNode.osc1.stop(t + 0.55);
                         ambientHumNode.osc2.stop(t + 0.55);
                     }
-                } catch (e) {}
+                } catch (e) { }
                 ambientHumNode = null;
             }
         }
