@@ -3248,6 +3248,7 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
                 <img src="thankyou.png" alt="Thank You" style="max-width: 600px; height: auto; border: 2px solid var(--accent); border-radius: 16px; box-shadow: 0 0 30px rgba(0, 255, 128, 0.2);">
             </div>
             <p class="subtitle" style="margin-top: 25px;">Follow the White Rabbit...</p>
+            <audio id="audio-thankyou" src="audio/Kylian%20Mbapp%C3%A9%20Dictator.mp3"></audio>
         </div>
 
     </div><!-- /deck -->
@@ -4053,6 +4054,15 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
             } else {
                 stopAmbientHum(true);
             }
+
+            const bgAudio = document.getElementById('audio-thankyou');
+            if (bgAudio) {
+                if (soundEnabled && cur === slides.length - 1) {
+                    bgAudio.play().catch(e => console.log(e));
+                } else {
+                    bgAudio.pause();
+                }
+            }
         }
         if (btnAudio) btnAudio.addEventListener('click', toggleAudio);
 
@@ -4144,8 +4154,21 @@ pkt.node_id   = <span class="vl">fake_target_id</span>;            <span class="
                     playInevitabilitySound();
                 } else if (cur === ARCHITECTS_SLIDE) {
                     playVictoryChime();
+                } else if (cur === slides.length - 1) {
+                    // Don't play default slide sound, rely on the MP3
                 } else {
                     playSlideSound(isSmithMode);
+                }
+
+                // Thank you slide background audio
+                const bgAudio = document.getElementById('audio-thankyou');
+                if (bgAudio) {
+                    if (cur === slides.length - 1 && soundEnabled) {
+                        bgAudio.play().catch(e => console.log('Autoplay blocked:', e));
+                    } else {
+                        bgAudio.pause();
+                        bgAudio.currentTime = 0;
+                    }
                 }
             }
         }
