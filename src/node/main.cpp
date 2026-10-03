@@ -42,8 +42,16 @@ static void onPktRecv(const Pkt *pkt, int8_t rssi) {
   // ---------- System beacon / Network alert -------------------
   if (pkt->type == (uint8_t)PktType::SYS_SYNC ||
       pkt->type == (uint8_t)PktType::SYS_ALERT) {
-    // TODO(stage3): Update g_filtered_rssi (EMA) and
-    // g_last_beacon_ms.
+    // SOLUTION-BEGIN stage:3 hint:"Update g_filtered_rssi (EMA) and
+    // g_last_beacon_ms."
+    // Fast-attack, smooth-decay EMA: reacts quickly when threat approaches
+    float alpha = ((float)rssi > g_filtered_rssi) ? RSSI_EMA_ALPHA_FAST : RSSI_EMA_ALPHA;
+    if (g_filtered_rssi <= -99.0f)
+      g_filtered_rssi = (float)rssi;
+    else
+      g_filtered_rssi = alpha * (float)rssi + (1.0f - alpha) * g_filtered_rssi;
+    g_last_beacon_ms = millis();
+    // SOLUTION-END
 
     if (pkt->type == (uint8_t)PktType::SYS_ALERT && pkt->len > 0) {
       // Show alert message with highlighted styling
@@ -70,16 +78,44 @@ static void onPktRecv(const Pkt *pkt, int8_t rssi) {
     return; // unknown type — discard
   }
 
-  // TODO(stage2): Check dedupeSeen(); if new, show the message
-  // and flash the LED.
+  // SOLUTION-BEGIN stage:2 hint:"Check dedupeSeen(); if new, show the message
+  // and flash the LED."
+  if (!dedupeSeen(pkt->node_id, pkt->seq)) {
+    Color col = nodeColor(pkt->color_idx);
+    // Display in web UI: use sender's team name if provided, fallback to Node ID.
+    char sender[28];
+    if (pkt->name[0] != '\0') {
+      snprintf(sender, sizeof(sender), "%s", pkt->name);
+    } else {
+      snprintf(sender, sizeof(sender), "Node %u", pkt->node_id);
+    }
+    webAddMessage(pkt->node_id, sender, col.r, col.g, col.b, pkt->text,
+                  /*is_alert=*/false);
+    ledFlashMsg(col);
+    Serial.printf("[chat RX] %s (Node %u, Seq %u, RSSI: %d dBm): %s\n", sender, pkt->node_id, pkt->seq, rssi, pkt->text);
+  }
+  // SOLUTION-END
 }
 
 // ----- Called by web.cpp when the browser sends a message ---
 void sendChatMessage(const char *text) {
   Pkt pkt = {};
 
-  // TODO(stage2): Fill in every Pkt field, then call
-  // radioSend(&pkt).
+  // SOLUTION-BEGIN stage:2 hint:"Fill in every Pkt field, then call
+  // radioSend(&pkt)."
+  pkt.magic = PKT_MAGIC;
+  pkt.ver = PKT_VER;
+  pkt.type = (uint8_t)PktType::CHAT;
+  pkt.node_id = NODE_ID;
+  pkt.color_idx = (uint8_t)(NODE_ID % N_COLORS);
+  pkt.seq = g_seq++;
+  strncpy(pkt.name, NODE_NAME, sizeof(pkt.name) - 1);
+  pkt.name[sizeof(pkt.name) - 1] = '\0';
+  strncpy(pkt.text, text, sizeof(pkt.text) - 1);
+  pkt.text[sizeof(pkt.text) - 1] = '\0';
+  pkt.len = (uint8_t)strlen(pkt.text);
+  radioSend(&pkt);
+  // SOLUTION-END
 
   // Echo to our own chat log (own messages don't come back via ESP-NOW).
   webAddMessage(NODE_ID, NODE_NAME, nodeColor(NODE_ID % N_COLORS).r,
@@ -191,8 +227,10 @@ void setup() {
     }
   });
 
-  // TODO(stage1): Call ledInit(NODE_ID) to set up the RGB LED
-  // for your node color.
+  // SOLUTION-BEGIN stage:1 hint:"Call ledInit(NODE_ID) to set up the RGB LED
+  // for your node color."
+  ledInit(NODE_ID);
+  // SOLUTION-END
 
   dedupeInit();
   // radioInit sets WiFi mode AP+STA, channel, and max TX power before esp_now_init.
@@ -222,8 +260,24 @@ void loop() {
   radioLoop();
   webLoop();
 
-  // TODO(stage3): Calculate distance and call
-  // ledSetRadarState/webSetRadarStatus.
+  uint32_t now = millis();
+  uint8_t st = 0;
+  float dist = 999.0f;
+
+  // SOLUTION-BEGIN stage:3 hint:"Calculate distance and call
+  // ledSetRadarState/webSetRadarStatus."
+  if (now - g_last_beacon_ms < BEACON_TIMEOUT_MS && g_filtered_rssi > -99.0f) {
+    dist = estimateDistanceCm(g_filtered_rssi);
+    if (dist < 100.0f)
+      st = 2; // CLOSE
+    else if (dist < 300.0f)
+      st = 1; // NEAR
+  } else {
+    g_filtered_rssi = -100.0f;
+  }
+  ledSetRadarState(st, dist);
+  webSetRadarStatus(st, dist);
+  // SOLUTION-END
 
   // Live serial diagnostic on radar state transitions
   static uint8_t s_last_radar_st = 0;
